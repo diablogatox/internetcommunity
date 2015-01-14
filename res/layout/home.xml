@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/ll_home"
+    android:background="#ffffff"
+    android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:id="@+id/rl_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#00baff"
+        >
+        <ImageView
+            android:id="@+id/iv_home_back" 
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_back"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            />
+        <ImageView
+            android:id="@+id/iv_home_news" 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/news"
+            android:layout_toLeftOf="@+id/iv_home_menu"
+            android:layout_centerVertical="true"
+            />
+        <ImageView 
+            android:id="@+id/iv_home_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:layout_centerVertical="true"
+            />
+    </RelativeLayout>
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <com.amap.api.maps2d.MapView 
+	        android:id="@+id/iv_home_map" 
+	        android:layout_height="250dp"
+	        android:layout_width="match_parent"
+	        android:clickable="true"/>
+    
+		<ListView 
+		    android:id="@+id/lv_home"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:divider="@null"
+			android:listSelector="#ffffff"	    
+		    android:overScrollMode="never"
+		    android:layout_marginBottom="5dp"
+		    android:background="#ffffff"
+		    ></ListView>
+		<TextView
+		    android:id="@+id/empty"
+		    android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_weight="1"
+	        android:gravity="center"
+	        android:padding="15dip"
+		    android:text="@string/no_nearby_users" />
+    </LinearLayout>
+    <!-- 地图 -->
+    
+</LinearLayout>

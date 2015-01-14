@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#ffffff"
+    android:layout_height="80dp" xmlns:app="http://schemas.android.com/apk/res/com.orfid.internetcommunity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_message1"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="5dp"
+       	android:layout_marginLeft="12dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_centerVertical="true"
+        android:background="@drawable/corners_bg" >
+
+        <com.orfid.widgts.CircleImageView
+            android:id="@+id/iv_messages1_pic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+        	android:scaleType="centerCrop"
+        	app:border_color="#ccffcc"
+        	app:border_width="1dp"
+            android:src="@drawable/my_qq_pic" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_message1_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="18dp"
+        android:layout_toRightOf="@+id/linearLayout_message1"
+        android:textSize="20sp"
+        android:text="大家群聊来看看呗" />
+    
+	<TextView 
+	    android:id="@+id/tv_message1_content"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/tv_message1_title"
+	    android:layout_alignLeft="@+id/tv_message1_title"
+	    android:text="加入哈哈哈哈哈哈啊哈哈哈"
+	    android:textSize="15sp"
+	    android:textColor="#888888"
+	    android:layout_marginTop="3dp" />
+
+	<TextView
+	    android:id="@+id/tv_message1_time"
+	    android:layout_width="wrap_content"
+	    android:layout_height="20dp"
+	    android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+	    android:layout_marginRight="10dp"
+	    android:textSize="12sp"
+	    android:textColor="#888888"
+	    android:text="12:53" />
+	
+	<View 
+	    android:layout_width="match_parent"
+	    android:layout_height="0.5dp"
+	    android:background="#999999"
+	    android:layout_alignLeft="@+id/tv_message1_title"
+	    android:layout_alignParentBottom="true"
+	    />
+
+</RelativeLayout>

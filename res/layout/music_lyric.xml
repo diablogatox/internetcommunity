@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/rl_music_lyric"
+    android:background="@drawable/background_tanceng" >
+    
+        <TextView 
+	        android:id="@+id/tv_music_lyric1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="45dp"
+	        android:layout_marginRight="18dp"
+	        android:layout_marginTop="12dp"
+	        android:layout_centerHorizontal="true"
+	        android:text="她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了"
+	        android:textSize="18sp"
+	        android:textColor="#00baff"
+	        />
+
+	    <TextView
+	        android:id="@+id/tv_music_lyric2"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignRight="@+id/tv_music_lyric1"
+	        android:layout_below="@+id/tv_music_lyric1"
+	        android:layout_marginRight="18dp"
+	        android:text="2014-12-18"
+	        android:textColor="#000000"
+	        android:textSize="15sp" />
+
+</RelativeLayout>

@@ -1,0 +1,14 @@
+package com.orfid.internetcommunity;
+
+public class AppConstants {
+	public static String USER_GPS_LOCATION = "http://sww.yxkuaile.com/user/gps";
+	public static String FIND_USERS_BY_DISTANCE = "http://sww.yxkuaile.com/user/findByDistance";
+	public static String MESSAGE_SESSION = "http://sww.yxkuaile.com/message/session";
+	public static String SEND_MESSAGE = "http://sww.yxkuaile.com/message/send";
+	// 查找用户根据UID
+	public static String FIND_USER_BY_UID = "http://sww.yxkuaile.com/user/find";
+	// 获取用户信息资料
+	public static String FETCH_USER_INFO = "http://sww.yxkuaile.com/user/GetInfo";
+	// 好友请求消息列表
+	public static String FRIEND_REQUEST_LIST = "http://sww.yxkuaile.com/message/addfriendlist";
+}

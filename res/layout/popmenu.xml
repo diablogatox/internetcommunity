@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup_view_cont"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@drawable/menu_drop_down_bj"
+    android:orientation="vertical" >
+
+    <GridView
+        android:padding="5dp"
+        android:id="@+id/gridView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:cacheColorHint="#00000000"
+        android:divider="#cccccc"
+        android:focusable="true"
+        android:listSelector="#ffffff"
+        android:focusableInTouchMode="true"
+        android:numColumns="3"
+        android:scrollbars="none" >
+    </GridView>
+
+</LinearLayout>

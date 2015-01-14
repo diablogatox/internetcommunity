@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_toast_add_friends"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"  >
+	
+    <RelativeLayout 
+        android:id="@+id/rl_toast_add_friends1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/corners_bg"
+        >
+        
+		<ImageView 
+		    android:id="@+id/iv_toast_add_friends"
+		    android:layout_width="35dp"
+		    android:layout_height="35dp"
+		    android:layout_centerVertical="true"
+		    android:layout_marginTop="25dp"
+		    android:layout_marginLeft="18dp"
+		    android:layout_marginBottom="25dp"
+		    android:layout_alignParentLeft="true"
+		    android:background="@drawable/icon_ts"
+		    />
+		<TextView 
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_centerVertical="true"
+		    android:layout_toRightOf="@+id/iv_toast_add_friends"
+		    android:layout_marginLeft="12dp"
+		    android:singleLine="true"
+		    android:text="已加对方为好友，请等待对方确认"
+		    android:textSize="13sp"
+		    android:textColor="#000000"
+		    />
+    </RelativeLayout>
+</RelativeLayout>

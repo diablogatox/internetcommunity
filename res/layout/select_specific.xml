@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <RelativeLayout
+        android:id="@+id/rl_select_specific1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#00baff" >
+
+        <ImageView
+            android:id="@+id/select_specific_back"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/icon_back" />
+
+        <TextView
+            android:id="@+id/tv_select_specific"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="搜索详细"
+            android:textColor="#ffffff"
+            android:textSize="22sp" />
+    </RelativeLayout>
+	
+    <LinearLayout 
+        android:id="@+id/ll_select_specific"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <RelativeLayout 
+	        android:id="@+id/rl_select_specific2"
+	        android:layout_width="match_parent"
+	        android:layout_height="70dp"
+	        android:layout_marginLeft="13dp"
+	        android:background="#ffffff"
+	        >
+	        <ImageView 
+		        android:id="@+id/iv_ss_pic"
+		        android:layout_width="50dp"
+		        android:layout_height="50dp"
+		        android:background="@drawable/my_qq_pic"
+		        android:layout_marginTop="8dp"
+		        android:layout_marginBottom="8dp"
+		        android:layout_centerVertical="true"
+		        />
+	    	<TextView 
+	        	android:id="@+id/tv_ss_name"
+	        	android:layout_width="wrap_content"
+	        	android:layout_height="wrap_content"
+	        	android:textSize="16sp"
+	        	android:layout_centerVertical="true"
+	        	android:layout_marginLeft="10dp"
+	        	android:layout_toRightOf="@+id/iv_ss_pic"
+	        	/>
+	    	<View 
+	    	    android:layout_width="match_parent"
+	    	    android:layout_height="1dp"
+	    	    android:background="#efefef"
+	    	    android:layout_alignParentBottom="true"
+	    	    />
+    	</RelativeLayout>
+    	
+    </LinearLayout>
+    
+</LinearLayout>
