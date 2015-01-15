@@ -42,6 +42,7 @@ public class ContactsAdapterSF extends BaseAdapter {
 		if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = LayoutInflater.from(context).inflate(R.layout.select_friends, null);
+			holder.view = convertView.findViewById(R.id.mainContent);
 			holder.iv_select_friends = (ImageView) convertView.findViewById(R.id.iv_select_friends);
 			holder.iv_sf_pic = (ImageView) convertView.findViewById(R.id.iv_sf_pic);
 			holder.tv_sf_name = (TextView) convertView.findViewById(R.id.tv_sf_name);
@@ -73,7 +74,8 @@ public class ContactsAdapterSF extends BaseAdapter {
 	}
 
 	public final class ViewHolder {
-		
+
+		public View view;
 		public TextView catalog;
 		public ImageView iv_select_friends;
 		public ImageView iv_sf_pic;

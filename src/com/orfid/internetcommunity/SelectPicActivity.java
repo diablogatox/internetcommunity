@@ -29,7 +29,7 @@ public class SelectPicActivity extends Activity {
 	private Uri photoUri;
 	
 	private final int PIC_FROM_CAMERA = 1;
-	private final int PIC_FROM£ßLOCALPHOTO = 0;
+	private final int PIC_FROM_LOCALPHOTO = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class SelectPicActivity extends Activity {
 		layout=(LinearLayout)findViewById(R.id.pop_layout); 
 		sp_pic_info = getSharedPreferences("pic", MODE_PRIVATE);
 		ed_pic_info = sp_pic_info.edit();
-		//Ìí¼ÓÑ¡Ôñ´°¿Ú·¶Î§¼àÌý¿ÉÒÔÓÅÏÈ»ñÈ¡´¥µã£¬¼´²»ÔÙÖ´ÐÐonTouchEvent()º¯Êý£¬µã»÷ÆäËûµØ·½Ê±Ö´ÐÐonTouchEvent()º¯ÊýÏú»ÙActivity   
+		//ï¿½ï¿½ï¿½Ñ¡ï¿½ñ´°¿Ú·ï¿½Î§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½È¡ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½onTouchEvent()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ê±Ö´ï¿½ï¿½onTouchEvent()ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Activity   
 		layout.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -50,7 +50,7 @@ public class SelectPicActivity extends Activity {
  
 			}
 		 });   
-		 //È¡Ïû   
+		 //È¡ï¿½ï¿½   
 		 btn_cancel.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -58,39 +58,39 @@ public class SelectPicActivity extends Activity {
 				finish();
 			}
 		});  
-		 //´ÓÊÖ»úÏà²áÑ¡Ôñ
+		 //ï¿½ï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
 		 btn_pick_photo.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				doHandlerPhoto(PIC_FROM£ßLOCALPHOTO);// ´ÓÏà²áÖÐÈ¥»ñÈ¡
+				doHandlerPhoto(PIC_FROM_LOCALPHOTO);// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½È¡
 			}
 		});   
-		 //ÅÄÕÕ
+		 //ï¿½ï¿½ï¿½ï¿½
 		 btn_take_photo.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				doHandlerPhoto(PIC_FROM_CAMERA);// ÓÃ»§µã»÷ÁË´ÓÕÕÏà»ú»ñÈ¡
+				doHandlerPhoto(PIC_FROM_CAMERA);// ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡
 			}
 		});
 
 	}
-	//ÊµÏÖonTouchEvent´¥ÆÁº¯Êýµ«µã»÷ÆÁÄ»Ê±Ïú»Ù±¾Activity   
+	//Êµï¿½ï¿½onTouchEventï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»Ê±ï¿½ï¿½ï¿½Ù±ï¿½Activity   
 	@Override  
 	public boolean onTouchEvent(MotionEvent event){   
 	    finish();   
 	    return true;   
 	} 
 	/**
-	 * ¸ù¾Ý²»Í¬·½Ê½Ñ¡ÔñÍ¼Æ¬ÉèÖÃImageView
+	 * ï¿½ï¿½ï¿½Ý²ï¿½Í¬ï¿½ï¿½Ê½Ñ¡ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ImageView
 	 * 
 	 * @param type
-	 *            0-±¾µØÏà²áÑ¡Ôñ£¬·Ç0ÎªÅÄÕÕ
+	 *            0-ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ñ£¬·ï¿½0Îªï¿½ï¿½ï¿½ï¿½
 	 */
 	private void doHandlerPhoto(int type) {
 		try {
-			// ±£´æ²Ã¼ôºóµÄÍ¼Æ¬ÎÄ¼þ
+			// ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½Ä¼ï¿½
 			File pictureFileDir = new File(
 					Environment.getExternalStorageDirectory(), "/upload");
 			if (!pictureFileDir.exists()) {
@@ -103,9 +103,9 @@ public class SelectPicActivity extends Activity {
 			photoUri = Uri.fromFile(picFile);
 			Log.i("TEST", "photoUri-create-----" + photoUri);
 
-			if (type == PIC_FROM£ßLOCALPHOTO) {// Ïà²á
+			if (type == PIC_FROM_LOCALPHOTO) {// ï¿½ï¿½ï¿½
 				Intent intent = getCropImageIntent();
-				startActivityForResult(intent, PIC_FROM£ßLOCALPHOTO);
+				startActivityForResult(intent, PIC_FROM_LOCALPHOTO);
 			} else {
 				Intent cameraIntent = new Intent(
 						MediaStore.ACTION_IMAGE_CAPTURE);
@@ -114,12 +114,12 @@ public class SelectPicActivity extends Activity {
 			}
 
 		} catch (Exception e) {
-			Log.i("HandlerPicError", "´¦ÀíÍ¼Æ¬³öÏÖ´íÎó");
+			Log.i("HandlerPicError", "ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½");
 		}
 	}
 
 	/**
-	 * µ÷ÓÃÍ¼Æ¬¼ô¼­³ÌÐò
+	 * ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public Intent getCropImageIntent() {
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
@@ -129,7 +129,7 @@ public class SelectPicActivity extends Activity {
 	}
 
 	/**
-	 * ÉèÖÃ¹«ÓÃ²ÎÊý
+	 * ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
 	 */
 	private void setIntentParams(Intent intent) {
 		intent.putExtra("crop", "true");
@@ -144,19 +144,19 @@ public class SelectPicActivity extends Activity {
 		intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 	}
 	/**
-	 * µÃµ½½á¹ûºó·µ»Ø¸øÉÏÒ»¸öÒ³Ãæ
+	 * ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ó·µ»Ø¸ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ò³ï¿½ï¿½
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
-		case PIC_FROM_CAMERA: // ÅÄÕÕ
+		case PIC_FROM_CAMERA: // ï¿½ï¿½ï¿½ï¿½
 			try {
 				cropImageUriByTakePhoto();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			break;
-		case PIC_FROM£ßLOCALPHOTO:// Ïà²á
+		case PIC_FROM_LOCALPHOTO:// ï¿½ï¿½ï¿½
 			try {
 				if (photoUri != null) {
 					Log.i("TEST", "start-----" + photoUri);
@@ -169,27 +169,27 @@ public class SelectPicActivity extends Activity {
 					finish();
 				} else {
 					SelectPicActivity.this.finish();
-					Log.i("TEST", "¿ÕphotoUri-----" + photoUri);
+					Log.i("TEST", "ï¿½ï¿½photoUri-----" + photoUri);
 				}
 			} catch (Exception e) {
-				Log.i("TEST", "Òì³£-----" + photoUri);
+				Log.i("TEST", "ï¿½ì³£-----" + photoUri);
 				e.printStackTrace();
 			}
 			break;
 		}
 	}
 	/**
-	 * ½«Ïà»úÅÄ³ÉµÄÍ¼Æ¬²Ã¼ô´¦Àí
+	 * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä³Éµï¿½Í¼Æ¬ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	private void cropImageUriByTakePhoto() {
 		Intent intent = new Intent("com.android.camera.action.CROP");
 		intent.setDataAndType(photoUri, "image/*");
 		setIntentParams(intent);
-		startActivityForResult(intent, PIC_FROM£ßLOCALPHOTO);
+		startActivityForResult(intent, PIC_FROM_LOCALPHOTO);
 	}
 
 	/**
-	 *½²±¾µØµÄÍ¼Æ¬×ª»»³Ébitmap¶ÔÏó
+	 *ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Í¼Æ¬×ªï¿½ï¿½ï¿½ï¿½bitmapï¿½ï¿½ï¿½ï¿½
 	 * @param uri
 	 * @return
 	 */
