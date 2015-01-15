@@ -11,4 +11,8 @@ public class AppConstants {
 	public static String FETCH_USER_INFO = "http://sww.yxkuaile.com/user/GetInfo";
 	// 好友请求消息列表
 	public static String FRIEND_REQUEST_LIST = "http://sww.yxkuaile.com/message/addfriendlist";
+	// 同意加为好友
+	public static String REPLY_FRIEND_REQUEST = "http://sww.yxkuaile.com/message/UserAction";
+	// 好友列表
+	public static String FRIEND_LIST = "http://sww.yxkuaile.com/user/firends";
 }
