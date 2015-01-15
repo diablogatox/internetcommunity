@@ -158,7 +158,7 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 		
 		for (int i = 0; i < friends.size(); i++) {
 			String username = friends.get(i).getUsername();
-			mylist.add(new Contacts(R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username)));
+			mylist.add(new Contacts(R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
 		}
 		
 		Contacts[] ContactsArray = mylist.toArray(new Contacts[mylist.size()]);

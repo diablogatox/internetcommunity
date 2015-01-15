@@ -3,16 +3,18 @@ package com.mofang.pb;
 import java.util.List;
 import java.util.Map;
 
-import com.mofang.util.PinyinUtils;
-import com.orfid.internetcommunity.R;
-
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.mofang.util.PinyinUtils;
+import com.orfid.internetcommunity.R;
 
 public class ContactsAdapterSF extends BaseAdapter {
 
@@ -42,7 +44,6 @@ public class ContactsAdapterSF extends BaseAdapter {
 		if (convertView == null) {
 			holder = new ViewHolder();
 			convertView = LayoutInflater.from(context).inflate(R.layout.select_friends, null);
-			holder.view = convertView.findViewById(R.id.mainContent);
 			holder.iv_select_friends = (ImageView) convertView.findViewById(R.id.iv_select_friends);
 			holder.iv_sf_pic = (ImageView) convertView.findViewById(R.id.iv_sf_pic);
 			holder.tv_sf_name = (TextView) convertView.findViewById(R.id.tv_sf_name);
@@ -70,12 +71,13 @@ public class ContactsAdapterSF extends BaseAdapter {
 		holder.iv_select_friends.setImageResource(R.drawable.select_friends);
 		holder.iv_sf_pic.setImageResource((Integer) list.get(position).get("icon"));
 		holder.tv_sf_name.setText((String) list.get(position).get("name"));
+		
+
 		return convertView;
 	}
 
 	public final class ViewHolder {
 
-		public View view;
 		public TextView catalog;
 		public ImageView iv_select_friends;
 		public ImageView iv_sf_pic;

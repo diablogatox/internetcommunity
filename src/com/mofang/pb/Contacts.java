@@ -2,12 +2,13 @@ package com.mofang.pb;
 
 public class Contacts {
 	
-	public Contacts(int icon, String name, String info, String py) {
+	public Contacts(int icon, String name, String info, String py, boolean check) {
 		// TODO Auto-generated constructor stub
 		this.icon = icon;
 		this.name = name;
 		this.info = info;
 		this.py = py;
+		this.check = check;
 	}
 
 	public String getName() {
@@ -40,6 +41,14 @@ public class Contacts {
 
 	public void setPy(String py) {
 		this.py = py;
+	}
+	
+	public boolean getCheck() {
+		return check;
+	}
+	
+	public void setCheck(boolean check) {
+		this.check = check;
 	}
 
 	private String name;
