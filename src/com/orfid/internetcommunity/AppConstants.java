@@ -15,7 +15,9 @@ public class AppConstants {
 	public static String REPLY_FRIEND_REQUEST = "http://sww.yxkuaile.com/message/UserAction";
 	// 好友列表
 	public static String FRIEND_LIST = "http://sww.yxkuaile.com/user/firends";
-	// 保存用户信息资料
+	/**
+	 * 保存用户信息资料
+	 */
 	public static String SAVE_USER_INFO = "http://sww.yxkuaile.com/user/SaveInfo";
 
 }
