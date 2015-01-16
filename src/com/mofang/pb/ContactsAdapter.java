@@ -3,10 +3,8 @@ package com.mofang.pb;
 import java.util.List;
 import java.util.Map;
 
-import com.mofang.util.PinyinUtils;
-import com.orfid.internetcommunity.R;
-
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,6 +13,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.mofang.util.PinyinUtils;
+import com.orfid.internetcommunity.HomeFriendsPicActivity;
+import com.orfid.internetcommunity.R;
 
 public class ContactsAdapter extends BaseAdapter {
 
@@ -69,13 +71,16 @@ public class ContactsAdapter extends BaseAdapter {
 				holder.catalog.setText(catalog);
 			}
 		}
+		
+		final String uid = (String) list.get(position).get("uid");
 		holder.rl_friends111.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View view) {
 				// TODO Auto-generated method stub
-//				Intent intent = new Intent(addFriendsActivity,HomeFriendsPicActivity.class);
-//				startActivity(intent);
+				Intent intent = new Intent(context,HomeFriendsPicActivity.class);
+				intent.putExtra("uid", uid);
+				context.startActivity(intent);
 			}
 		});
 		holder.icon.setImageResource((Integer) list.get(position).get("icon"));

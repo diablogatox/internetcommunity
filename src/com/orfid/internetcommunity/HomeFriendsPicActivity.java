@@ -33,7 +33,7 @@ import android.widget.Toast;
 
 public class HomeFriendsPicActivity extends Activity implements Runnable{
 	private ImageView home_pic_back;
-	private TextView tv_lahei1, tv_pic_name1, tv_name_id1;
+	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age;
 	private Button btn_add_friends;
 	private GridView gv_friends_pic_home;
 	private String uid;
@@ -49,12 +49,13 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		tv_lahei1 = (TextView) findViewById(R.id.tv_lahei1);
 		tv_pic_name1 = (TextView) findViewById(R.id.tv_pic_name1);
 		tv_name_id1 = (TextView) findViewById(R.id.tv_name_id1);
+		tv_pic_age = (TextView) findViewById(R.id.tv_pic_age);
 		btn_add_friends = (Button) findViewById(R.id.btn_add_friends);
 		gv_friends_pic_home = (GridView) findViewById(R.id.gv_friends_pic_home);
 		gv_friends_pic_home.setAdapter(new GameAdapter());
 		gv_friends_pic_home.setFocusable(false);
-		tv_lahei1.setText("À­ºÚ/¾Ù±¨");
-		// ·µ»Ø
+		tv_lahei1.setText("æ‹‰é»‘/ä¸¾æŠ¥");
+		// è¿”å›
 		home_pic_back.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -62,7 +63,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 				finish();
 			}
 		});
-		//À­ºÚ/¾Ù±¨
+		//æ‹‰é»‘/ä¸¾æŠ¥
 		tv_lahei1.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -70,7 +71,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 				startActivity(new Intent(HomeFriendsPicActivity.this,LaHeiActivity.class));
 			}
 		});
-		//Ìí¼ÓºÃÓÑ
+		//æ·»åŠ å¥½å‹
 		btn_add_friends.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -118,7 +119,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
-			viewHolder.tv_game_bg.setText("Ó¢ĞÛÁªÃË");
+			viewHolder.tv_game_bg.setText("è‹±é›„è”ç›Ÿ");
 			return convertView;
 		}
 		public class PictureViewHolder{
@@ -168,7 +169,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "---¼ÓºÃÓÑÇëÇó---JSON" + result);
+			Log.i("TEST", "---åŠ å¥½å‹è¯·æ±‚---JSON" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
@@ -184,7 +185,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 						if (1==object.getInt("status")) {
 							startActivity(new Intent(HomeFriendsPicActivity.this,ToastActivity.class));
 						}else if(0==object.getInt("status")){
-							Toast.makeText(HomeFriendsPicActivity.this,"ÍøÂçÒì³£",Toast.LENGTH_SHORT).show();
+							Toast.makeText(HomeFriendsPicActivity.this,"ç½‘ç»œå¼‚å¸¸",Toast.LENGTH_SHORT).show();
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -238,18 +239,20 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 
 		@Override
 		protected void onPostExecute(String result) {
-			Log.d("TEST", "»ñÈ¡ÓÃ»§ĞÅÏ¢×ÊÁÏJSON---" + result);
+			Log.d("TEST", "è·å–ç”¨æˆ·ä¿¡æ¯èµ„æ–™JSON---" + result);
 			JSONObject obj;
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
 //					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 ////					startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
-//					// ¼ÓÔØ¸½½üÓÃ»§ÁĞ±í
+//					// åŠ è½½é™„è¿‘ç”¨æˆ·åˆ—è¡¨
 //					new LoadNearbyUsersTask().excute();
 					JSONObject jObj = new JSONObject(obj.getString("data"));
 					tv_name_id1.setText(jObj.getString("uid"));
 					tv_pic_name1.setText(jObj.getString("username"));
+					int age = Utils.getAge(Long.parseLong(jObj.getString("birthday")) * 1000);
+					tv_pic_age.setText(age+"");
 					
 //					age = Utils.getAge(jObj.getString("birthday"));
 				}else if(0==obj.getInt("status")){

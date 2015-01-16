@@ -40,7 +40,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class AddFriendsActivity extends Activity implements OnClickListener, Runnable {
-	//ºÃÓÑ½çÃæ
+	//å¥½å‹ç•Œé¢
     private ImageView add_friends_back;
     private ImageButton ib_add_friends1,ib_add_friends2;
     private RelativeLayout rl_add_friends1;
@@ -55,7 +55,7 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_friends);
 		
-		initWidget();
+//		initWidget();
 		add_friends_back = (ImageView) findViewById(R.id.add_friends_back);
 		ib_add_friends1 = (ImageButton) findViewById(R.id.ib_add_friends1);
 		ib_add_friends2 = (ImageButton) findViewById(R.id.ib_add_friends2);
@@ -67,14 +67,15 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 		ib_add_friends1.setOnClickListener(this);
 		ib_add_friends2.setOnClickListener(this);
 		lv = (ListView) findViewById(R.id.lv_add_friends1);
-        lv.setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View view, int position,
-					long id) {
-				//
-			}
-		});
+//        lv.setOnItemClickListener(new OnItemClickListener() {
+//			
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View view, int position,
+//					long id) {
+//				Contacts contact = (Contacts) adapter.getItem(position);
+//				
+//			}
+//		});
         
         sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
         token = sp.getString("token", "");
@@ -82,12 +83,12 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
         new Thread(AddFriendsActivity.this).start();
 	}
 	private void initWidget() {
-		lv = (ListView) findViewById(R.id.lv_add_friends1);
+//		lv = (ListView) findViewById(R.id.lv_add_friends1);
 //		adapter = new ContactsAdapter(this, getMapList());
-		lv.setAdapter(adapter);
+//		lv.setAdapter(adapter);
 	}
 	/**
-	 * ³õÊ¼»¯¼ÓÔØlistVIewËùĞèÒªµÄÊı¾İ ²¢½øĞĞÅÅĞòºÍÆ¥Åä
+	 * åˆå§‹åŒ–åŠ è½½listVIewæ‰€éœ€è¦çš„æ•°æ® å¹¶è¿›è¡Œæ’åºå’ŒåŒ¹é…
 	 */
 	@SuppressWarnings("unchecked")
 //	private List<Map<String, Object>> getMapList() {
@@ -95,27 +96,27 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 //		List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
 //
 //		Contacts[] ContactsArray = new Contacts[] {
-//				new Contacts(R.drawable.my_qq_pic, "ÌÆÉ®", null, PinyinUtils.getAlpha("ÌÆÉ®")),
-//				new Contacts(R.drawable.my_qq_pic, "ÖíÊ¦µÜ", null, PinyinUtils.getAlpha("ÖíÊ¦µÜ")),
-//				new Contacts(R.drawable.my_qq_pic, "°¢´ô", null, PinyinUtils.getAlpha("°¢´ô")),
+//				new Contacts(R.drawable.my_qq_pic, "å”åƒ§", null, PinyinUtils.getAlpha("å”åƒ§")),
+//				new Contacts(R.drawable.my_qq_pic, "çŒªå¸ˆå¼Ÿ", null, PinyinUtils.getAlpha("çŒªå¸ˆå¼Ÿ")),
+//				new Contacts(R.drawable.my_qq_pic, "é˜¿å‘†", null, PinyinUtils.getAlpha("é˜¿å‘†")),
 //				new Contacts(R.drawable.my_qq_pic, "8899", null, PinyinUtils.getAlpha("8899")),
-//				new Contacts(R.drawable.my_qq_pic, "ËïÎò¿Õ", null, PinyinUtils.getAlpha("ËïÎò¿Õ")),
-//				new Contacts(R.drawable.my_qq_pic, "Ğ¡Ã÷", null, PinyinUtils.getAlpha("Ğ¡Ã÷")),
-//				new Contacts(R.drawable.my_qq_pic, "´ó¸ç", null, PinyinUtils.getAlpha("´ó¸ç")),
-//				new Contacts(R.drawable.my_qq_pic, "¶­²ß", null, PinyinUtils.getAlpha("¶­²ß")),
-//				new Contacts(R.drawable.my_qq_pic, "ÀöÀö", null, PinyinUtils.getAlpha("ÀöÀö")),
-//				new Contacts(R.drawable.my_qq_pic, "Àö¾ı", null, PinyinUtils.getAlpha("Àö¾ı")),
-//				new Contacts(R.drawable.my_qq_pic, "Ã×Ïß", null, PinyinUtils.getAlpha("Ã×Ïß")),
-//				new Contacts(R.drawable.my_qq_pic, "ÍõÎ°Ñó", null, PinyinUtils.getAlpha("ÍõÎ°Ñó")),
-//				new Contacts(R.drawable.my_qq_pic, "Ç¿Ç¿", null, PinyinUtils.getAlpha("Ç¿Ç¿")),
-//				new Contacts(R.drawable.my_qq_pic, "ÖÜ¼Ñ", null, PinyinUtils.getAlpha("ÖÜ¼Ñ")),
-//				new Contacts(R.drawable.my_qq_pic, "¶«·¼", null, PinyinUtils.getAlpha("¶«·¼")),
-//				new Contacts(R.drawable.my_qq_pic, "ÏãÀ¼", null, PinyinUtils.getAlpha("ÏãÀ¼")),
-//				new Contacts(R.drawable.my_qq_pic,"°¢Èı", null, PinyinUtils.getAlpha("°¢Èı")),
-//				new Contacts(R.drawable.my_qq_pic,"ÕÅÈı", null, PinyinUtils.getAlpha("ÕÅÈı"))
+//				new Contacts(R.drawable.my_qq_pic, "å­™æ‚Ÿç©º", null, PinyinUtils.getAlpha("å­™æ‚Ÿç©º")),
+//				new Contacts(R.drawable.my_qq_pic, "å°æ˜", null, PinyinUtils.getAlpha("å°æ˜")),
+//				new Contacts(R.drawable.my_qq_pic, "å¤§å“¥", null, PinyinUtils.getAlpha("å¤§å“¥")),
+//				new Contacts(R.drawable.my_qq_pic, "è‘£ç­–", null, PinyinUtils.getAlpha("è‘£ç­–")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸½ä¸½", null, PinyinUtils.getAlpha("ä¸½ä¸½")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸½å›", null, PinyinUtils.getAlpha("ä¸½å›")),
+//				new Contacts(R.drawable.my_qq_pic, "ç±³çº¿", null, PinyinUtils.getAlpha("ç±³çº¿")),
+//				new Contacts(R.drawable.my_qq_pic, "ç‹ä¼Ÿæ´‹", null, PinyinUtils.getAlpha("ç‹ä¼Ÿæ´‹")),
+//				new Contacts(R.drawable.my_qq_pic, "å¼ºå¼º", null, PinyinUtils.getAlpha("å¼ºå¼º")),
+//				new Contacts(R.drawable.my_qq_pic, "å‘¨ä½³", null, PinyinUtils.getAlpha("å‘¨ä½³")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸œèŠ³", null, PinyinUtils.getAlpha("ä¸œèŠ³")),
+//				new Contacts(R.drawable.my_qq_pic, "é¦™å…°", null, PinyinUtils.getAlpha("é¦™å…°")),
+//				new Contacts(R.drawable.my_qq_pic,"é˜¿ä¸‰", null, PinyinUtils.getAlpha("é˜¿ä¸‰")),
+//				new Contacts(R.drawable.my_qq_pic,"å¼ ä¸‰", null, PinyinUtils.getAlpha("å¼ ä¸‰"))
 //			};
 //		
-//		//¶ÔÊı×é½øĞĞÅÅĞò
+//		//å¯¹æ•°ç»„è¿›è¡Œæ’åº
 //		Arrays.sort(ContactsArray, new PinyinComparator());
 //		
 //		for (Contacts contacts : ContactsArray) {
@@ -134,42 +135,44 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 		List<Map<String, Object>> mapList = new ArrayList<Map<String, Object>>();
 
 //		Contacts[] ContactsArray = new Contacts[] {
-//				new Contacts(R.drawable.my_qq_pic, "ÌÆÉ®", null, PinyinUtils.getAlpha("ÌÆÉ®")),
-//				new Contacts(R.drawable.my_qq_pic, "ÖíÊ¦µÜ", null, PinyinUtils.getAlpha("ÖíÊ¦µÜ")),
-//				new Contacts(R.drawable.my_qq_pic, "°¢´ô", null, PinyinUtils.getAlpha("°¢´ô")),
+//				new Contacts(R.drawable.my_qq_pic, "å”åƒ§", null, PinyinUtils.getAlpha("å”åƒ§")),
+//				new Contacts(R.drawable.my_qq_pic, "çŒªå¸ˆå¼Ÿ", null, PinyinUtils.getAlpha("çŒªå¸ˆå¼Ÿ")),
+//				new Contacts(R.drawable.my_qq_pic, "é˜¿å‘†", null, PinyinUtils.getAlpha("é˜¿å‘†")),
 //				new Contacts(R.drawable.my_qq_pic, "8899", null, PinyinUtils.getAlpha("8899")),
-//				new Contacts(R.drawable.my_qq_pic, "ËïÎò¿Õ", null, PinyinUtils.getAlpha("ËïÎò¿Õ")),
-//				new Contacts(R.drawable.my_qq_pic, "Ğ¡Ã÷", null, PinyinUtils.getAlpha("Ğ¡Ã÷")),
-//				new Contacts(R.drawable.my_qq_pic, "´ó¸ç", null, PinyinUtils.getAlpha("´ó¸ç")),
-//				new Contacts(R.drawable.my_qq_pic, "¶­²ß", null, PinyinUtils.getAlpha("¶­²ß")),
-//				new Contacts(R.drawable.my_qq_pic, "ÀöÀö", null, PinyinUtils.getAlpha("ÀöÀö")),
-//				new Contacts(R.drawable.my_qq_pic, "Àö¾ı", null, PinyinUtils.getAlpha("Àö¾ı")),
-//				new Contacts(R.drawable.my_qq_pic, "Ã×Ïß", null, PinyinUtils.getAlpha("Ã×Ïß")),
-//				new Contacts(R.drawable.my_qq_pic, "ÍõÎ°Ñó", null, PinyinUtils.getAlpha("ÍõÎ°Ñó")),
-//				new Contacts(R.drawable.my_qq_pic, "Ç¿Ç¿", null, PinyinUtils.getAlpha("Ç¿Ç¿")),
-//				new Contacts(R.drawable.my_qq_pic, "ÖÜ¼Ñ", null, PinyinUtils.getAlpha("ÖÜ¼Ñ")),
-//				new Contacts(R.drawable.my_qq_pic, "¶«·¼", null, PinyinUtils.getAlpha("¶«·¼")),
-//				new Contacts(R.drawable.my_qq_pic, "ÏãÀ¼", null, PinyinUtils.getAlpha("ÏãÀ¼")),
-//				new Contacts(R.drawable.my_qq_pic,"°¢Èı", null, PinyinUtils.getAlpha("°¢Èı")),
-//				new Contacts(R.drawable.my_qq_pic,"ÕÅÈı", null, PinyinUtils.getAlpha("ÕÅÈı"))
+//				new Contacts(R.drawable.my_qq_pic, "å­™æ‚Ÿç©º", null, PinyinUtils.getAlpha("å­™æ‚Ÿç©º")),
+//				new Contacts(R.drawable.my_qq_pic, "å°æ˜", null, PinyinUtils.getAlpha("å°æ˜")),
+//				new Contacts(R.drawable.my_qq_pic, "å¤§å“¥", null, PinyinUtils.getAlpha("å¤§å“¥")),
+//				new Contacts(R.drawable.my_qq_pic, "è‘£ç­–", null, PinyinUtils.getAlpha("è‘£ç­–")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸½ä¸½", null, PinyinUtils.getAlpha("ä¸½ä¸½")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸½å›", null, PinyinUtils.getAlpha("ä¸½å›")),
+//				new Contacts(R.drawable.my_qq_pic, "ç±³çº¿", null, PinyinUtils.getAlpha("ç±³çº¿")),
+//				new Contacts(R.drawable.my_qq_pic, "ç‹ä¼Ÿæ´‹", null, PinyinUtils.getAlpha("ç‹ä¼Ÿæ´‹")),
+//				new Contacts(R.drawable.my_qq_pic, "å¼ºå¼º", null, PinyinUtils.getAlpha("å¼ºå¼º")),
+//				new Contacts(R.drawable.my_qq_pic, "å‘¨ä½³", null, PinyinUtils.getAlpha("å‘¨ä½³")),
+//				new Contacts(R.drawable.my_qq_pic, "ä¸œèŠ³", null, PinyinUtils.getAlpha("ä¸œèŠ³")),
+//				new Contacts(R.drawable.my_qq_pic, "é¦™å…°", null, PinyinUtils.getAlpha("é¦™å…°")),
+//				new Contacts(R.drawable.my_qq_pic,"é˜¿ä¸‰", null, PinyinUtils.getAlpha("é˜¿ä¸‰")),
+//				new Contacts(R.drawable.my_qq_pic,"å¼ ä¸‰", null, PinyinUtils.getAlpha("å¼ ä¸‰"))
 //			};
 		
 		ArrayList<Contacts> mylist = new ArrayList<Contacts>();
 		
 		for (int i = 0; i < friends.size(); i++) {
 			String username = friends.get(i).getUsername();
-			mylist.add(new Contacts(R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
+			String uid = friends.get(i).getUid();
+			mylist.add(new Contacts(uid, R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
 		}
 		
 		Contacts[] ContactsArray = mylist.toArray(new Contacts[mylist.size()]);
 		
 		
 		
-		//¶ÔÊı×é½øĞĞÅÅĞò
+		//å¯¹æ•°ç»„è¿›è¡Œæ’åº
 		Arrays.sort(ContactsArray, new PinyinComparator());
 		
 		for (Contacts contacts : ContactsArray) {
 			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("uid", contacts.getUid());
 			map.put("icon", contacts.getIcon());
 			map.put("name", contacts.getName());
 			map.put("info", contacts.getInfo());
@@ -182,19 +185,19 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {
-		case R.id.add_friends_back://·µ»Ø
+		case R.id.add_friends_back://è¿”å›
 			finish();
 			break;
-		case R.id.rl_add_friends1://Ìí¼ÓºÃÓÑ
+		case R.id.rl_add_friends1://æ·»åŠ å¥½å‹
 			startActivity(new Intent(AddFriendsActivity.this,AddNewFriendsActivity.class));
 			break;
-		case R.id.ib_add_friends1://Ìí¼ÓºÃÓÑ
+		case R.id.ib_add_friends1://æ·»åŠ å¥½å‹
 			startActivity(new Intent(AddFriendsActivity.this,AddNewFriendsActivity.class));
 			break;
-		case R.id.rl_add_friends2://ĞÂµÄºÃÓÑ
+		case R.id.rl_add_friends2://æ–°çš„å¥½å‹
 			startActivity(new Intent(AddFriendsActivity.this,NewFriendsActivity.class));
 			break;
-		case R.id.ib_add_friends2://ĞÂµÄºÃÓÑ
+		case R.id.ib_add_friends2://æ–°çš„å¥½å‹
 			startActivity(new Intent(AddFriendsActivity.this,NewFriendsActivity.class));
 			break;
 		}
@@ -243,12 +246,12 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.d("TEST", "ºÃÓÑÁĞ±íJSON---" + result);
+			Log.d("TEST", "å¥½å‹åˆ—è¡¨JSON---" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
 					object = new JSONObject(result);
-//					Log.i("TEST", "µÇÂ¼ĞÅÏ¢token---" + object.getInt("token"));
+//					Log.i("TEST", "ç™»å½•ä¿¡æ¯token---" + object.getInt("token"));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -271,13 +274,15 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 			    	        	Log.d("Exception",e.toString());
 			    	        }
 
-			    	        ContactsAdapter adapter = new ContactsAdapter(AddFriendsActivity.this, getMapList(friends));
+			    	        adapter = new ContactsAdapter(AddFriendsActivity.this, getMapList(friends));
 
 			    			lv.setAdapter(adapter);
 			    			lv.setOnItemClickListener(new OnItemClickListener() {
 			    				@Override
 			    				public void onItemClick(AdapterView<?> parent, View view, int position,
 			    						long id) {
+//			    					Contacts contact = (Contacts) adapter.getItem(position);
+//			    					Log.d("uid========>", contact.getUid());
 			    				}
 			    			});
 							

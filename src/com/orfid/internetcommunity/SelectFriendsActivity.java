@@ -133,7 +133,8 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		
 		for (int i = 0; i < friends.size(); i++) {
 			String username = friends.get(i).getUsername();
-			mylist.add(new Contacts(R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
+			String uid = friends.get(i).getUid();
+			mylist.add(new Contacts(uid, R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
 		}
 		
 		Contacts[] ContactsArray = mylist.toArray(new Contacts[mylist.size()]);

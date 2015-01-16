@@ -14,12 +14,11 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -53,32 +52,40 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	private TextView tv_personal_sex;
 	private TextView tv_personal_age;
 	private TextView tv_personal_signature;
+	private TextView tv_personal_uid;
 	private RelativeLayout rl_personal7;
 	public static int screenWeight, screenHeight;
 	private GridView gv_personal;
-	SharedPreferences preferences;
-	Editor editor;
-	SharedPreferences sp_sexy_info;
-	Editor ed_sexy_info;
-	SharedPreferences sp_nickname_info;
-	Editor ed_nickname_info;
-	SharedPreferences sp_birthday_info;
-	Editor ed_birthday_info;
+//	SharedPreferences preferences;
+//	Editor editor;
+//	SharedPreferences sp_sexy_info;
+//	Editor ed_sexy_info;
+//	SharedPreferences sp_nickname_info;
+//	Editor ed_nickname_info;
+//	SharedPreferences sp_birthday_info;
+//	Editor ed_birthday_info;
+	private SharedPreferences sp;
+	private SharedPreferences.Editor et;
+	private String token, uid;
 	
 	int year1,month1,day1;
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		screenWeight = getWindowManager().getDefaultDisplay().getWidth(); // ÆÁÄ»¿í£¨ÏñËØ£¬Èç£º480px£©
-		screenHeight = getWindowManager().getDefaultDisplay().getHeight(); // ÆÁÄ»¸ß£¨ÏñËØ£¬Èç£º800px£©
+		screenWeight = getWindowManager().getDefaultDisplay().getWidth(); // å±å¹•å®½ï¼ˆåƒç´ ï¼Œå¦‚ï¼š480pxï¼‰
+		screenHeight = getWindowManager().getDefaultDisplay().getHeight(); // å±å¹•é«˜ï¼ˆåƒç´ ï¼Œå¦‚ï¼š800pxï¼‰
 		setContentView(R.layout.personal);
 		
 		findID();
-		inintEditor();
+//		inintEditor();
 		gv_personal.setAdapter(new MyAdapter());
 		gv_personal.setFocusable(false);
 		
+		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
+        token = sp.getString("token", "");
+        uid = sp.getString("uid", "");
+        
 		new Thread(PersonalActivity.this).start();
 	}
 	@Override
@@ -86,7 +93,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		URL url;
 		String result = null;
 		try {
-			url = new URL("http://sww.yxkuaile.com/user/SaveInfo");
+			url = new URL(AppConstants.FETCH_USER_INFO);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 			conn.setRequestMethod("POST");
@@ -94,6 +101,8 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 
 			Writer writer = new OutputStreamWriter(conn.getOutputStream());
 
+			String str = "token=" + token + "&uid=" + uid;
+			writer.write(str);
 			writer.flush();
 
 			Reader is = new InputStreamReader(conn.getInputStream());
@@ -120,7 +129,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "±£´æÓÃ»§ÐÅÏ¢×ÊÁÏ---" + result);
+			Log.i("TEST", "èŽ·å–ç”¨æˆ·ä¿¡æ¯èµ„æ–™---" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
@@ -134,9 +143,31 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 				if (object != null) {
 					try {
 						if (1==object.getInt("status")) {
-							Toast.makeText(PersonalActivity.this,
-									object.getString("text"),
-									Toast.LENGTH_SHORT).show();
+//							Toast.makeText(PersonalActivity.this,
+//									object.getString("text"),
+//									Toast.LENGTH_SHORT).show();
+							JSONObject jObj = new JSONObject(object.getString("data"));
+							tv_personal_nickname.setText(jObj.getString("username"));
+							String sex = "";
+							if (jObj.getString("sex").equals("0")) {
+								sex = "ä¿å¯†";
+							} else if (jObj.getString("sex").equals("1")) {
+								sex = "ç”·";
+							} else if (jObj.getString("sex").equals("2")) {
+								sex = "å¥³";
+							}
+
+							tv_personal_sex.setText(sex);
+							tv_personal_age.setText(Utils.covertTimestampToDate(Long.parseLong(jObj.getString("birthday")) * 1000));
+							tv_personal_uid.setText(jObj.getString("uid"));
+							
+							et = sp.edit();
+							et.putString("username", jObj.getString("username"));
+							et.putString("birthday", jObj.getString("birthday"));
+							et.putString("sex", jObj.getString("sex"));
+							et.putString("photo", jObj.getString("photo"));
+							et.commit();
+							
 						}else if(0==object.getInt("status")){
 							Toast.makeText(PersonalActivity.this,object.getString("text"),Toast.LENGTH_SHORT).show();
 						}
@@ -178,47 +209,47 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
-//			viewHolder.tv_game_bg.setText("Ó¢ÐÛÁªÃË");
+//			viewHolder.tv_game_bg.setText("è‹±é›„è”ç›Ÿ");
 			return convertView;
 		}
 		public class PictureViewHolder{
 			TextView tv_game_bg;
 		}
 	}
-	private void inintEditor() {
-		preferences = getSharedPreferences("user", MODE_PRIVATE);
-		editor = preferences.edit();
-		
-		sp_sexy_info = getSharedPreferences("sexy", MODE_PRIVATE);
-		ed_sexy_info = sp_sexy_info.edit();
-		
-		sp_nickname_info = getSharedPreferences("nick", MODE_PRIVATE);
-		ed_nickname_info = sp_nickname_info.edit();
-		
-		sp_birthday_info = getSharedPreferences("birthday", MODE_PRIVATE);
-		ed_birthday_info = sp_birthday_info.edit();
-	}
+//	private void inintEditor() {
+//		preferences = getSharedPreferences("user", MODE_PRIVATE);
+//		editor = preferences.edit();
+//		
+//		sp_sexy_info = getSharedPreferences("sexy", MODE_PRIVATE);
+//		ed_sexy_info = sp_sexy_info.edit();
+//		
+//		sp_nickname_info = getSharedPreferences("nick", MODE_PRIVATE);
+//		ed_nickname_info = sp_nickname_info.edit();
+//		
+//		sp_birthday_info = getSharedPreferences("birthday", MODE_PRIVATE);
+//		ed_birthday_info = sp_birthday_info.edit();
+//	}
 	@Override
 	protected void onResume() {
-		if(preferences.getString("user_sign", "")==null||preferences.getString("user_sign", "").equals("")||preferences.getString("user_sign", "").equals("null")){
-			tv_personal_signature.setText("±à¼­¸öÐÔÇ©Ãû");
-			tv_personal_signature.setTextColor(Color.parseColor("#55000000"));
-		}else{
-			tv_personal_signature.setText(preferences.getString("user_sign", ""));
-			tv_personal_signature.setTextColor(Color.parseColor("#000000"));
-		}
-		if("1".equals(sp_sexy_info.getString("nan", ""))){
-			tv_personal_sex.setText("ÄÐ");
-		}else {
-			tv_personal_sex.setText("Å®");
-		}
-		if(sp_nickname_info.getString("nickname", "")==null||sp_nickname_info.getString("nickname", "").equals("")||sp_nickname_info.getString("nickname", "").equals("null")){
-			tv_personal_nickname.setText("");
-		}else{
-			tv_personal_nickname.setText(sp_nickname_info.getString("nickname", ""));
-		}
-		tv_personal_age.setText(sp_birthday_info.getString("birthday1", ""));
-		
+//		if(preferences.getString("user_sign", "")==null||preferences.getString("user_sign", "").equals("")||preferences.getString("user_sign", "").equals("null")){
+//			tv_personal_signature.setText("ç¼–è¾‘ä¸ªæ€§ç­¾å");
+//			tv_personal_signature.setTextColor(Color.parseColor("#55000000"));
+//		}else{
+//			tv_personal_signature.setText(preferences.getString("user_sign", ""));
+//			tv_personal_signature.setTextColor(Color.parseColor("#000000"));
+//		}
+//		if("1".equals(sp_sexy_info.getString("nan", ""))){
+//			tv_personal_sex.setText("ç”·");
+//		}else {
+//			tv_personal_sex.setText("å¥³");
+//		}
+//		if(sp_nickname_info.getString("nickname", "")==null||sp_nickname_info.getString("nickname", "").equals("")||sp_nickname_info.getString("nickname", "").equals("null")){
+//			tv_personal_nickname.setText("");
+//		}else{
+//			tv_personal_nickname.setText(sp_nickname_info.getString("nickname", ""));
+//		}
+//		tv_personal_age.setText(sp_birthday_info.getString("birthday1", ""));
+//		
 		Bitmap bitmap =getDiskBitmap();
 		iv_personal_pic.setImageBitmap(bitmap);
 		super.onResume();
@@ -232,10 +263,10 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 				pictureFileDir.mkdirs();
 			}
 			File picFile = new File(pictureFileDir, "upload.jpeg");
-			if (!picFile.exists()) {//Èç¹ûÎÄ¼þ²»´æÔÚ£¬¼ÓÔØÏîÄ¿×ÊÔ´Í¼Æ¬
+			if (!picFile.exists()) {//å¦‚æžœæ–‡ä»¶ä¸å­˜åœ¨ï¼ŒåŠ è½½é¡¹ç›®èµ„æºå›¾ç‰‡
 				bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.my_qq_pic);
-			}else{//Èç¹ûÎÄ¼þ´æÔÚ¼ÓÔØSD¿¨Í¼Æ¬
-				String pathString=picFile.getAbsolutePath();//ÎÄ¼þµÄ¾ø¶ÔÂ·¾¶
+			}else{//å¦‚æžœæ–‡ä»¶å­˜åœ¨åŠ è½½SDå¡å›¾ç‰‡
+				String pathString=picFile.getAbsolutePath();//æ–‡ä»¶çš„ç»å¯¹è·¯å¾„
 				File file = new File(pathString);
 				if (file.exists()) {
 					bitmap = BitmapFactory.decodeFile(pathString);
@@ -251,48 +282,50 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	public void onClick(View arg0) {
 		
 		switch (arg0.getId()) {
-		case R.id.personal_back://·µ»ØÍË³ö
-			writeBirthdayData();
+		case R.id.personal_back://è¿”å›žé€€å‡º
+//			writeBirthdayData();
 			finish();
 			break;
-		case R.id.iv_personal_pic://±à¼­¸öÈËÍ·Ïñ
+		case R.id.iv_personal_pic://ç¼–è¾‘ä¸ªäººå¤´åƒ
 			Intent intent = new Intent(PersonalActivity.this,SelectPicActivity.class);
 			startActivityForResult(intent, RESULT_OK);
 			break;
-		case R.id.ib_icon_signature://±à¼­¸öÈËÇ©Ãû
+		case R.id.ib_icon_signature://ç¼–è¾‘ä¸ªäººç­¾å
 			startActivity(new Intent(PersonalActivity.this,MaoPaoActivity.class));
 			break;
-		case R.id.ib_personal_arrow1://±à¼­êÇ³Æ
-			startActivity(new Intent(PersonalActivity.this,NickNameActivity.class));
+		case R.id.ib_personal_arrow1://ç¼–è¾‘æ˜µç§°
+			Intent i1 = new Intent(PersonalActivity.this,NickNameActivity.class);
+			startActivityForResult(i1, 2);
 			break;
-		case R.id.rl_personal3://±à¼­êÇ³Æ
-			startActivity(new Intent(PersonalActivity.this,NickNameActivity.class));
+		case R.id.rl_personal3://ç¼–è¾‘æ˜µç§°
+			Intent i2 = new Intent(PersonalActivity.this,NickNameActivity.class);
+			startActivityForResult(i2, 2);
 			break;
-		case R.id.ib_personal_arrow2://±à¼­ÐÔ±ð
+		case R.id.ib_personal_arrow2://ç¼–è¾‘æ€§åˆ«
 			Intent intent1 = new Intent(PersonalActivity.this,SexyActivity.class);
-			startActivity(intent1);
+			startActivityForResult(intent1, 3);
 			break;
-		case R.id.rl_personal4://±à¼­ÐÔ±ð
+		case R.id.rl_personal4://ç¼–è¾‘æ€§åˆ«
 			Intent intent2 = new Intent(PersonalActivity.this,SexyActivity.class);
-			startActivity(intent2);
+			startActivityForResult(intent2, 3);
 			break;
-		case R.id.ib_personal_arrow3://±à¼­ÉúÈÕ
+		case R.id.ib_personal_arrow3://ç¼–è¾‘ç”Ÿæ—¥
 			showBirthDayDialog();
 			break;
-		case R.id.rl_personal5://±à¼­ÉúÈÕ
+		case R.id.rl_personal5://ç¼–è¾‘ç”Ÿæ—¥
 			showBirthDayDialog();
 			break;
-		case R.id.rl_personal7://Ìí¼ÓÓÎÏ·
+		case R.id.rl_personal7://æ·»åŠ æ¸¸æˆ
 			startActivity(new Intent(PersonalActivity.this,AddGamesActivity.class));
 			break;
-		case R.id.ib_add_game_yuan2://Ìí¼ÓÓÎÏ·
+		case R.id.ib_add_game_yuan2://æ·»åŠ æ¸¸æˆ
 			startActivity(new Intent(PersonalActivity.this,AddGamesActivity.class));
 			break;
 		}
 	
 	}
 	/**
-	 * ´´½¨ÈÕÆÚ¼°Ê±¼äÑ¡Ôñ¶Ô»°¿ò ·µ»ØÒ»¸ö
+	 * åˆ›å»ºæ—¥æœŸåŠæ—¶é—´é€‰æ‹©å¯¹è¯æ¡† è¿”å›žä¸€ä¸ª
 	 */
 	protected Calendar showBirthDayDialog() {
 		Calendar c = Calendar.getInstance();
@@ -303,14 +336,17 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 					@Override
 					public void onDateSet(DatePicker view, int year,
 							int monthOfYear, int dayOfMonth) {
-						Log.i("TEST", "Äê---"+year);
-						Log.i("TEST", "ÔÂ---"+(monthOfYear+1));
-						Log.i("TEST", "ÈÕ---"+dayOfMonth);
-						//ÉèÖÃÉúÈÕ
+						Log.i("TEST", "å¹´---"+year);
+						Log.i("TEST", "æœˆ---"+(monthOfYear+1));
+						Log.i("TEST", "æ—¥---"+dayOfMonth);
+						//è®¾ç½®ç”Ÿæ—¥
 						tv_personal_age.setText(year+"."+(monthOfYear+1)+"."+dayOfMonth);
 						year1=year;
 						month1=monthOfYear;
 						day1=dayOfMonth;
+						int birthday = Utils.componentTimeToTimestamp(year1, month1, day1, 0, 0);
+						Log.d("birthday timestamp======>", birthday+"");
+						new SaveUserInfoTask(PersonalActivity.this, null, birthday+"", null, null).execute();
 					}
 				}, c.get(Calendar.YEAR), c.get(Calendar.MONTH),
 				c.get(Calendar.DAY_OF_MONTH));
@@ -332,6 +368,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		tv_personal_signature = (TextView) findViewById(R.id.tv_personal_signature);
 		tv_personal_sex = (TextView) findViewById(R.id.tv_personal_sex);
 		tv_personal_age = (TextView) findViewById(R.id.tv_personal_age);
+		tv_personal_uid = (TextView) findViewById(R.id.tv_personal_id);
 		rl_personal7 = (RelativeLayout) findViewById(R.id.rl_personal7);
 		gv_personal = (GridView) findViewById(R.id.gv_personal);
 		personal_back.setOnClickListener(this);
@@ -346,14 +383,39 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		rl_personal7.setOnClickListener(this);
 		ib_add_game_yuan2.setOnClickListener(this);
 	}
-	//½«ÈÕÆÚÐ´Èë±¾µØ
-	public void writeBirthdayData(){
-		ed_birthday_info.clear();
-		ed_birthday_info.commit();
-			
-		ed_birthday_info.putString("birthday1",year1+"."+(month1+1)+"."+day1);
-			
-		ed_birthday_info.commit();
+	//å°†æ—¥æœŸå†™å…¥æœ¬åœ°
+//	public void writeBirthdayData(){
+//		ed_birthday_info.clear();
+//		ed_birthday_info.commit();
+//			
+//		ed_birthday_info.putString("birthday1",year1+"."+(month1+1)+"."+day1);
+//			
+//		ed_birthday_info.commit();
+//	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("requestCode======>", requestCode+"");
+//		Log.d("resultCode=======>", resultCode+"");
+		if (requestCode == 3) {
+			if (resultCode == RESULT_OK) {
+				int selectedGender = data.getExtras().getInt("selectedGender");
+				Log.d("selectedGender=======>", selectedGender+"");
+				if (selectedGender == 1) {
+					tv_personal_sex.setText("ç”·");
+				} else if (selectedGender == 2) {
+					tv_personal_sex.setText("å¥³");
+				}
+				et = sp.edit();
+				et.putString("sex", selectedGender+"");
+				et.commit();
+			}
+		} else if (requestCode == 2) {
+			if (resultCode == RESULT_OK) {
+				String modifiedNickname = data.getExtras().getString("modifiedNikename");
+				Log.d("modifiedNickname=======>", modifiedNickname+"");
+				tv_personal_nickname.setText(modifiedNickname);
+			}
+		}
 	}
 	
 }

@@ -2,8 +2,9 @@ package com.mofang.pb;
 
 public class Contacts {
 	
-	public Contacts(int icon, String name, String info, String py, boolean check) {
+	public Contacts(String uid, int icon, String name, String info, String py, boolean check) {
 		// TODO Auto-generated constructor stub
+		this.uid = uid;
 		this.icon = icon;
 		this.name = name;
 		this.info = info;
@@ -11,6 +12,14 @@ public class Contacts {
 		this.check = check;
 	}
 
+	public String getUid() {
+		return uid;
+	}
+	
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -51,6 +60,7 @@ public class Contacts {
 		this.check = check;
 	}
 
+	private String uid;
 	private String name;
 	private String info;
 	private int icon;

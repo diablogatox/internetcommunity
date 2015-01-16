@@ -68,7 +68,6 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/iv_pic_home_friends"
             android:layout_marginTop="15dp"
-            android:text="@string/ling_ling"
             android:textSize="18sp" />
         
         <TextView 
@@ -86,7 +85,6 @@
             android:id="@+id/tv_pic_age"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="18"
             android:layout_toRightOf="@+id/tv_pic_sex"
             android:layout_alignTop="@+id/tv_pic_sex"
             android:textSize="18sp"
@@ -111,7 +109,6 @@
             android:layout_toRightOf="@+id/tv_name_id"
             android:layout_alignTop="@+id/tv_name_id"
             android:layout_marginBottom="10dp"
-            android:text="1688888"
             android:textSize="18sp"
             />
 		
@@ -167,7 +164,6 @@
             android:layout_marginTop="10dp"
             android:layout_marginLeft="35dp"
             android:layout_marginBottom="10dp"
-            android:text="游戏以外消息不回，别打招呼了。游戏意外消息不回，别打招呼了！"
             android:textSize="18sp"
             android:textColor="#888888"
             />

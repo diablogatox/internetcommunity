@@ -5,14 +5,17 @@ public class AppConstants {
 	public static String FIND_USERS_BY_DISTANCE = "http://sww.yxkuaile.com/user/findByDistance";
 	public static String MESSAGE_SESSION = "http://sww.yxkuaile.com/message/session";
 	public static String SEND_MESSAGE = "http://sww.yxkuaile.com/message/send";
-	// 查找用户根据UID
+	// 鏌ユ壘鐢ㄦ埛鏍规嵁UID
 	public static String FIND_USER_BY_UID = "http://sww.yxkuaile.com/user/find";
-	// 获取用户信息资料
+	// 鑾峰彇鐢ㄦ埛淇℃伅璧勬枡
 	public static String FETCH_USER_INFO = "http://sww.yxkuaile.com/user/GetInfo";
-	// 好友请求消息列表
+	// 濂藉弸璇锋眰娑堟伅鍒楄〃
 	public static String FRIEND_REQUEST_LIST = "http://sww.yxkuaile.com/message/addfriendlist";
-	// 同意加为好友
+	// 鍚屾剰鍔犱负濂藉弸
 	public static String REPLY_FRIEND_REQUEST = "http://sww.yxkuaile.com/message/UserAction";
-	// 好友列表
+	// 濂藉弸鍒楄〃
 	public static String FRIEND_LIST = "http://sww.yxkuaile.com/user/firends";
+	// 淇濆瓨鐢ㄦ埛淇℃伅璧勬枡
+	public static String SAVE_USER_INFO = "http://sww.yxkuaile.com/user/SaveInfo";
+
 }
