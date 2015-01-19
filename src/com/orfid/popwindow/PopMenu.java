@@ -37,7 +37,7 @@ public class PopMenu {
 		View view = LayoutInflater.from(context).inflate(R.layout.function,
 				null);
 
-		// ÉèÖÃ gridView
+		// è®¾ç½® gridView
 		gridView = (GridView) view.findViewById(R.id.gridView);
 		gridView.setAdapter(new PopAdapter());
 		gridView.setFocusableInTouchMode(true);
@@ -45,36 +45,36 @@ public class PopMenu {
 
 		popupWindow = new PopupWindow(view, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 
-		// Õâ¸öÊÇÎªÁËµã»÷¡°·µ»ØBack¡±Ò²ÄÜÊ¹ÆäÏûÊ§£¬²¢ÇÒ²¢²»»áÓ°ÏìÄãµÄ±³¾°£¨ºÜÉñÆæµÄ£©
+		// è¿™ä¸ªæ˜¯ä¸ºäº†ç‚¹å‡»â€œè¿”å›Backâ€ä¹Ÿèƒ½ä½¿å…¶æ¶ˆå¤±ï¼Œå¹¶ä¸”å¹¶ä¸ä¼šå½±å“ä½ çš„èƒŒæ™¯ï¼ˆå¾ˆç¥å¥‡çš„ï¼‰
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
 	}
 
-	// ÉèÖÃ²Ëµ¥Ïîµã»÷¼àÌıÆ÷
+	// è®¾ç½®èœå•é¡¹ç‚¹å‡»ç›‘å¬å™¨
 		public void setOnItemClickListener(OnItemClickListener listener) {
 			gridView.setOnItemClickListener(listener);
 		}
 
-	// ÏÂÀ­Ê½ µ¯³ö pop²Ëµ¥ parent ÓÒÏÂ½Ç
+	// ä¸‹æ‹‰å¼ å¼¹å‡º popèœå• parent å³ä¸‹è§’
 	@SuppressWarnings("deprecation")
 	public void showAsDropDown(View parent) {
 
 		popupWindow.showAsDropDown(parent, parent.getWidth(), 0);
 
-		// Ê¹Æä¾Û¼¯
+		// ä½¿å…¶èšé›†
 		popupWindow.setFocusable(true);
-		// ÉèÖÃÔÊĞíÔÚÍâµã»÷ÏûÊ§
+		// è®¾ç½®å…è®¸åœ¨å¤–ç‚¹å‡»æ¶ˆå¤±
 		popupWindow.setOutsideTouchable(true);
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());
-		// Ë¢ĞÂ×´Ì¬
+		// åˆ·æ–°çŠ¶æ€
 		popupWindow.update();
 	}
 
-	// Òş²Ø²Ëµ¥
+	// éšè—èœå•
 	public void dismiss() {
 		popupWindow.dismiss();
 	}
 
-	// ÊÊÅäÆ÷
+	// é€‚é…å™¨
 	private final class PopAdapter extends BaseAdapter {
 
 		@Override

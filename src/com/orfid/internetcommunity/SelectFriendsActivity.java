@@ -9,14 +9,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mofang.pb.Contacts;
-import com.mofang.pb.ContactsAdapter;
 import com.mofang.pb.ContactsAdapterSF;
 import com.mofang.util.PinyinComparator;
 import com.mofang.util.PinyinUtils;
@@ -26,6 +28,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -50,7 +53,8 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 	private ContactsAdapterSF adaptersf;
 	private SharedPreferences sp;
 	private String token;
-	private List<Map<String, Object>> mapList;
+	private List<Map<String, Object>> mapList, mapList2;
+	private MyGVAdapter gvAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +67,26 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		gv_ps = (GridView) findViewById(R.id.gv_ps);
 		lv_ps1 = (ListView) findViewById(R.id.lv_ps1);
 		
-		gv_ps.setAdapter(new MyGVAdapter());
+		mapList2 = new ArrayList<Map<String, Object>>();
+		gvAdapter = new MyGVAdapter(this, mapList2);
+		gv_ps.setAdapter(gvAdapter);
+		
+		gv_ps.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Log.d("gv_index=====>", position+"");
+//				
+//				int lvIndex = Integer.parseInt(mapList2.get(position).get("lvIndex").toString());
+//				Log.d("lv_index======>", lvIndex+"");
+//				Map<String, Object> contact = mapList.get(lvIndex);
+//				mapList2.remove(position);
+//				contact.put("check", false);
+			}
+			
+		});
+		
 		lv_ps1.setOnItemClickListener(new OnItemClickListener() {
 			
 			@Override
@@ -83,9 +106,31 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		//确锟斤拷
 		tv_ps_sure.setOnClickListener(new OnClickListener() {
 			
+			Map inviteMap = new LinkedHashMap();
+			
 			@Override
 			public void onClick(View arg0) {
-				startActivity(new Intent(SelectFriendsActivity.this,ChattingActivity.class));
+				if (gv_ps.getChildCount() !=0) {
+					List  inviteeUnRegisteredUserList = new LinkedList();
+					for (int i=0; i<mapList2.size(); i++) {
+						inviteMap.put("uid", mapList2.get(i).get("uid"));
+						
+						JSONObject obj1 = new JSONObject(inviteMap);
+						inviteeUnRegisteredUserList.add(obj1);
+					}
+					
+					Log.d("inviteeUnRegisteredUserList=========>", inviteeUnRegisteredUserList.toString());
+					
+					new CreateGroupTask(inviteeUnRegisteredUserList.toString()).execute();
+					//JSONArray inviteUnRegisteredUsers = new JSONArray(inviteeUnRegisteredUserList);
+					
+//					new InvitationTask(inviteeUnRegisteredUserList.toString()).execute(Constants._Invitation_inviteUsers);
+					
+				} else {
+					Toast.makeText(SelectFriendsActivity.this, "还没有添加邀请人", Toast.LENGTH_SHORT).show();
+				}
+				
+//				startActivity(new Intent(SelectFriendsActivity.this,ChattingActivity.class));
 			}
 		});
 		
@@ -144,6 +189,7 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		
 		for (Contacts contacts : ContactsArray) {
 			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("uid", contacts.getUid());
 			map.put("icon", contacts.getIcon());
 			map.put("name", contacts.getName());
 			map.put("info", contacts.getInfo());
@@ -155,19 +201,27 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 	
 	class MyGVAdapter extends BaseAdapter{
 
+		private Context context;
+		private List<Map<String, Object>> list;
+
+		public MyGVAdapter(Context context, List<Map<String, Object>> list) {
+			this.context = context;
+			this.list = list;
+		}
+		
 		@Override
 		public int getCount() {
-			return 6;
+			return list == null ? 0 : list.size(); 
 		}
 
 		@Override
-		public Object getItem(int arg0) {
-			return null;
+		public Object getItem(int position) {
+			return list.get(position);
 		}
 
 		@Override
-		public long getItemId(int arg0) {
-			return arg0;
+		public long getItemId(int position) {
+			return position;
 		}
 
 		@Override
@@ -274,16 +328,33 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 			    					
 			    					ImageView iv = (ImageView) view.findViewById(R.id.iv_select_friends);
 			    					Map<String, Object> contact = mapList.get(position);
+			    					Log.d("contact=======>", contact.toString());
 			    					boolean isChecked = Boolean.parseBoolean(contact.get("check").toString());
 			    					if (!isChecked) {
 			    						iv.setImageResource(R.drawable.select_friends_checked);
 			    						contact.put("check", true);
 			    						// add this contact to grid
+			    						Map<String,Object> item = new HashMap<String, Object>();
+			    						Log.d("lvIndex==========>", position+"");
+			    						Log.d("uid==========>", contact.get("uid").toString());
+			    						item.put("lvIndex", position);
+			    						item.put("uid", contact.get("uid").toString());
+			    						mapList2.add(item);
+			    						gvAdapter.notifyDataSetChanged();
 			    						
 			    					} else {
 			    						iv.setImageResource(R.drawable.select_friends);
 			    						contact.put("check", false);
-			    						// remove this contact from grid
+			    						// remove this contact grid
+//			    						mapList2.remove(position);
+			    						int pos = 0;
+			    						for (int i=0; i<mapList2.size(); i++) {
+			    							if (position == Integer.parseInt(mapList2.get(i).get("lvIndex").toString())) {
+			    								pos = i;
+			    							}
+			    						}
+			    						mapList2.remove(pos);
+			    						gvAdapter.notifyDataSetChanged();
 			    					}
 			    					
 			    				}
@@ -299,5 +370,88 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 			}
 		}
 	};
+	
+	private class CreateGroupTask extends AsyncTask<String, Void, String> {
+
+		private String members;
+		
+		public CreateGroupTask(String members) {
+			this.members = members;
+		}
+		
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.CREATE_MESSAGE_GROUP);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token;
+				JSONArray jArray = new JSONArray(members);
+				String tmp = "";
+				for (int i=0; i<jArray.length(); i++) {
+					tmp += "&members[]=" + ((JSONObject)jArray.get(i)).getString("uid");
+				}
+//				Log.d("test============>", str+tmp);
+				writer.write(str+tmp);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "创建多人聊天(群组)JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+//					Toast.makeText(SelectFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+////					startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
+//					// 加载附近用户列表
+//					new LoadNearbyUsersTask().excute();
+					JSONObject jObj = new JSONObject(obj.getString("data"));
+					if (jObj != null) {
+						int sid = jObj.getInt("sid");
+						Intent i = new Intent();
+						i.setClass(SelectFriendsActivity.this, ChattingActivity.class);
+						i.putExtra("sid", sid);
+						startActivity(i);
+					}
+				}else if(0==obj.getInt("status")){
+//					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	
 }

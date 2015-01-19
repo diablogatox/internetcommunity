@@ -34,7 +34,7 @@ import android.widget.Toast;
 public class HomeFriendsPicActivity extends Activity implements Runnable{
 	private ImageView home_pic_back;
 	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age;
-	private Button btn_add_friends;
+	private Button btn_add_friends, btn_begin_speak;
 	private GridView gv_friends_pic_home;
 	private String uid;
 	private SharedPreferences sp;
@@ -51,6 +51,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		tv_name_id1 = (TextView) findViewById(R.id.tv_name_id1);
 		tv_pic_age = (TextView) findViewById(R.id.tv_pic_age);
 		btn_add_friends = (Button) findViewById(R.id.btn_add_friends);
+		btn_begin_speak = (Button) findViewById(R.id.btn_begin_speak);
 		gv_friends_pic_home = (GridView) findViewById(R.id.gv_friends_pic_home);
 		gv_friends_pic_home.setAdapter(new GameAdapter());
 		gv_friends_pic_home.setFocusable(false);
@@ -78,6 +79,18 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 			public void onClick(View v) {
 				new Thread(HomeFriendsPicActivity.this).start();
 			}
+		});
+		//开始聊天
+		btn_begin_speak.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent();
+				i.setClass(HomeFriendsPicActivity.this, ChattingActivity.class);
+				i.putExtra("toUid", uid);
+				startActivity(i);
+			}
+			
 		});
 		
 		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);

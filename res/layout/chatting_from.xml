@@ -34,7 +34,10 @@
         android:cacheColorHint="#00000000"
         android:divider="@null"
         android:scrollbars="vertical"
-        android:transcriptMode="alwaysScroll" >
+        android:transcriptMode="alwaysScroll"
+        android:layout_marginLeft="10dp"
+	    android:layout_marginRight="10dp"
+	    android:layout_marginTop="10dp" >
     </ListView>
 
     <LinearLayout
