@@ -8,7 +8,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +21,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,6 +55,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	ImageView iv_chatting_voice_big;//大语音图标
 	ImageView iv_chatting_picturek;//相册图标
 	
+	private Timer mTimer;
 	private String messageContent;
 	private ChatAdapter chatAdapter;
 	private List<ChatEntity> chatList;
@@ -70,7 +76,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		if (intent != null) {
 			Bundle bundle = intent.getExtras();
 			uid = bundle.getString("toUid");
-			sid = bundle.getString("sid");
+			sid = bundle.getInt("sid")+"";
 		}
 		chatList = new ArrayList<ChatEntity>(); 
         chatAdapter = new ChatAdapter(this, chatList);
@@ -106,9 +112,18 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		icon_title_right.setOnClickListener(this);
 		et_chatting_input.setOnClickListener(this);
 		
-		new LoadMessageListTask().execute();
+//		new LoadMessageListTask().execute();
+		mTimer = new Timer();  
+        // start timer task  
+        setTimerTask();  
 	}
 
+	@Override  
+    protected void onDestroy() {  
+        super.onDestroy();  
+        // cancel timer  
+        mTimer.cancel();  
+    } 
 	
 	// 发布消息
  	public void send() {
@@ -122,6 +137,18 @@ public class ChattingActivity extends Activity implements OnClickListener{
      	lv_chatting_history.setSelection(chatList.size() - 1);
      	et_chatting_input.setText("");
      }
+ 	
+ // 接收消息
+  	public void receive(String message, String portrait) {
+  		ChatEntity chatEntity = new ChatEntity();
+//      	chatEntity.setChatTime(Utils.getLocalTime());
+      	chatEntity.setContent(message);
+//      	chatEntity.setUserImage(portrait);
+      	chatEntity.setComeMsg(true);
+      	chatList.add(chatEntity);
+      	chatAdapter.notifyDataSetChanged();
+      	lv_chatting_history.setSelection(chatList.size() - 1);
+  	}
 	 	
 	private void init() {
 		
@@ -459,8 +486,21 @@ public class ChattingActivity extends Activity implements OnClickListener{
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
 //					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					JSONObject jObj = new JSONObject(obj.getString("data"));
+					if (jObj != null && jObj.length() > 0) {
+						JSONArray jArr = new JSONArray(jObj.getString("messages"));
+						
+						for (int i=0; i<jArr.length(); i++) {
+							JSONObject jsonObj = (JSONObject) jArr.get(i); 
+							JSONObject jUser = new JSONObject(jsonObj.getString("user"));
+							if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
+								receive(jsonObj.getString("text"), "");
+							}
+						}
+						
+					}
 				}else if(0==obj.getInt("status")){
-//					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -468,5 +508,36 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		}
 		
 	}
+	
+	private void setTimerTask() {  
+        mTimer.schedule(new TimerTask() {  
+            @Override  
+            public void run() {  
+                Message message = new Message();  
+                message.what = 1;  
+                doActionHandler.sendMessage(message);  
+            }  
+        }, 1000, 10000/* 表示1000毫秒之後，每隔1000毫秒執行一次 */);  
+    }  
+  
+    /** 
+     * do some action 
+     */  
+    private Handler doActionHandler = new Handler() {  
+        @Override  
+        public void handleMessage(Message msg) {  
+            super.handleMessage(msg);  
+            int msgId = msg.what;  
+            switch (msgId) {  
+                case 1:  
+                    // do some action  
+//                	Log.d("test========>", "ddd");
+                	new LoadMessageListTask().execute();
+                    break;  
+                default:  
+                    break;  
+            }  
+        }  
+    };  
 	
 }
