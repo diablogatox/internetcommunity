@@ -14,6 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.mofang.util.UploadUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -72,6 +75,9 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	private SharedPreferences.Editor et;
 	private String token, uid;
 	
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
+	
 	int year1,month1,day1;
 	@SuppressWarnings("deprecation")
 	@Override
@@ -89,6 +95,14 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
         token = sp.getString("token", "");
         uid = sp.getString("uid", "");
+        
+        options = new DisplayImageOptions.Builder()
+		.showStubImage(R.drawable.my_qq_pic)
+		.showImageForEmptyUri(R.drawable.my_qq_pic).cacheInMemory()
+		.cacheOnDisc().build();
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(PersonalActivity.this));
         
 		new Thread(PersonalActivity.this).start();
 	}
@@ -152,6 +166,10 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 //									Toast.LENGTH_SHORT).show();
 							JSONObject jObj = new JSONObject(object.getString("data"));
 							Log.d("photo url========>", jObj.getString("photo"));
+							
+							
+							imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + jObj.getString("photo"), iv_personal_pic,
+									options, null);
 							
 							tv_personal_nickname.setText(jObj.getString("username"));
 							String sex = "";
