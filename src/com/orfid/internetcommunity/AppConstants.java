@@ -1,6 +1,12 @@
 package com.orfid.internetcommunity;
 
 public class AppConstants {
+	
+	/**
+	 * 主要域名
+	 */
+	public static String MAIN_DOMAIN = "http://sww.yxkuaile.com/";
+	
 	public static String USER_GPS_LOCATION = "http://sww.yxkuaile.com/user/gps";
 	public static String FIND_USERS_BY_DISTANCE = "http://sww.yxkuaile.com/user/findByDistance";
 	public static String MESSAGE_SESSION = "http://sww.yxkuaile.com/message/session";

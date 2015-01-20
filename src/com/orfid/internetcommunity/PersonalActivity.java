@@ -9,8 +9,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mofang.util.UploadUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -19,6 +22,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -147,6 +151,8 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 //									object.getString("text"),
 //									Toast.LENGTH_SHORT).show();
 							JSONObject jObj = new JSONObject(object.getString("data"));
+							Log.d("photo url========>", jObj.getString("photo"));
+							
 							tv_personal_nickname.setText(jObj.getString("username"));
 							String sex = "";
 							if (jObj.getString("sex").equals("0")) {
@@ -250,11 +256,11 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 //		}
 //		tv_personal_age.setText(sp_birthday_info.getString("birthday1", ""));
 //		
-		Bitmap bitmap =getDiskBitmap();
-		iv_personal_pic.setImageBitmap(bitmap);
+//		Bitmap bitmap =getDiskBitmap();
+//		iv_personal_pic.setImageBitmap(bitmap);
 		super.onResume();
 	}
-	private Bitmap getDiskBitmap() {
+	private Bitmap getDiskBitmap(String fileName) {
 		Bitmap bitmap = null;
 		try {
 			File pictureFileDir = new File(
@@ -262,7 +268,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			if (!pictureFileDir.exists()) {
 				pictureFileDir.mkdirs();
 			}
-			File picFile = new File(pictureFileDir, "upload.jpeg");
+			File picFile = new File(pictureFileDir, fileName);
 			if (!picFile.exists()) {//如果文件不存在，加载项目资源图片
 				bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.my_qq_pic);
 			}else{//如果文件存在加载SD卡图片
@@ -288,7 +294,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			break;
 		case R.id.iv_personal_pic://编辑个人头像
 			Intent intent = new Intent(PersonalActivity.this,SelectPicActivity.class);
-			startActivityForResult(intent, RESULT_OK);
+			startActivityForResult(intent, 0);
 			break;
 		case R.id.ib_icon_signature://编辑个人签名
 			startActivity(new Intent(PersonalActivity.this,MaoPaoActivity.class));
@@ -415,7 +421,52 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 				Log.d("modifiedNickname=======>", modifiedNickname+"");
 				tv_personal_nickname.setText(modifiedNickname);
 			}
+		} else if (requestCode == 0) {
+			if (resultCode == RESULT_OK) {
+				String photoPath = data.getExtras().getString("photoPath");
+				Log.d("photoPath========>>", photoPath+"");
+				
+				Bitmap bitmap = BitmapFactory.decodeFile(photoPath);
+				iv_personal_pic.setImageBitmap(bitmap);
+				
+				new UploadPhotoTask(this, photoPath).execute();
+			}
 		}
+	}
+	
+	public class UploadPhotoTask extends AsyncTask<String, Void, String> {
+
+		String photoUri;
+		
+		public UploadPhotoTask(Context context, String photoUri) {
+			this.photoUri = photoUri;
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			File file=new File(photoUri);
+			return UploadUtils.uploadFile(PersonalActivity.this, file, AppConstants.SAVE_USER_INFO);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if(result.length() > 0){
+//				Log.d("result========>", result);
+	        	Toast.makeText(PersonalActivity.this, "上传成功",Toast.LENGTH_LONG ).show();
+
+	        	Log.d("upload image success====>", result);
+
+	        }else{
+	        	Toast.makeText(PersonalActivity.this, "上传失败，请检查网络", Toast.LENGTH_LONG ).show();
+	        }
+		}
+
 	}
 	
 }
