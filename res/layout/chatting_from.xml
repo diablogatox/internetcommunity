@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    android:background="#ffffff"
+    android:background="#f3f7f8"
     android:orientation="vertical" >
 
     <RelativeLayout
@@ -26,7 +26,6 @@
 
     <ListView
         android:id="@+id/lv_chatting_history"
-        android:background="#ffffff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/ll_chatting_bottom"

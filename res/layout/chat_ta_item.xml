@@ -41,12 +41,12 @@
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/iv_user_image"
             android:background="@drawable/chat_ta"
-            android:gravity="left|center"
+            android:gravity="center"
             android:clickable="true"
             android:focusable="true"
             android:lineSpacingExtra="2dp"
             android:minHeight="50dp"
-            android:textColor="#ff000000"
+            android:textColor="#000"
             android:textSize="14sp" />
         
     </RelativeLayout>
