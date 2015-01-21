@@ -27,6 +27,7 @@
             android:text="添加游戏"
             android:layout_centerInParent="true"
             />
+        <!--
         <TextView 
             android:id="@+id/tv_add_games_save"
             android:layout_width="wrap_content"
@@ -44,6 +45,7 @@
             android:textColor="#ffffff"
             android:background="@drawable/button_add_game_pen2"
             />
+        -->
     </RelativeLayout>
     
     <TextView 

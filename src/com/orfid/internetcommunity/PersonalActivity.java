@@ -7,7 +7,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,7 +37,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -78,6 +80,11 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	ImageLoader imageLoader;
 	private DisplayImageOptions options;
 	
+	MyAdapter adapter;
+	List<GameItem> gameItems = new ArrayList<GameItem>();
+	
+	String gameListJsonStr = null;
+	
 	int year1,month1,day1;
 	@SuppressWarnings("deprecation")
 	@Override
@@ -89,7 +96,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		
 		findID();
 //		inintEditor();
-		gv_personal.setAdapter(new MyAdapter());
+
 		gv_personal.setFocusable(false);
 		
 		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
@@ -103,8 +110,11 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration
 				.createDefault(PersonalActivity.this));
+		
         
 		new Thread(PersonalActivity.this).start();
+		
+		new GameListTask().execute();
 	}
 	@Override
 	public void run() {
@@ -185,11 +195,22 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 							tv_personal_age.setText(Utils.covertTimestampToDate(Long.parseLong(jObj.getString("birthday")) * 1000));
 							tv_personal_uid.setText(jObj.getString("uid"));
 							
+							JSONArray jArr = new JSONArray(jObj.getString("signature"));
+							String val = null;
+							if (jArr.length() > 0) {
+								String key = (String) jArr.get(0);
+								val = (String) jArr.get(1);
+								if (key.equals("text")) {
+									tv_personal_signature.setText(val);
+								}
+								
+							}
 							et = sp.edit();
 							et.putString("username", jObj.getString("username"));
 							et.putString("birthday", jObj.getString("birthday"));
 							et.putString("sex", jObj.getString("sex"));
 							et.putString("photo", jObj.getString("photo"));
+							et.putString("signature", val);
 							et.commit();
 							
 						}else if(0==object.getInt("status")){
@@ -203,43 +224,51 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		}
 	};
 	
-	class MyAdapter extends BaseAdapter{
+	class MyAdapter extends ArrayAdapter<GameItem>{
+		
+		private List<GameItem> items;
+		private GameItem objBean;
+		
+		public MyAdapter(Context context, int resource, List<GameItem> arrayList) {
+			super(context, resource, arrayList);
+			this.items = arrayList;
+		}
 
+		
 		@Override
 		public int getCount() {
-			return 5;
+			return items == null ? 0: items.size();
+		}
+
+
+		@Override
+		public GameItem getItem(int position) {
+			return items.get(position);
 		}
 
 		@Override
-		public Object getItem(int position) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int arg0, View convertView, ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 			PictureViewHolder viewHolder = null;
 			if (convertView == null) {
 				viewHolder = new PictureViewHolder();
 				convertView = LayoutInflater.from(PersonalActivity.this).inflate(
 						R.layout.gridview_hf, parent, false);
-				viewHolder.tv_game_bg = (TextView) convertView
-						.findViewById(R.id.tv_game_bg);
+				viewHolder.tv_game_bg = (TextView) convertView.findViewById(R.id.tv_game_bg);
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
-//			viewHolder.tv_game_bg.setText("英雄联盟");
+			
+			objBean = items.get(position);
+			viewHolder.tv_game_bg.setText(objBean.getName());
 			return convertView;
 		}
-		public class PictureViewHolder{
+		public class PictureViewHolder {
 			TextView tv_game_bg;
 		}
+		
 	}
+
 //	private void inintEditor() {
 //		preferences = getSharedPreferences("user", MODE_PRIVATE);
 //		editor = preferences.edit();
@@ -315,7 +344,9 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			startActivityForResult(intent, 0);
 			break;
 		case R.id.ib_icon_signature://编辑个人签名
-			startActivity(new Intent(PersonalActivity.this,MaoPaoActivity.class));
+			Intent i = new Intent(PersonalActivity.this,MaoPaoActivity.class);
+			i.putExtra("isSignature", true);
+			startActivityForResult(i, 1);
 			break;
 		case R.id.ib_personal_arrow1://编辑昵称
 			Intent i1 = new Intent(PersonalActivity.this,NickNameActivity.class);
@@ -340,10 +371,14 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			showBirthDayDialog();
 			break;
 		case R.id.rl_personal7://添加游戏
-			startActivity(new Intent(PersonalActivity.this,AddGamesActivity.class));
+			Intent intent3 = new Intent(PersonalActivity.this,AddGamesActivity.class);
+			intent3.putExtra("gameList", gameListJsonStr);
+			startActivity(intent3);
 			break;
 		case R.id.ib_add_game_yuan2://添加游戏
-			startActivity(new Intent(PersonalActivity.this,AddGamesActivity.class));
+			Intent intent4 = new Intent(PersonalActivity.this,AddGamesActivity.class);
+			intent4.putExtra("gameList", gameListJsonStr);
+			startActivity(intent4);
 			break;
 		}
 	
@@ -449,6 +484,11 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 				
 				new UploadPhotoTask(this, photoPath).execute();
 			}
+		} else if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
+				String text = data.getExtras().getString("text");
+				tv_personal_signature.setText(text);
+			}
 		}
 	}
 	
@@ -485,6 +525,73 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	        }
 		}
 
+	}
+	
+	private class GameListTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.GAME_LIST);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token + "&uid=" + uid;
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "游戏列表JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+//					Toast.makeText(PersonalActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					gameListJsonStr = result;
+					GameJSONParser parser = new GameJSONParser();
+					gameItems = parser.parse(obj);
+					Log.d("itemCount=======>", gameItems.size()+"");
+					adapter = new MyAdapter(PersonalActivity.this, R.layout.gridview_hf, gameItems);
+					gv_personal.setAdapter(adapter);
+//					adapter.notifyDataSetChanged();
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(PersonalActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 }

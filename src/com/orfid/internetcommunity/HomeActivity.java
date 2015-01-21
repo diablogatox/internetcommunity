@@ -111,6 +111,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
         mapView.setLayoutParams(lParams);
         sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
         token = sp.getString("token", "");
+        Log.d("【token(test only)】===========>", token);
 		init();
 		locationInit();
 		iv_home_news = (ImageView) findViewById(R.id.iv_home_news);

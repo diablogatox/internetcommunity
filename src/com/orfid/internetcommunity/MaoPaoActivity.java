@@ -12,35 +12,45 @@ import android.widget.RelativeLayout;
 public class MaoPaoActivity extends Activity {
 	private RelativeLayout rl_maopao1,rl_maopao2,rl_maopao3;
 	private LinearLayout layout;
-	public static MaoPaoActivity instance = null;//ÉèÖÃÒ»¸ö¾²Ì¬µÄ±äÁ¿instance
+	public static MaoPaoActivity instance = null;//è®¾ç½®ä¸€ä¸ªé™æ€çš„å˜é‡instance
+	boolean isSignature = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.mao_pao);
-		instance = this;//½«instance³õÊ¼»¯Îªthis
+		
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+		if (bundle != null) {
+			isSignature = bundle.getBoolean("isSignature");
+		}
+		
+		instance = this;//å°†instanceåˆå§‹åŒ–ä¸ºthis
 		rl_maopao1 = (RelativeLayout) this.findViewById(R.id.rl_maopao1);   
 		rl_maopao2 = (RelativeLayout) this.findViewById(R.id.rl_maopao2);   
 		rl_maopao3 = (RelativeLayout) this.findViewById(R.id.rl_maopao3);
 		layout = (LinearLayout) this.findViewById(R.id.ll_mao_pao);
-		//Ìí¼ÓÑ¡Ôñ´°¿Ú·¶Î§¼àÌý¿ÉÒÔÓÅÏÈ»ñÈ¡´¥µã£¬¼´²»ÔÙÖ´ÐÐonTouchEvent()º¯Êý£¬µã»÷ÆäËûµØ·½Ê±Ö´ÐÐonTouchEvent()º¯ÊýÏú»ÙActivity   
+		//æ·»åŠ é€‰æ‹©çª—å£èŒƒå›´ç›‘å¬å¯ä»¥ä¼˜å…ˆèŽ·å–è§¦ç‚¹ï¼Œå³ä¸å†æ‰§è¡ŒonTouchEvent()å‡½æ•°ï¼Œç‚¹å‡»å…¶ä»–åœ°æ–¹æ—¶æ‰§è¡ŒonTouchEvent()å‡½æ•°é”€æ¯Activity   
 		 layout.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-//				Toast.makeText(getApplicationContext(), "ÌáÊ¾£ºµã»÷´°¿ÚÍâ²¿¹Ø±Õ´°¿Ú£¡",    
+//				Toast.makeText(getApplicationContext(), "æç¤ºï¼šç‚¹å‡»çª—å£å¤–éƒ¨å…³é—­çª—å£ï¼",    
 //					       Toast.LENGTH_SHORT).show();  
 			}
 		 });   
-		 //ÎÄ×Ö
+		 //æ–‡å­—
 		 rl_maopao1.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(MaoPaoActivity.this,TextQipaoActivity.class));
+				Intent intent = new Intent(MaoPaoActivity.this,TextQipaoActivity.class);
+				intent.putExtra("isSignature", isSignature);
+				startActivityForResult(intent, 0);
 			}
 		});  
-		 //ÓïÒô
+		 //è¯­éŸ³
 		 rl_maopao2.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -48,7 +58,7 @@ public class MaoPaoActivity extends Activity {
 				startActivity(new Intent(MaoPaoActivity.this,VoiceQipaoActivity.class));
 			}
 		});   
-		 //È¡Ïû
+		 //å–æ¶ˆ
 		 rl_maopao3.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -57,10 +67,25 @@ public class MaoPaoActivity extends Activity {
 			}
 		});
 	}
-	//ÊµÏÖonTouchEvent´¥ÆÁº¯Êýµ«µã»÷ÆÁÄ»Ê±Ïú»Ù±¾Activity   
-			@Override  
-			public boolean onTouchEvent(MotionEvent event){   
-			    finish();   
-			    return true;   
-			} 
+	//å®žçŽ°onTouchEventè§¦å±å‡½æ•°ä½†ç‚¹å‡»å±å¹•æ—¶é”€æ¯æœ¬Activity   
+	@Override  
+	public boolean onTouchEvent(MotionEvent event){   
+	    finish();   
+	    return true;   
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode,
+			Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == RESULT_OK) {
+				
+				setResult(RESULT_OK, data);
+				finish();
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	} 
+			
+			
 }
