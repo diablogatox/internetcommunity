@@ -1,4 +1,4 @@
-package com.orfid.internetcommunity;
+Ôªøpackage com.orfid.internetcommunity;
 
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -28,7 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class AddNewFriendsActivity extends Activity implements Runnable{
-	//ÃÌº”∫√”—ΩÁ√Ê
+	//Ê∑ªÂä†Â•ΩÂèãÁïåÈù¢
 	private ImageView add_new_friends_back;
 	private LinearLayout ll_find_user_id;
 	private EditText et_add_new_friends;
@@ -47,7 +47,7 @@ public class AddNewFriendsActivity extends Activity implements Runnable{
 		ll_find_user_id = (LinearLayout) findViewById(R.id.ll_find_user_id);
 		et_add_new_friends = (EditText) findViewById(R.id.et_add_new_friends);
 		
-		//∑µªÿ
+		//ËøîÂõû
 		add_new_friends_back.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -55,7 +55,7 @@ public class AddNewFriendsActivity extends Activity implements Runnable{
 				finish();
 			}
 		});
-		//∞¥IDÀ—À˜∫√”—
+		//ÊåâIDÊêúÁ¥¢Â•ΩÂèã
 		ll_find_user_id.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -63,7 +63,7 @@ public class AddNewFriendsActivity extends Activity implements Runnable{
 				String use_id = et_add_new_friends.getText().toString();
 				Log.d("searched user id======>", use_id);
 				if(use_id.equals("")||use_id==null){
-					Toast.makeText(AddNewFriendsActivity.this, "«Î ‰»Î”√ªßid", Toast.LENGTH_SHORT).show();
+					Toast.makeText(AddNewFriendsActivity.this, "ËØ∑ËæìÂÖ•Áî®Êà∑id", Toast.LENGTH_SHORT).show();
 					et_add_new_friends.requestFocus();
 					return;
 				}else{
@@ -115,7 +115,7 @@ public class AddNewFriendsActivity extends Activity implements Runnable{
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "”√ªßID--JSON---" + result);
+			Log.i("TEST", "Áî®Êà∑ID--JSON---" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
@@ -139,7 +139,7 @@ public class AddNewFriendsActivity extends Activity implements Runnable{
 							intent.putExtra("photo", obj.getString("photo"));
 							startActivity(intent);
 						}else if(0==object.getInt("status")){
-							Toast.makeText(AddNewFriendsActivity.this,"”√ªß≤ª¥Ê‘⁄",Toast.LENGTH_SHORT).show();
+							Toast.makeText(AddNewFriendsActivity.this,"Áî®Êà∑‰∏çÂ≠òÂú®",Toast.LENGTH_SHORT).show();
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();

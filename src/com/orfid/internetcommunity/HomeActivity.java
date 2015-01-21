@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
@@ -30,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -63,6 +65,10 @@ import com.amap.api.services.poisearch.PoiSearch;
 import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
 import com.amap.api.services.poisearch.PoiSearch.SearchBound;
 import com.amap.api.services.poisearch.Scenic;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.orfid.internetcommunity.PersonalActivity.MyAdapter.PictureViewHolder;
 import com.orfid.popwindow.PopMenu;
 
 public class HomeActivity extends Activity implements OnMapClickListener,AMapLocationListener, LocationSource, OnPoiSearchListener, Runnable  {
@@ -94,6 +100,11 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	private SharedPreferences sp;
 	private String token;
 	
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
+	
+	List<Bubble> bubbleItems = new ArrayList<Bubble>();
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -102,6 +113,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		screenHeight = getWindowManager().getDefaultDisplay().getHeight(); // 屏幕高（像素，如：800px）
 		setContentView(R.layout.home);
 
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(HomeActivity.this));
+        
 		mapView = (MapView) findViewById(R.id.iv_home_map);
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
 		LinearLayout.LayoutParams lParams = (LinearLayout.LayoutParams)mapView.getLayoutParams();
@@ -154,7 +169,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		TextView emptyView = (TextView) findViewById(R.id.empty);
 		lv = (ListView) findViewById(R.id.lv_home);
 		lv.setEmptyView(emptyView);
-		lv.setAdapter(adapter);
+		
 		lv.setCacheColorHint(Color.TRANSPARENT);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			
@@ -197,6 +212,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				lv.setVisibility(View.VISIBLE);//显示listview
 			}
 		});
+		
+		new BubbleListTask().execute();
 	}
 
 	/**
@@ -296,27 +313,28 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		}
 		locationManager = null;
 	}
-	class MyAdapter extends BaseAdapter {
-
-		private List<PoiItem> list;
+	
+	
+	class MyAdapter extends ArrayAdapter<Bubble>{
 		
-		public MyAdapter(List<PoiItem> list) {
-			this.list = list;
+		private List<Bubble> items;
+		private Bubble objBean;
+		
+		public MyAdapter(Context context, int resource, List<Bubble> arrayList) {
+			super(context, resource, arrayList);
+			this.items = arrayList;
 		}
+
 		
 		@Override
 		public int getCount() {
-			return list!=null?list.size():0;
+			return items == null ? 0: items.size();
 		}
 
-		@Override
-		public Object getItem(int position) {
-			return null;
-		}
 
 		@Override
-		public long getItemId(int position) {
-			return position;
+		public Bubble getItem(int position) {
+			return items.get(position);
 		}
 
 		@Override
@@ -341,34 +359,44 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
 
+			objBean = items.get(position);
 //			viewHolder.iv_friends_pic.setBackgroundResource(R.drawable.my_qq_pic);//头像
+			if (objBean.getPhoto() != null && !objBean.getPhoto().trim().equals(""))
+				imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + objBean.getPhoto(), viewHolder.iv_friends_pic,
+						options, null);
 			viewHolder.iv_friends_pic.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					startActivity(new Intent(HomeActivity.this,
-							HomeFriendsPicActivity.class));
+					Intent i = new Intent(HomeActivity.this,
+							HomeFriendsPicActivity.class);
+					i.putExtra("uid", objBean.getUid());
+					Log.d("uid======>", objBean.getUid());
+//					startActivity(i);
 				}
 			});
-			viewHolder.tv_friends_name.setText(list.get(position).getTitle());//名字
+			viewHolder.tv_friends_name.setText(objBean.getUsername());//名字
 			viewHolder.tv_friends_name.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
-					startActivity(new Intent(HomeActivity.this,
-							HomeFriendsPicActivity.class));
+					Intent i = new Intent(HomeActivity.this,
+							HomeFriendsPicActivity.class);
+					i.putExtra("uid", objBean.getUid());
+					Log.d("uid======>", objBean.getUid());
+//					startActivity(i);
 				}
 			});
 			viewHolder.tv_distance.setText(500 + "m"); //距离
 			// 在下面进行判断，并显示或隐藏歌词和语音，实现相应的功能
-			viewHolder.tv_music_content.setText("她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了"); // 歌词
+			viewHolder.tv_music_content.setText(objBean.getBubble_content()); // 歌词
 			viewHolder.tv_music_content.setOnClickListener(new OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					//显示歌词
 				    Intent intent = new Intent();
-				    intent.putExtra("one", "她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了");
+				    intent.putExtra("one", objBean.getBubble_content());
 				    intent.setClass(HomeActivity.this,MusicLyricActivity.class);
 				    startActivity(intent);
 				}
@@ -384,7 +412,6 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			});
 			return convertView;
 		}
-
 		public class PictureViewHolder {
 			ImageView iv_friends_pic;
 			TextView tv_friends_name;
@@ -392,8 +419,109 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			TextView tv_distance;
 			Button btn_voice;
 		}
-
+		
 	}
+
+//	class MyAdapter extends BaseAdapter {
+//
+//		private List<PoiItem> list;
+//		
+//		public MyAdapter(List<PoiItem> list) {
+//			this.list = list;
+//		}
+//		
+//		public MyAdapter() {}
+//		
+//		@Override
+//		public int getCount() {
+//			return 5;
+//		}
+//
+//		@Override
+//		public Object getItem(int position) {
+//			return null;
+//		}
+//
+//		@Override
+//		public long getItemId(int position) {
+//			return position;
+//		}
+//
+//		@Override
+//		public View getView(int position, View convertView, ViewGroup parent) {
+//			PictureViewHolder viewHolder = null;
+//			if (convertView == null) {
+//				viewHolder = new PictureViewHolder();
+//				convertView = LayoutInflater.from(HomeActivity.this).inflate(
+//						R.layout.home_friends, parent, false);
+//				viewHolder.iv_friends_pic = (ImageView) convertView
+//						.findViewById(R.id.iv_friends_pic);
+//				viewHolder.tv_friends_name = (TextView) convertView
+//						.findViewById(R.id.tv_friends_name);
+//				viewHolder.tv_music_content = (TextView) convertView
+//						.findViewById(R.id.tv_music_content);
+//				viewHolder.tv_distance = (TextView) convertView
+//						.findViewById(R.id.tv_distance);
+//				viewHolder.btn_voice = (Button) convertView
+//						.findViewById(R.id.btn_voice);
+//				convertView.setTag(viewHolder);
+//			} else {
+//				viewHolder = (PictureViewHolder) convertView.getTag();
+//			}
+//
+////			viewHolder.iv_friends_pic.setBackgroundResource(R.drawable.my_qq_pic);//头像
+//			viewHolder.iv_friends_pic.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					startActivity(new Intent(HomeActivity.this,
+//							HomeFriendsPicActivity.class));
+//				}
+//			});
+//			viewHolder.tv_friends_name.setText("test");//名字
+//			viewHolder.tv_friends_name.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					startActivity(new Intent(HomeActivity.this,
+//							HomeFriendsPicActivity.class));
+//				}
+//			});
+//			viewHolder.tv_distance.setText(500 + "m"); //距离
+//			// 在下面进行判断，并显示或隐藏歌词和语音，实现相应的功能
+//			viewHolder.tv_music_content.setText("她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了"); // 歌词
+//			viewHolder.tv_music_content.setOnClickListener(new OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					//显示歌词
+//				    Intent intent = new Intent();
+//				    intent.putExtra("one", "她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了");
+//				    intent.setClass(HomeActivity.this,MusicLyricActivity.class);
+//				    startActivity(intent);
+//				}
+//			});
+//			viewHolder.btn_voice.setVisibility(View.GONE);
+//			viewHolder.btn_voice.setOnClickListener(new OnClickListener() {// ����
+//
+//				@Override
+//				public void onClick(View v) {
+//					// 语音
+//					startActivity(new Intent(HomeActivity.this,VoiceStartActivity.class));
+//				}
+//			});
+//			return convertView;
+//		}
+//
+//		public class PictureViewHolder {
+//			ImageView iv_friends_pic;
+//			TextView tv_friends_name;
+//			TextView tv_music_content;
+//			TextView tv_distance;
+//			Button btn_voice;
+//		}
+//
+//	}
 	/**
 	 * 此方法已经废弃
 	 */
@@ -658,10 +786,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				if (result.getQuery().equals(query)) {// 是否是同一条
 					poiResult = result;
 					poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-					adapter = new MyAdapter(poiItems);
-					lv.setAdapter(adapter);
-					Log.d("count", adapter.getCount()+"");
-					adapter.notifyDataSetChanged();
+//					adapter = new MyAdapter(poiItems);
+//					lv.setAdapter(adapter);
+//					Log.d("count", adapter.getCount()+"");
+//					adapter.notifyDataSetChanged();
 //					Log.d("test===>", poiItems.get(0).getTitle());
 //					for(int i = 0;i<poiItems.size();i++){
 ////						Log.d("poiId====>", poiItems.get(i).getPoiId());
@@ -835,6 +963,71 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 ////					startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
 //					// 加载附近用户列表
 //					new LoadNearbyUsersTask().excute();
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+		
+	}
+	
+	private class BubbleListTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.BUBBLE_LIST);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token;
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "气泡列表JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+					BubbleJSONParser parser = new BubbleJSONParser();
+					bubbleItems = parser.parse(obj);
+					adapter = new MyAdapter(HomeActivity.this, R.layout.home_friends, bubbleItems);
+					lv.setAdapter(adapter);
+//					Log.d("bubbleItemsSize=======>", bubbleItems.size()+"");
+//					adapter.notifyDataSetChanged();
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}

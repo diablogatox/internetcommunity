@@ -1,4 +1,4 @@
-package com.orfid.internetcommunity;
+锘縫ackage com.orfid.internetcommunity;
 
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -53,7 +53,7 @@ public class MessageActivity extends Activity {
 				finish();
 			}
 		});
-		lv.setAdapter(adapter);
+		lv.setAdapter(new MyAdapter());
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
@@ -98,10 +98,10 @@ public class MessageActivity extends Activity {
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
-//			viewHolder.iv_messages1_pic.setImageResource(R.drawable.my_qq_pic);//头像
-			viewHolder.tv_message1_title.setText("大家群聊来看看呗");//标题
-			viewHolder.tv_message1_content.setText("加入哈哈哈哈哈哈啊哈哈哈"); //内容
-			viewHolder.tv_message1_time.setText("12:53"); //时间
+//			viewHolder.iv_messages1_pic.setImageResource(R.drawable.my_qq_pic);//澶村儚
+			viewHolder.tv_message1_title.setText("澶у缇よ亰鏉ョ湅鐪嬪憲");//鏍囬
+			viewHolder.tv_message1_content.setText("鍔犲叆鍝堝搱鍝堝搱鍝堝搱鍟婂搱鍝堝搱"); //鍐呭
+			viewHolder.tv_message1_time.setText("12:53"); //鏃堕棿
 			return convertView;
 		}
 		public class PictureViewHolder {
@@ -157,14 +157,14 @@ public class MessageActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(String result) {
-			Log.d("TEST", "消息会话列表JSON---" + result);
+			Log.d("TEST", "娑堟伅浼氳瘽鍒楄〃JSON---" + result);
 			JSONObject obj;
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
 					Toast.makeText(MessageActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 ////					startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
-//					// 加载附近用户列表
+//					// 鍔犺浇闄勮繎鐢ㄦ埛鍒楄〃
 //					new LoadNearbyUsersTask().excute();
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(MessageActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();

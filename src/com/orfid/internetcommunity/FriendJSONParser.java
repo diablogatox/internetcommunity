@@ -49,15 +49,21 @@ public class FriendJSONParser {
 		String uid;
 		String username;
 		String photo;
+		String latitude = null;
+		String longitude = null;
 		
 		try {
 			uid = jFriend.getString("uid");
 			username = jFriend.getString("username");
 			photo = jFriend.getString("photo");
+			if (jFriend.has("latitude")) latitude = jFriend.getString("latitude");
+			if (jFriend.has("longitude")) longitude = jFriend.getString("longitude");
 
 			friend.setUid(uid);
 			friend.setUsername(username);
 			friend.setPhoto(photo);
+			friend.setLatitude(latitude);
+			friend.setLongitude(longitude);
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

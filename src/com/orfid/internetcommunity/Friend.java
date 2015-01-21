@@ -8,6 +8,8 @@ public class Friend {
 	private String sex;
 	private String signature;
 	private String birthday;
+	private String latitude;
+	private String longitude;
 	
 	public String getUid() {
 		return uid;
@@ -45,5 +47,16 @@ public class Friend {
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
 	}
-	
+	public String getLatitude() {
+		return latitude;
+	}
+	public void setLatitude(String latitude) {
+		this.latitude = latitude;
+	}
+	public String getLongitude() {
+		return longitude;
+	}
+	public void setLongitude(String longitude) {
+		this.longitude = longitude;
+	}
 }

@@ -57,5 +57,9 @@ public class AppConstants {
 	 * 用户删除游戏
 	 */
 	public static String REMOVE_GAME = "http://sww.yxkuaile.com/game/remove";
+	/**
+	 * 气泡列表
+	 */
+	public static String BUBBLE_LIST = "http://sww.yxkuaile.com/bubble/list";
 
 }
