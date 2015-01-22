@@ -11,6 +11,28 @@ public class Friend {
 	private String latitude;
 	private String longitude;
 	
+	public Friend(String uid, String username, String photo, String sex,
+			String signature, String birthday, String latitude, String longitude) {
+		super();
+		this.uid = uid;
+		this.username = username;
+		this.photo = photo;
+		this.sex = sex;
+		this.signature = signature;
+		this.birthday = birthday;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
+	
+	public Friend(String uid, String username, String photo) {
+		super();
+		this.uid = uid;
+		this.username = username;
+		this.photo = photo;
+	}
+	
+	public Friend() {}
+
 	public String getUid() {
 		return uid;
 	}

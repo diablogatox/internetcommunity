@@ -61,8 +61,8 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private List<ChatEntity> chatList;
 	private SharedPreferences sp;
 	private String token;
-	private String uid;
-	private String sid;
+	private String uid = "";
+	private String sid = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +73,11 @@ public class ChattingActivity extends Activity implements OnClickListener{
         token = sp.getString("token", "");
         
 		Intent intent = getIntent();
-		if (intent != null) {
+		//if (intent != null) {
 			Bundle bundle = intent.getExtras();
 			uid = bundle.getString("toUid");
 			sid = bundle.getInt("sid")+"";
-		}
+		//}
 		chatList = new ArrayList<ChatEntity>(); 
         chatAdapter = new ChatAdapter(this, chatList);
         

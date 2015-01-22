@@ -6,7 +6,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +27,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -33,12 +36,15 @@ import android.widget.Toast;
 
 public class HomeFriendsPicActivity extends Activity implements Runnable{
 	private ImageView home_pic_back;
-	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age;
+	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age, tv_pic_qianming;
 	private Button btn_add_friends, btn_begin_speak;
 	private GridView gv_friends_pic_home;
 	private String uid;
 	private SharedPreferences sp;
 	private String token;
+	
+	private MyAdapter adapter;
+	List<GameItem> gameItems = new ArrayList<GameItem>();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +56,11 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		tv_pic_name1 = (TextView) findViewById(R.id.tv_pic_name1);
 		tv_name_id1 = (TextView) findViewById(R.id.tv_name_id1);
 		tv_pic_age = (TextView) findViewById(R.id.tv_pic_age);
+		tv_pic_qianming = (TextView) findViewById(R.id.tv_pic_qianming);
 		btn_add_friends = (Button) findViewById(R.id.btn_add_friends);
 		btn_begin_speak = (Button) findViewById(R.id.btn_begin_speak);
 		gv_friends_pic_home = (GridView) findViewById(R.id.gv_friends_pic_home);
-		gv_friends_pic_home.setAdapter(new GameAdapter());
+//		gv_friends_pic_home.setAdapter(new GameAdapter());
 		gv_friends_pic_home.setFocusable(false);
 		tv_lahei1.setText("拉黑/举报");
 		// 返回
@@ -101,22 +108,31 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		uid = bundle.getString("uid");
 		
 		new FetchUserInfoTask().execute();
+		
+		new GameListTask().execute();
 	}
-	class GameAdapter extends BaseAdapter{
+	
+	
+class MyAdapter extends ArrayAdapter<GameItem>{
+		
+		private List<GameItem> items;
+		private GameItem objBean;
+		
+		public MyAdapter(Context context, int resource, List<GameItem> arrayList) {
+			super(context, resource, arrayList);
+			this.items = arrayList;
+		}
 
+		
 		@Override
 		public int getCount() {
-			return 4;
+			return items == null ? 0: items.size();
 		}
 
-		@Override
-		public Object getItem(int position) {
-			return position;
-		}
 
 		@Override
-		public long getItemId(int position) {
-			return position;
+		public GameItem getItem(int position) {
+			return items.get(position);
 		}
 
 		@Override
@@ -126,20 +142,22 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 				viewHolder = new PictureViewHolder();
 				convertView = LayoutInflater.from(HomeFriendsPicActivity.this).inflate(
 						R.layout.gridview_hf, parent, false);
-				viewHolder.tv_game_bg = (TextView) convertView
-						.findViewById(R.id.tv_game_bg);
+				viewHolder.tv_game_bg = (TextView) convertView.findViewById(R.id.tv_game_bg);
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
-			viewHolder.tv_game_bg.setText("英雄联盟");
+			
+			objBean = items.get(position);
+			viewHolder.tv_game_bg.setText(objBean.getName());
 			return convertView;
 		}
-		public class PictureViewHolder{
+		public class PictureViewHolder {
 			TextView tv_game_bg;
 		}
 		
 	}
+
 	@Override
 	public void run() {
 		URL url=null;
@@ -266,8 +284,77 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 					tv_pic_name1.setText(jObj.getString("username"));
 					int age = Utils.getAge(Long.parseLong(jObj.getString("birthday")) * 1000);
 					tv_pic_age.setText(age+"");
+					JSONArray jArr = new JSONArray(jObj.getString("signature"));
+					tv_pic_qianming.setText(jArr.get(1).toString());
 					
 //					age = Utils.getAge(jObj.getString("birthday"));
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	
+	private class GameListTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.GAME_LIST);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token + "&uid=" + uid;
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "游戏列表JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+//					Toast.makeText(PersonalActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					GameJSONParser parser = new GameJSONParser();
+					gameItems = parser.parse(obj);
+					Log.d("itemCount=======>", gameItems.size()+"");
+					adapter = new MyAdapter(HomeFriendsPicActivity.this, R.layout.gridview_hf, gameItems);
+					gv_friends_pic_home.setAdapter(adapter);
+//					adapter.notifyDataSetChanged();
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}

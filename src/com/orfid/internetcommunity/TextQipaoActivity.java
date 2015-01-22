@@ -109,7 +109,11 @@ public class TextQipaoActivity extends Activity {
 //				MaoPaoActivity.instance.finish();
 				Log.d("isSignature=======>", isSignature?"yes":"no");
 				String str = et_fabu.getText().toString().trim();
-				new UserSignatureTask(str).execute();
+				if (!str.equals("")) {
+					new UserSignatureTask(str, isSignature).execute();
+				} else {
+					Toast.makeText(TextQipaoActivity.this, "请先输入内容", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 	}
@@ -122,9 +126,11 @@ public class TextQipaoActivity extends Activity {
 	private class UserSignatureTask extends AsyncTask<String, Void, String> {
 
 		private String text;
+		private boolean isSignature;
 		
-		public UserSignatureTask(String text) {
+		public UserSignatureTask(String text, boolean isSignature) {
 			this.text = text;
+			this.isSignature = isSignature;
 		}
 		
 		@Override
@@ -132,7 +138,13 @@ public class TextQipaoActivity extends Activity {
 			URL url=null;
 			String result = "";
 			try {
-				url = new URL(AppConstants.USER_SIGNATURE);
+				String apiUrl = null;
+				if (isSignature) {
+					apiUrl = AppConstants.USER_SIGNATURE;
+				} else {
+					apiUrl = AppConstants.SEND_BUBBLE;
+				}
+				url = new URL(apiUrl);
 				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
 				conn.setRequestMethod("POST");

@@ -4,8 +4,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import android.util.Log;
 
 
 
@@ -48,6 +54,22 @@ public class Utils {
 	      Matcher m = p.matcher(fullName);  
 	   
 	      return (m.find()) ? m.group(1) : "";
+	}
+	
+	public static String covertToLocalTime(long timestamp) {
+		Calendar cal = Calendar.getInstance();
+		TimeZone tz = cal.getTimeZone();
+
+		/* debug: is it local time? */
+		Log.d("Time zone", tz.getDisplayName());
+
+		/* parse the date to string in local time */
+		SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd HH:mm a");
+		sdf.setTimeZone(tz);
+
+		String localTime = sdf.format(new Date(timestamp * 1000));
+
+		return localTime;
 	}
 
 }
