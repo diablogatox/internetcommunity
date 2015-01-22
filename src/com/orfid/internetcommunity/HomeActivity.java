@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -50,8 +51,10 @@ import com.amap.api.maps2d.AMap.OnMapClickListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.BitmapDescriptor;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
@@ -68,6 +71,9 @@ import com.amap.api.services.poisearch.Scenic;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 import com.orfid.internetcommunity.PersonalActivity.MyAdapter.PictureViewHolder;
 import com.orfid.popwindow.PopMenu;
 
@@ -104,6 +110,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	private DisplayImageOptions options;
 	
 	List<Bubble> bubbleItems = new ArrayList<Bubble>();
+	List<Friend> nearbyUserItems = new ArrayList<Friend>();
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -228,7 +235,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	 /**      * amap添加一些事件监听器      */    
 	private void setUpMap() {                   
 		aMap.setOnMapClickListener(this);// 对amap添加单击地图事件监听器     
-		aMap.moveCamera(CameraUpdateFactory.zoomTo(15)); // 设置地图的缩放级别
+		aMap.moveCamera(CameraUpdateFactory.zoomTo(20)); // 设置地图的缩放级别
 //		aMap.setLocationSource(this);// 设置定位监听
 //		aMap.setMylocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false 
 //		aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_FOLLOW);// 设置定位的类型为 跟随模式 
@@ -242,11 +249,13 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		// 自定义系统定位小蓝点
 		MyLocationStyle myLocationStyle = new MyLocationStyle();
 		myLocationStyle.myLocationIcon(BitmapDescriptorFactory
-				.fromResource(R.drawable.location_marker));// 设置小蓝点的图标
-		myLocationStyle.strokeColor(Color.BLACK);// 设置圆形的边框颜色
-		myLocationStyle.radiusFillColor(Color.argb(100, 0, 0, 180));// 设置圆形的填充颜色
+				.fromResource(R.drawable.picture_my));// 设置小蓝点的图标
+		myLocationStyle.strokeColor(Color.TRANSPARENT);
+		myLocationStyle.radiusFillColor(Color.TRANSPARENT);
+//		myLocationStyle.strokeColor(Color.BLACK);// 设置圆形的边框颜色
+//		myLocationStyle.radiusFillColor(Color.argb(100, 0, 0, 180));// 设置圆形的填充颜色
 		// myLocationStyle.anchor(int,int)//设置小蓝点的锚点
-		myLocationStyle.strokeWidth(1.0f);// 设置圆形的边框粗细
+//		myLocationStyle.strokeWidth(1.0f);// 设置圆形的边框粗细
 		aMap.setMyLocationStyle(myLocationStyle);
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
@@ -361,7 +370,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 
 			objBean = items.get(position);
 //			viewHolder.iv_friends_pic.setBackgroundResource(R.drawable.my_qq_pic);//头像
-			if (objBean.getPhoto() != null && !objBean.getPhoto().trim().equals(""))
+			if (!objBean.getPhoto().trim().equals("null"))
 				imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + objBean.getPhoto(), viewHolder.iv_friends_pic,
 						options, null);
 			viewHolder.iv_friends_pic.setOnClickListener(new OnClickListener() {
@@ -959,10 +968,55 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
-					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
-////					startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
-//					// 加载附近用户列表
-//					new LoadNearbyUsersTask().excute();
+//					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					FriendJSONParser parser = new FriendJSONParser();
+					nearbyUserItems = parser.parse(obj);
+					for (Friend friend: nearbyUserItems) {
+						MarkerOptions markerOption = new MarkerOptions();
+						markerOption.position(new LatLng(Float.parseFloat(friend.getLatitude()), Float.parseFloat(friend.getLongitude())));
+						markerOption.title(friend.getUsername()).snippet(friend.getUsername());
+						markerOption.draggable(false);
+//						markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
+						Log.d("photo=============ddddd===>", friend.getPhoto());
+						if (!friend.getPhoto().trim().equals("null")) {
+							imageLoader.loadImage(AppConstants.MAIN_DOMAIN + "/" + friend.getPhoto(), new ImageLoadingListener() {
+	
+								@Override
+								public void onLoadingCancelled(String arg0,
+										View arg1) {
+									// TODO Auto-generated method stub
+									
+								}
+	
+								@Override
+								public void onLoadingComplete(String arg0,
+										View arg1, Bitmap loadedImage) {
+									Log.d("image loading complete=====>", "yes");
+									Log.d("arg0=====>", arg0);
+//									markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
+//									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
+//									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
+									
+								}
+	
+								@Override
+								public void onLoadingFailed(String arg0, View arg1,
+										FailReason arg2) {
+									// TODO Auto-generated method stub
+									
+								}
+	
+								@Override
+								public void onLoadingStarted(String arg0, View arg1) {
+									// TODO Auto-generated method stub
+									
+								}
+								
+							});
+						}
+						
+						aMap.addMarker(markerOption);
+					}
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}
