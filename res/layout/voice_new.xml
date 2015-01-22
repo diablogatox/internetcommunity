@@ -7,10 +7,19 @@
     <RelativeLayout 
         android:id="@+id/rl_add_voice"
         android:layout_width="match_parent"
-        android:layout_height="210dp"
+        android:layout_height="270dp"
         android:layout_alignParentBottom="true"
         android:background="#ffffff"
         >
+        <TextView 
+            android:id="@+id/status_hint_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_above="@+id/ib_voice_big"
+            android:layout_margin="20dp"
+            android:text="按住说话"
+             />
         <ImageButton 
             android:id="@+id/ib_voice_big"
             android:layout_width="wrap_content"
@@ -30,5 +39,17 @@
             />
     </RelativeLayout>
     
+    <LinearLayout
+        android:id="@+id/rcChat_popup"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:visibility="gone" >
+        <include
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            layout="@layout/rcd_hint_window"/>
+    </LinearLayout>
 
 </RelativeLayout>

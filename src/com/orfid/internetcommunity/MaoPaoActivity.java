@@ -55,7 +55,9 @@ public class MaoPaoActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(MaoPaoActivity.this,VoiceQipaoActivity.class));
+				Intent intent = new Intent(MaoPaoActivity.this, VoiceQipaoActivity.class);
+				intent.putExtra("isSignature", isSignature);
+				startActivityForResult(intent, 1);
 			}
 		});   
 		 //取消
