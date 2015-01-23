@@ -192,6 +192,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				} else if (type.equals("2")) {
 					Intent intent2 = new Intent(HomeActivity.this, VoiceStartActivity.class);
 					intent2.putExtra("audioUrl", bubbleItems.get(position).getBubble_content());
+					intent2.putExtra("time", bubbleItems.get(position).getUtime());
+					intent2.putExtra("duration", bubbleItems.get(position).getDuration());
 					startActivity(intent2);
 				}
 			}
