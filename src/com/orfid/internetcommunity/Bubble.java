@@ -8,6 +8,7 @@ public class Bubble {
 	private String bubble_type;
 	private String bubble_content;
 	private String utime;
+	private String duration;
 	
 	public String getUid() {
 		return uid;
@@ -44,5 +45,11 @@ public class Bubble {
 	}
 	public void setUtime(String utime) {
 		this.utime = utime;
+	}
+	public String getDuration() {
+		return duration;
+	}
+	public void setDuration(String duration) {
+		this.duration = duration;
 	}
 }

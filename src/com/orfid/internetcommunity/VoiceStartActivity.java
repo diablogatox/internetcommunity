@@ -21,8 +21,8 @@ public class VoiceStartActivity extends Activity {
 		tv_voice_start2 = (TextView) findViewById(R.id.tv_voice_start2);
 		tv_voice_date = (TextView) findViewById(R.id.tv_voice_date);
 		
-		tv_voice_start2.setText("12");//ÉùÒôµÄÊ±¼ä¼ÆÊ±
-		tv_voice_date.setText("2014-12-18");//ÈÕÆÚÉèÖÃ
+		tv_voice_start2.setText("12");//å£°éŸ³çš„æ—¶é—´è®¡æ—¶
+		tv_voice_date.setText("2014-12-18");//æ—¥æœŸè®¾ç½®
 		rl_voice_start.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -34,7 +34,7 @@ public class VoiceStartActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
-				//¿ªÊ¼²¥·ÅÉùÒô
+				//å¼€å§‹æ’­æ”¾å£°éŸ³
 			}
 		});
 		

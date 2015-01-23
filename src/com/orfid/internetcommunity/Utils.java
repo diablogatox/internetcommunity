@@ -1,10 +1,14 @@
 package com.orfid.internetcommunity;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 
 public class Utils {
 
@@ -62,4 +66,31 @@ public class Utils {
 	    }
 	    return dateStr;
 	}
+	
+//	public static long getAudioDuriation(String audioUrl) {
+//		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//		retriever.setDataSource(audioUrl);
+//		String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//		long timeInmillisec = Long.parseLong( time );
+//		long duration = timeInmillisec / 1000;
+//		long hours = duration / 3600;
+//		long minutes = (duration - hours * 3600) / 60;
+//		long seconds = duration - (hours * 3600 + minutes * 60);
+//		
+//		return seconds;
+//	}
+	
+	public static MediaPlayer createNetAudio(String audioUrl) {
+        MediaPlayer mp=new MediaPlayer();  
+        try {  
+            mp.setDataSource(audioUrl);  
+        } catch (IllegalArgumentException e) {  
+            return null;  
+        } catch (IllegalStateException e) {  
+            return null;  
+        } catch (IOException e) {  
+            return null;  
+        }  
+        return mp;  
+    }
 }

@@ -23,7 +23,7 @@ public class MusicLyricActivity extends Activity {
 		tv_music_lyric2 = (TextView) findViewById(R.id.tv_music_lyric2);
 		rl_music_lyric = (RelativeLayout) findViewById(R.id.rl_music_lyric);
 		rl_music_lyric=(RelativeLayout)findViewById(R.id.rl_music_lyric);   
-		 //添加选择窗口范围监听可以优先获取触点，即不再执行onTouchEvent()函数，点击其他地方时执行onTouchEvent()函数销毁Activity   
+		 //娣诲姞閫夋嫨绐楀彛鑼冨洿鐩戝惉鍙互浼樺厛鑾峰彇瑙︾偣锛屽嵆涓嶅啀鎵цonTouchEvent()鍑芥暟锛岀偣鍑诲叾浠栧湴鏂规椂鎵цonTouchEvent()鍑芥暟閿�姣丄ctivity   
 		rl_music_lyric.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -33,9 +33,10 @@ public class MusicLyricActivity extends Activity {
 		});  
 		
 		Intent intent = getIntent();
-	    String musicLyric = intent.getStringExtra("one");  
-		tv_music_lyric1.setText(musicLyric);
-		tv_music_lyric2.setText("2014-12-18");
+		Bundle bundle = intent.getExtras();
+
+		tv_music_lyric1.setText(bundle.getString("content"));
+		tv_music_lyric2.setText(Utils.covertTimestampToDate(Long.parseLong(bundle.getString("time")) * 1000));
 	}
 	@Override  
 	public boolean onTouchEvent(MotionEvent event){   

@@ -11,6 +11,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.media.MediaMetadataRetriever;
 import android.util.Log;
 
 
@@ -71,5 +72,18 @@ public class Utils {
 
 		return localTime;
 	}
+	
+//	public static long getAudioDuriation(String audioUrl) {
+//		MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//		retriever.setDataSource(audioUrl);
+//		String time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+//		long timeInmillisec = Long.parseLong( time );
+//		long duration = timeInmillisec / 1000;
+//		long hours = duration / 3600;
+//		long minutes = (duration - hours * 3600) / 60;
+//		long seconds = duration - (hours * 3600 + minutes * 60);
+//		
+//		return seconds;
+//	}
 
 }

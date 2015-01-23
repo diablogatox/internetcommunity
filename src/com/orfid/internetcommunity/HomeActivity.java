@@ -7,6 +7,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -20,6 +21,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,7 +35,6 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,7 +52,6 @@ import com.amap.api.maps2d.AMap.OnMapClickListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.model.BitmapDescriptor;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MarkerOptions;
@@ -73,8 +73,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
-import com.orfid.internetcommunity.PersonalActivity.MyAdapter.PictureViewHolder;
 import com.orfid.popwindow.PopMenu;
 
 public class HomeActivity extends Activity implements OnMapClickListener,AMapLocationListener, LocationSource, OnPoiSearchListener, Runnable  {
@@ -179,13 +177,34 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		
 		lv.setCacheColorHint(Color.TRANSPARENT);
 		lv.setOnItemClickListener(new OnItemClickListener() {
-			
+
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				arg1.setBackgroundColor(Color.parseColor("#ffffff")); 
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				Log.d("id==========>", id+"");
+				String type = bubbleItems.get(position).getBubble_type();
+				if (type.equals("0")) {
+					Intent intent = new Intent();
+				    intent.setClass(HomeActivity.this, MusicLyricActivity.class);
+					intent.putExtra("content", bubbleItems.get(position).getBubble_content());
+					intent.putExtra("time", bubbleItems.get(position).getUtime());
+					startActivity(intent);
+				} else if (type.equals("2")) {
+					Intent intent2 = new Intent(HomeActivity.this, VoiceStartActivity.class);
+					intent2.putExtra("audioUrl", bubbleItems.get(position).getBubble_content());
+					startActivity(intent2);
+				}
 			}
+			
 		});
+//		lv.setOnItemClickListener(new OnItemClickListener() {
+//			
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//					long arg3) {
+//				arg1.setBackgroundColor(Color.parseColor("#ffffff")); 
+//			}
+//		});
 
 		//消息
 		iv_home_news.setOnClickListener(new OnClickListener() {
@@ -346,10 +365,12 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			return items.get(position);
 		}
 
+		HashMap<Integer,View> lmap = new HashMap<Integer,View>();
+		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			PictureViewHolder viewHolder = null;
-			if (convertView == null) {
+			if (lmap.get(position)==null) {
 				viewHolder = new PictureViewHolder();
 				convertView = LayoutInflater.from(HomeActivity.this).inflate(
 						R.layout.home_friends, parent, false);
@@ -363,8 +384,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 						.findViewById(R.id.tv_distance);
 				viewHolder.btn_voice = (Button) convertView
 						.findViewById(R.id.btn_voice);
+				lmap.put(position, convertView);  
 				convertView.setTag(viewHolder);
 			} else {
+				convertView = lmap.get(position);  
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
 
@@ -398,27 +421,38 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			});
 			viewHolder.tv_distance.setText(500 + "m"); //距离
 			// 在下面进行判断，并显示或隐藏歌词和语音，实现相应的功能
-			viewHolder.tv_music_content.setText(objBean.getBubble_content()); // 歌词
-			viewHolder.tv_music_content.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					//显示歌词
-				    Intent intent = new Intent();
-				    intent.putExtra("one", objBean.getBubble_content());
-				    intent.setClass(HomeActivity.this,MusicLyricActivity.class);
-				    startActivity(intent);
-				}
-			});
-			viewHolder.btn_voice.setVisibility(View.GONE);
-			viewHolder.btn_voice.setOnClickListener(new OnClickListener() {// ����
-
-				@Override
-				public void onClick(View v) {
-					// 语音
-					startActivity(new Intent(HomeActivity.this,VoiceStartActivity.class));
-				}
-			});
+			
+			if (objBean.getBubble_type().equals("0")) {
+				viewHolder.tv_music_content.setText(objBean.getBubble_content()); // 歌词
+//				viewHolder.tv_music_content.setOnClickListener(new OnClickListener() {
+//					
+//					@Override
+//					public void onClick(View v) {
+//						//显示歌词
+//						Log.d("点击的是哪个====>", objBean.getUsername()+"<<<"+objBean.getBubble_content());
+////					    Intent intent = new Intent();
+////					    intent.setClass(HomeActivity.this, MusicLyricActivity.class);
+////						intent.putExtra("content", objBean.getBubble_content());
+////						intent.putExtra("time", objBean.getUtime());
+////					    startActivity(intent);
+//					}
+//				});
+			} else if (objBean.getBubble_type().equals("2")) {
+				viewHolder.tv_music_content.setVisibility(View.GONE);
+				viewHolder.btn_voice.setText(objBean.getDuration());
+				viewHolder.btn_voice.setVisibility(View.VISIBLE);
+//				viewHolder.btn_voice.setOnClickListener(new OnClickListener() {
+//
+//					@Override
+//					public void onClick(View v) {
+//						// 语音
+////						Log.d("音频时长=======>", objBean.getDuration());
+////						startActivity(new Intent(HomeActivity.this,VoiceStartActivity.class));
+//					}
+//				});
+			}
+			
+			
 			return convertView;
 		}
 		public class PictureViewHolder {

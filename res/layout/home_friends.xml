@@ -43,7 +43,6 @@
 	        android:id="@+id/tv_music_content"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="她静悄悄的来过，她慢慢带走沉默"
 	        android:singleLine="true"
 	        android:textColor="#888888"
 	        android:layout_marginTop="5dp"
@@ -53,9 +52,11 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="25dp"
 	        android:background="@drawable/voice_bj"
-	        android:text="12″"
 	        android:textColor="#ffffff"
 	        android:layout_marginTop="2dp"
+	        android:visibility="gone"
+	        android:focusable="false"
+	        android:clickable="false"
 	        />
     </LinearLayout>
 

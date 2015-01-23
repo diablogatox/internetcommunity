@@ -1,5 +1,6 @@
 package com.orfid.internetcommunity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,8 +8,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.media.MediaPlayer;
+
 public class BubbleJSONParser {
 
+	static MediaPlayer mp;
 	List<Bubble> listArray;
 	
 	public List<Bubble> parse(JSONObject jObject) {
@@ -51,6 +55,7 @@ public class BubbleJSONParser {
 		String bubble_type;
 		String bubble_content;
 		String utime;
+		String duration = null;
 		
 		try {
 			JSONObject jUser = new JSONObject(jBubble.getString("user"));
@@ -60,6 +65,20 @@ public class BubbleJSONParser {
 			bubble_type = jBubble.getString("bubble_type");
 			bubble_content = jBubble.getString("bubble_content");
 			utime = jBubble.getString("utime");
+			if (bubble_type != null && bubble_type.equals("2")) {
+				mp = Utils.createNetAudio(bubble_content);
+				try {
+					mp.prepare();
+					duration = (mp.getDuration()/1000)+"";
+				} catch (IllegalStateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
 
 			bubble.setUid(uid);
 			bubble.setUsername(username);
@@ -67,6 +86,7 @@ public class BubbleJSONParser {
 			bubble.setBubble_type(bubble_type);
 			bubble.setBubble_content(bubble_content);
 			bubble.setUtime(utime);
+			bubble.setDuration(duration);
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

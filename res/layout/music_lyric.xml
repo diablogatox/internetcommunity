@@ -13,7 +13,6 @@
 	        android:layout_marginRight="18dp"
 	        android:layout_marginTop="12dp"
 	        android:layout_centerHorizontal="true"
-	        android:text="她静悄悄的来过，她慢慢带走沉默。只是最后的承诺，还是没有带走了"
 	        android:textSize="18sp"
 	        android:textColor="#00baff"
 	        />
@@ -25,7 +24,6 @@
 	        android:layout_alignRight="@+id/tv_music_lyric1"
 	        android:layout_below="@+id/tv_music_lyric1"
 	        android:layout_marginRight="18dp"
-	        android:text="2014-12-18"
 	        android:textColor="#000000"
 	        android:textSize="15sp" />
 

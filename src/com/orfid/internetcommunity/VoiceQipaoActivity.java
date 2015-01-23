@@ -1,12 +1,18 @@
 package com.orfid.internetcommunity;
 
+import java.io.File;
 import java.io.IOException;
 
+import com.mofang.util.UploadUtils;
+
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -14,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class VoiceQipaoActivity extends Activity {
 	private ImageView iv_voice_back;
@@ -22,6 +29,7 @@ public class VoiceQipaoActivity extends Activity {
 	private ImageView mDisplayVoicePlay;
 	private ProgressBar mDisplayVoiceProgressBar;
 	private TextView mDisplayVoiceTime;
+	private TextView tv_voice_fabu;
 	private boolean mPlayState; // 播放状态
 	private MediaPlayer mMediaPlayer;
 	private String mRecordPath;// 录音的存储名称
@@ -40,6 +48,23 @@ public class VoiceQipaoActivity extends Activity {
 		
 		iv_voice_back = (ImageView) findViewById(R.id.iv_voice_back);
 		rl_add_voice = (RelativeLayout) findViewById(R.id.rl_add_voice);
+		tv_voice_fabu = (TextView) findViewById(R.id.tv_voice_fabu);
+		
+		tv_voice_fabu.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Log.d("record path to be uploaded=====>", mRecordPath);
+				String apiUrl;
+				if (isSignature) {
+					apiUrl = AppConstants.USER_SIGNATURE;
+				} else {
+					apiUrl = AppConstants.SEND_BUBBLE;
+				}
+				new UploadRecordTask(VoiceQipaoActivity.this, mRecordPath).execute(apiUrl);
+			}
+			
+		});
 		
 		mDisplayVoiceLayout = (LinearLayout) findViewById(R.id.voice_display_voice_layout);
 		mDisplayVoicePlay = (ImageView) findViewById(R.id.voice_display_voice_play);
@@ -167,6 +192,42 @@ public class VoiceQipaoActivity extends Activity {
 				mDisplayVoiceTime.setText((int) mRecord_Time + "″");
 			}
 		}
+	}
+	
+	
+	public class UploadRecordTask extends AsyncTask<String, Void, String> {
+
+		String recordPath;
+		
+		public UploadRecordTask(Context context, String recordPath) {
+			this.recordPath = recordPath;
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			File file=new File(recordPath);
+			return UploadUtils.uploadFile(VoiceQipaoActivity.this, file, params[0]);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if(result.length() > 0){
+//				Log.d("result========>", result);
+	        	Toast.makeText(VoiceQipaoActivity.this, "上传成功",Toast.LENGTH_LONG ).show();
+
+	        	Log.d("upload record success====>", result);
+
+	        }else{
+	        	Toast.makeText(VoiceQipaoActivity.this, "上传失败，请检查网络", Toast.LENGTH_LONG ).show();
+	        }
+		}
+
 	}
 	
 	
