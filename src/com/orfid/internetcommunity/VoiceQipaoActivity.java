@@ -1,16 +1,32 @@
 package com.orfid.internetcommunity;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class VoiceQipaoActivity extends Activity {
 	private ImageView iv_voice_back;
 	private RelativeLayout rl_add_voice;
+	private LinearLayout mDisplayVoiceLayout;
+	private ImageView mDisplayVoicePlay;
+	private ProgressBar mDisplayVoiceProgressBar;
+	private TextView mDisplayVoiceTime;
+	private boolean mPlayState; // 播放状态
+	private MediaPlayer mMediaPlayer;
+	private String mRecordPath;// 录音的存储名称
+	private float mRecord_Time;// 录音的时间
+	private int mPlayCurrentPosition;
 	private boolean isSignature;
 	
 	@Override
@@ -24,6 +40,12 @@ public class VoiceQipaoActivity extends Activity {
 		
 		iv_voice_back = (ImageView) findViewById(R.id.iv_voice_back);
 		rl_add_voice = (RelativeLayout) findViewById(R.id.rl_add_voice);
+		
+		mDisplayVoiceLayout = (LinearLayout) findViewById(R.id.voice_display_voice_layout);
+		mDisplayVoicePlay = (ImageView) findViewById(R.id.voice_display_voice_play);
+		mDisplayVoiceProgressBar = (ProgressBar) findViewById(R.id.voice_display_voice_progressbar);
+		mDisplayVoiceTime = (TextView) findViewById(R.id.voice_display_voice_time);
+		
 		//返回
 		iv_voice_back.setOnClickListener(new OnClickListener() {
 			
@@ -40,8 +62,112 @@ public class VoiceQipaoActivity extends Activity {
 			public void onClick(View arg0) {
 				Intent intent = new Intent(VoiceQipaoActivity.this,VoiceNewActivity.class);
 				intent.putExtra("isSignature", isSignature);
-				startActivity(intent);
+				startActivityForResult(intent, 0);
+			}
+		});
+		
+		mDisplayVoicePlay.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				// 播放录音
+				if (!mPlayState) {
+					mMediaPlayer = new MediaPlayer();
+					try {
+						// 添加录音的路径
+						mMediaPlayer.setDataSource(mRecordPath);
+						// 准备
+						mMediaPlayer.prepare();
+						// 播放
+						mMediaPlayer.start();
+						// 根据时间修改界面
+						new Thread(new Runnable() {
+
+							public void run() {
+
+								mDisplayVoiceProgressBar
+										.setMax((int) mRecord_Time);
+								mPlayCurrentPosition = 0;
+								while (mMediaPlayer.isPlaying()) {
+									mPlayCurrentPosition = mMediaPlayer
+											.getCurrentPosition() / 1000;
+									mDisplayVoiceProgressBar
+											.setProgress(mPlayCurrentPosition);
+								}
+							}
+						}).start();
+						// 修改播放状态
+						mPlayState = true;
+						// 修改播放图标
+						mDisplayVoicePlay
+								.setImageResource(R.drawable.globle_player_btn_stop);
+
+						mMediaPlayer
+								.setOnCompletionListener(new OnCompletionListener() {
+									// 播放结束后调用
+									public void onCompletion(MediaPlayer mp) {
+										// 停止播放
+										mMediaPlayer.stop();
+										// 修改播放状态
+										mPlayState = false;
+										// 修改播放图标
+										mDisplayVoicePlay
+												.setImageResource(R.drawable.globle_player_btn_play);
+										// 初始化播放数据
+										mPlayCurrentPosition = 0;
+										mDisplayVoiceProgressBar
+												.setProgress(mPlayCurrentPosition);
+									}
+								});
+
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch (IllegalStateException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				} else {
+					if (mMediaPlayer != null) {
+						// 根据播放状态修改显示内容
+						if (mMediaPlayer.isPlaying()) {
+							mPlayState = false;
+							mMediaPlayer.stop();
+							mDisplayVoicePlay
+									.setImageResource(R.drawable.globle_player_btn_play);
+							mPlayCurrentPosition = 0;
+							mDisplayVoiceProgressBar
+									.setProgress(mPlayCurrentPosition);
+						} else {
+							mPlayState = false;
+							mDisplayVoicePlay
+									.setImageResource(R.drawable.globle_player_btn_play);
+							mPlayCurrentPosition = 0;
+							mDisplayVoiceProgressBar
+									.setProgress(mPlayCurrentPosition);
+						}
+					}
+				}
 			}
 		});
 	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == RESULT_OK) {
+				Bundle extras = data.getExtras();
+				mRecordPath = extras.getString("recordPath");
+				mRecord_Time = extras.getFloat("recordTime");
+				
+				mDisplayVoiceLayout.setVisibility(View.VISIBLE);
+				mDisplayVoicePlay
+						.setImageResource(R.drawable.globle_player_btn_play);
+				mDisplayVoiceProgressBar.setMax((int) mRecord_Time);
+				mDisplayVoiceProgressBar.setProgress(0);
+				mDisplayVoiceTime.setText((int) mRecord_Time + "″");
+			}
+		}
+	}
+	
+	
 }

@@ -18,7 +18,7 @@
             android:layout_centerHorizontal="true"
             android:layout_above="@+id/ib_voice_big"
             android:layout_margin="20dp"
-            android:text="按住说话"
+            android:text="按住 说话"
              />
         <ImageButton 
             android:id="@+id/ib_voice_big"
@@ -39,17 +39,41 @@
             />
     </RelativeLayout>
     
-    <LinearLayout
-        android:id="@+id/rcChat_popup"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:visibility="gone" >
-        <include
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            layout="@layout/rcd_hint_window"/>
-    </LinearLayout>
+    <RelativeLayout
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+       android:layout_centerHorizontal="true"
+       android:layout_marginBottom="20dip"
+       android:layout_marginLeft="20dip"
+       android:layout_marginRight="20dip" >
+
+       <TextView
+           android:id="@+id/voice_record_time"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:layout_alignParentTop="true"
+           android:text="0&apos;&apos;"
+           android:textColor="#999999" />
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentRight="true"
+           android:layout_alignParentTop="true"
+           android:text="60″"
+           android:textColor="#999999" />
+
+       <ProgressBar
+           android:id="@+id/voice_record_progressbar"
+           style="?android:attr/progressBarStyleHorizontal"
+           android:layout_width="fill_parent"
+           android:layout_height="6dip"
+           android:layout_below="@+id/voice_record_time"
+           android:max="60"
+           android:progress="0"
+           android:progressDrawable="@drawable/globle_player_progress_bar_bg" />
+   </RelativeLayout>
 
 </RelativeLayout>

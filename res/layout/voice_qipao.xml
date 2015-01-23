@@ -79,5 +79,42 @@
             android:layout_centerVertical="true"
             />
     </RelativeLayout>
+    
+    <LinearLayout
+	    android:id="@+id/voice_display_voice_layout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="30dp"
+	    android:layout_gravity="center_horizontal"
+	    android:background="@drawable/globle_player_bg"
+	    android:gravity="center_vertical"
+	    android:orientation="horizontal"
+	    android:visibility="gone" >
+	
+	    <ImageView
+	        android:id="@+id/voice_display_voice_play"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/globle_player_btn_play" />
+	
+	    <ProgressBar
+	        android:id="@+id/voice_display_voice_progressbar"
+	        style="?android:attr/progressBarStyleHorizontal"
+	        android:layout_width="match_parent"
+	        android:layout_height="6dip"
+	        android:layout_margin="8dip"
+	        android:layout_weight="1"
+	        android:max="100"
+	        android:progress="50"
+	        android:progressDrawable="@drawable/globle_player_progress_bar_bg" />
+	
+	    <TextView
+	        android:id="@+id/voice_display_voice_time"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="7″"
+	        android:textColor="#999999"
+	        android:textSize="12sp" />
+	</LinearLayout>
 
 </LinearLayout>
