@@ -1,4 +1,4 @@
-﻿package com.orfid.internetcommunity;
+package com.orfid.internetcommunity;
 
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
