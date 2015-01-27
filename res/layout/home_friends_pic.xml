@@ -54,7 +54,7 @@
             android:id="@+id/iv_pic_home_friends"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/my_qq_pic"
+            android:background="@drawable/no_portrait"
             android:layout_centerVertical="true"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="10dp"

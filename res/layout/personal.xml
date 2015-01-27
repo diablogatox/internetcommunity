@@ -6,7 +6,7 @@
 	<RelativeLayout 
 	    android:id="@+id/rl_personal1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="65dp"
         android:layout_alignParentTop="true"
         android:background="#00baff"
         >
@@ -14,8 +14,6 @@
             android:id="@+id/personal_back" 
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp"
             android:background="@drawable/icon_back"
             android:layout_centerVertical="true"
             />

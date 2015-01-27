@@ -2,7 +2,7 @@ package com.mofang.pb;
 
 public class Contacts {
 	
-	public Contacts(String uid, int icon, String name, String info, String py, boolean check) {
+	public Contacts(String uid, String icon, String name, String info, String py, boolean check) {
 		// TODO Auto-generated constructor stub
 		this.uid = uid;
 		this.icon = icon;
@@ -36,11 +36,11 @@ public class Contacts {
 		this.info = info;
 	}
 
-	public int getIcon() {
+	public String getIcon() {
 		return icon;
 	}
 
-	public void setIcon(int icon) {
+	public void setIcon(String icon) {
 		this.icon = icon;
 	}
 
@@ -63,7 +63,7 @@ public class Contacts {
 	private String uid;
 	private String name;
 	private String info;
-	private int icon;
+	private String icon;
 	private String py; //首字母拼音
 	@SuppressWarnings("unused")
 	private boolean check;

@@ -8,7 +8,7 @@
         android:id="@+id/iv_gridview_sf"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/my_qq_pic"
+        android:background="@drawable/no_portrait"
         />
     
     <TextView

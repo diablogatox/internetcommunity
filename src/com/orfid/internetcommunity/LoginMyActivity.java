@@ -44,7 +44,7 @@ public class LoginMyActivity extends Activity implements Runnable {
 		btn_register = (Button) findViewById(R.id.btn_register);
 		btn_login = (Button) findViewById(R.id.btn_login);
 		
-		//×¢²á
+		//×¢ï¿½ï¿½
 		btn_register.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -52,7 +52,7 @@ public class LoginMyActivity extends Activity implements Runnable {
 				startActivity(new Intent(LoginMyActivity.this,RegisterMyActivity.class));
 			}
 		});
-		//µÇÂ¼
+		//ï¿½ï¿½Â¼
 		btn_login.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -60,11 +60,11 @@ public class LoginMyActivity extends Activity implements Runnable {
 				String username = et_login_username.getText().toString();
 				String password = et_login_password.getText().toString();
 				if(username.equals("")||username==null){
-					Toast.makeText(LoginMyActivity.this, "ÇëÊäÈëÓÃ»§Ãû", Toast.LENGTH_SHORT).show();
+					Toast.makeText(LoginMyActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_login_username.requestFocus();
 					return;
 				}else if(password.equals("")||password==null){
-					Toast.makeText(LoginMyActivity.this, "ÇëÊäÈëÃÜÂë", Toast.LENGTH_SHORT).show();
+					Toast.makeText(LoginMyActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_login_password.requestFocus();
 					return;
 				}else{
@@ -117,12 +117,12 @@ public class LoginMyActivity extends Activity implements Runnable {
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "µÇÂ¼ÐÅÏ¢JSON---" + result);
+			Log.i("TEST", "ï¿½ï¿½Â¼ï¿½ï¿½Ï¢JSON---" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
 					object = new JSONObject(result);
-//					Log.i("TEST", "µÇÂ¼ÐÅÏ¢token---" + object.getInt("token"));
+//					Log.i("TEST", "ï¿½ï¿½Â¼ï¿½ï¿½Ï¢token---" + object.getInt("token"));
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
@@ -144,7 +144,10 @@ public class LoginMyActivity extends Activity implements Runnable {
 							et.commit();
 							Toast.makeText(LoginMyActivity.this,object.getString("text"),Toast.LENGTH_SHORT).show();
 							Log.d("uid", sp.getString("uid", ""));
-							startActivity(new Intent(LoginMyActivity.this,HomeActivity.class));
+							Intent intent = new Intent(LoginMyActivity.this,HomeActivity.class);
+							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); 
+							startActivity(intent);
+							
 						}else if(0==object.getInt("status")){
 							Toast.makeText(LoginMyActivity.this,object.getString("text"),Toast.LENGTH_SHORT).show();
 						}

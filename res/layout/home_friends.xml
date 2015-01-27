@@ -18,7 +18,7 @@
             app:border_color="#ccffcc"
             app:border_width="1dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/my_qq_pic" />
+            android:src="@drawable/no_portrait" />
     </LinearLayout>
 
     <TextView
@@ -28,8 +28,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="8dp"
         android:layout_toRightOf="@+id/linearLayout1"
-        android:textSize="20sp"
-        android:text="林俊杰" />
+        android:textSize="20sp" />
     
     <LinearLayout 
         android:layout_width="wrap_content"

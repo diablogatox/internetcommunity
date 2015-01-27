@@ -14,16 +14,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mofang.util.PinyinUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.orfid.internetcommunity.AppConstants;
 import com.orfid.internetcommunity.R;
 
 public class ContactsAdapterSF extends BaseAdapter {
 
 	private Context context;
 	private List<Map<String, Object>> list;
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
 
 	public ContactsAdapterSF(Context context, List<Map<String, Object>> list) {
 		this.context = context;
 		this.list = list;
+		
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(context));
 	}
 
 	public int getCount() {
@@ -69,7 +79,9 @@ public class ContactsAdapterSF extends BaseAdapter {
 		}
 		
 		holder.iv_select_friends.setImageResource(R.drawable.select_friends);
-		holder.iv_sf_pic.setImageResource((Integer) list.get(position).get("icon"));
+//		holder.iv_sf_pic.setImageResource((Integer) list.get(position).get("icon"));
+		imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + list.get(position).get("icon"), holder.iv_sf_pic,
+				options, null);
 		holder.tv_sf_name.setText((String) list.get(position).get("name"));
 		
 

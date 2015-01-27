@@ -12,8 +12,11 @@ import org.json.JSONObject;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,15 +33,19 @@ public class RegisterMyActivity extends Activity implements Runnable{
 	ImageView iv_register_back;
 	ImageView iv_text_application;
 	TextView tv_text_application;
-	EditText et_register_username;//ÓÃ»§Ãû
-	EditText et_register_password;//ÃÜÂë
-	EditText et_confirm_password;//È·ÈÏÃÜÂë
-	Button btn_accomplished;//Íê³É×¢²á
+	EditText et_register_username;//ï¿½Ã»ï¿½ï¿½ï¿½
+	EditText et_register_password;//ï¿½ï¿½ï¿½ï¿½
+	EditText et_confirm_password;//È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	Button btn_accomplished;//ï¿½ï¿½ï¿½×¢ï¿½ï¿½
+	private SharedPreferences sp;
+	private SharedPreferences.Editor et;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.register_my);
+		
+		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
 		
 		iv_register_back = (ImageView) findViewById(R.id.iv_register_back);
 		iv_text_application = (ImageView) findViewById(R.id.iv_text_application);
@@ -46,18 +53,18 @@ public class RegisterMyActivity extends Activity implements Runnable{
 		et_register_username = (EditText) findViewById(R.id.et_register_username);
 		et_register_password = (EditText) findViewById(R.id.et_register_password);
 		et_confirm_password = (EditText) findViewById(R.id.et_confirm_password);
-		//¼ÓÏÂ»®Ïß
+		//ï¿½ï¿½ï¿½Â»ï¿½ï¿½ï¿½
 		tv_text_application.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
 		tv_text_application.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
-				// ¡¶ÉçÍÅÍø°ÉÍæ¼ÒÈ¦¡·ÎÄ±¾Ð­Òé
+				// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¦ï¿½ï¿½ï¿½Ä±ï¿½Ð­ï¿½ï¿½
 				
 			}
 		});
 		btn_accomplished = (Button) findViewById(R.id.btn_accomplished);
-		//·µ»Ø
+		//ï¿½ï¿½ï¿½ï¿½
 		iv_register_back.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -65,7 +72,7 @@ public class RegisterMyActivity extends Activity implements Runnable{
 				finish();
 			}
 		});
-		//Íê³É×¢²á
+		//ï¿½ï¿½ï¿½×¢ï¿½ï¿½
 		btn_accomplished.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -74,19 +81,19 @@ public class RegisterMyActivity extends Activity implements Runnable{
 				String password = et_register_password.getText().toString();
 				String password_confirm = et_confirm_password.getText().toString();
 				if(username.equals("")||username==null){
-					Toast.makeText(RegisterMyActivity.this, "ÇëÊäÈëÓÃ»§Ãû", Toast.LENGTH_SHORT).show();
+					Toast.makeText(RegisterMyActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_register_username.requestFocus();
 					return;
 				}else if(password.equals("")||password==null){
-					Toast.makeText(RegisterMyActivity.this, "ÇëÊäÈëÃÜÂë", Toast.LENGTH_SHORT).show();
+					Toast.makeText(RegisterMyActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_register_password.requestFocus();
 					return;
 				}else if(password_confirm.equals("")||password_confirm==null){
-					Toast.makeText(RegisterMyActivity.this, "ÇëÈ·ÈÏÄúµÄÃÜÂë", Toast.LENGTH_SHORT).show();
+					Toast.makeText(RegisterMyActivity.this, "ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_confirm_password.requestFocus();
 					return;
 				}else if(!password_confirm.equals(password)){
-					Toast.makeText(RegisterMyActivity.this, "Á½´ÎÃÜÂë²»Ò»ÖÂ", Toast.LENGTH_SHORT).show();
+					Toast.makeText(RegisterMyActivity.this, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë²»Ò»ï¿½ï¿½", Toast.LENGTH_SHORT).show();
 					et_confirm_password.requestFocus();
 					return;
 				}else{
@@ -96,6 +103,21 @@ public class RegisterMyActivity extends Activity implements Runnable{
 		});
 	}
 	
+	
+	
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		if (sp.getBoolean("isLogin", false)) {
+			Intent intent = new Intent(this, HomeActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); 
+			startActivity(intent);
+			finish();
+		}
+	}
+
+
+
 	@Override
 	public void run() {
 		URL url;
@@ -140,7 +162,7 @@ public class RegisterMyActivity extends Activity implements Runnable{
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "×¢²áÐÅÏ¢JSON---" + result);
+			Log.i("TEST", "×¢ï¿½ï¿½ï¿½ï¿½Ï¢JSON---" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
@@ -153,14 +175,16 @@ public class RegisterMyActivity extends Activity implements Runnable{
 			case 0x11:
 				if (object != null) {
 					try {
-						//×¢²á³É¹¦
+						//×¢ï¿½ï¿½É¹ï¿½
 						if (1==object.getInt("status")) {
 							Toast.makeText(RegisterMyActivity.this,
 									object.getString("text"),
 									Toast.LENGTH_SHORT).show();
-							startActivity(new Intent(RegisterMyActivity.this,
-									LoginMyActivity.class));
-						}//×¢²áÊ§°Ü
+//							startActivity(new Intent(RegisterMyActivity.this,
+//									LoginMyActivity.class));
+							// è‡ªåŠ¨ç™»å½•
+							new AutoLoginTask().execute();
+						}//×¢ï¿½ï¿½Ê§ï¿½ï¿½
 						else if(0==object.getInt("status")){
 							Toast.makeText(RegisterMyActivity.this,
 									object.getString("text"),
@@ -173,5 +197,76 @@ public class RegisterMyActivity extends Activity implements Runnable{
 			}
 		}
 	};
+	
+	private class AutoLoginTask extends AsyncTask<String, Void, String> {
+		
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.USER_LOGIN);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "username=" + et_register_username.getText().toString()
+						+ "&password=" + et_register_password.getText().toString();
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			JSONObject object;
+			try {
+				object = new JSONObject(result);
+				et = sp.edit();
+				et.putString("token", object.getString("token"));
+				
+				JSONObject data = new JSONObject(object.getString("data"));
+				et.putString("uid", data.getString("uid"));
+				et.putString("username", data.getString("username"));
+				et.putString("photo", data.getString("photo"));
+				et.putBoolean("isLogin", true);
+				et.commit();
+				
+				Intent intent = new Intent(RegisterMyActivity.this,
+						PersonalActivity.class);
+				intent.putExtra("uid", data.getString("uid"));
+				startActivity(intent);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
+	}
 
 }

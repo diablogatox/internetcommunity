@@ -15,6 +15,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.mofang.util.PinyinUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.orfid.internetcommunity.AppConstants;
+import com.orfid.internetcommunity.HomeActivity;
 import com.orfid.internetcommunity.HomeFriendsPicActivity;
 import com.orfid.internetcommunity.R;
 
@@ -22,10 +27,16 @@ public class ContactsAdapter extends BaseAdapter {
 
 	private Context context;
 	private List<Map<String, Object>> list;
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
 
 	public ContactsAdapter(Context context, List<Map<String, Object>> list) {
 		this.context = context;
 		this.list = list;
+		
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(context));
 	}
 
 	public int getCount() {
@@ -83,7 +94,9 @@ public class ContactsAdapter extends BaseAdapter {
 				context.startActivity(intent);
 			}
 		});
-		holder.icon.setImageResource((Integer) list.get(position).get("icon"));
+//		holder.icon.setImageResource((Integer) list.get(position).get("icon"));
+		imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + list.get(position).get("icon"), holder.icon,
+				options, null);
 		holder.title.setText((String) list.get(position).get("name"));
 		return convertView;
 	}

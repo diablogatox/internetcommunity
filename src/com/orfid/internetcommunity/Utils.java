@@ -35,7 +35,8 @@ public class Utils {
                 --a;
         }
         if(a < 0)
-                throw new IllegalArgumentException("Age < 0");
+        	a = 0;
+//                throw new IllegalArgumentException("Age < 0");
         return a;
 	}
 	

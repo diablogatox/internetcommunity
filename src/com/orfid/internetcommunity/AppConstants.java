@@ -61,5 +61,13 @@ public class AppConstants {
 	 * 气泡列表
 	 */
 	public static String BUBBLE_LIST = "http://sww.yxkuaile.com/bubble/list";
+	/**
+	 * 用户登录
+	 */
+	public static String USER_LOGIN = "http://sww.yxkuaile.com/user/login";
+	/**
+	 * 用户登出
+	 */
+	public static String USER_SIGNOUT = "http://sww.yxkuaile.com/user/logout";
 
 }

@@ -22,6 +22,9 @@ import com.mofang.pb.Contacts;
 import com.mofang.pb.ContactsAdapterSF;
 import com.mofang.util.PinyinComparator;
 import com.mofang.util.PinyinUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -179,7 +182,8 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		for (int i = 0; i < friends.size(); i++) {
 			String username = friends.get(i).getUsername();
 			String uid = friends.get(i).getUid();
-			mylist.add(new Contacts(uid, R.drawable.my_qq_pic, username, null, PinyinUtils.getAlpha(username), false));
+			String icon = friends.get(i).getPhoto();
+			mylist.add(new Contacts(uid, icon, username, null, PinyinUtils.getAlpha(username), false));
 		}
 		
 		Contacts[] ContactsArray = mylist.toArray(new Contacts[mylist.size()]);
@@ -203,10 +207,15 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 
 		private Context context;
 		private List<Map<String, Object>> list;
+		ImageLoader imageLoader;
+		private DisplayImageOptions options;
 
 		public MyGVAdapter(Context context, List<Map<String, Object>> list) {
 			this.context = context;
 			this.list = list;
+			imageLoader = ImageLoader.getInstance();
+	        imageLoader.init(ImageLoaderConfiguration
+					.createDefault(context));
 		}
 		
 		@Override
@@ -225,7 +234,7 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 		}
 
 		@Override
-		public View getView(int arg0, View convertView, ViewGroup parent) {
+		public View getView(int position, View convertView, ViewGroup parent) {
 
 			PictureViewHolder1 viewHolder = null;
 			if (convertView == null) {
@@ -238,6 +247,9 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 			} else {
 				viewHolder = (PictureViewHolder1) convertView.getTag();
 			}
+			
+			imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + list.get(position).get("icon"), viewHolder.iv_gridview_sf,
+					options, null);
 			return convertView;
 		}
 		public class PictureViewHolder1 {
@@ -339,6 +351,7 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 			    						Log.d("uid==========>", contact.get("uid").toString());
 			    						item.put("lvIndex", position);
 			    						item.put("uid", contact.get("uid").toString());
+			    						item.put("icon", contact.get("icon").toString());
 			    						mapList2.add(item);
 			    						gvAdapter.notifyDataSetChanged();
 			    						
@@ -445,7 +458,7 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 						startActivity(i);
 					}
 				}else if(0==obj.getInt("status")){
-//					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					Toast.makeText(SelectFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

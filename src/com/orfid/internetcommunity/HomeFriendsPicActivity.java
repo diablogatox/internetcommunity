@@ -13,6 +13,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -35,13 +39,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class HomeFriendsPicActivity extends Activity implements Runnable{
-	private ImageView home_pic_back;
+	private ImageView home_pic_back, iv_pic_home_friends;
 	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age, tv_pic_qianming;
 	private Button btn_add_friends, btn_begin_speak;
 	private GridView gv_friends_pic_home;
 	private String uid;
 	private SharedPreferences sp;
 	private String token;
+	
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
 	
 	private MyAdapter adapter;
 	List<GameItem> gameItems = new ArrayList<GameItem>();
@@ -51,7 +58,13 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_friends_pic);
 		
+		
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(HomeFriendsPicActivity.this));
+        
 		home_pic_back = (ImageView) findViewById(R.id.home_pic_back);
+		iv_pic_home_friends = (ImageView) findViewById(R.id.iv_pic_home_friends);
 		tv_lahei1 = (TextView) findViewById(R.id.tv_lahei1);
 		tv_pic_name1 = (TextView) findViewById(R.id.tv_pic_name1);
 		tv_name_id1 = (TextView) findViewById(R.id.tv_name_id1);
@@ -113,7 +126,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 	}
 	
 	
-class MyAdapter extends ArrayAdapter<GameItem>{
+	class MyAdapter extends ArrayAdapter<GameItem>{
 		
 		private List<GameItem> items;
 		private GameItem objBean;
@@ -284,9 +297,13 @@ class MyAdapter extends ArrayAdapter<GameItem>{
 					tv_pic_name1.setText(jObj.getString("username"));
 					int age = Utils.getAge(Long.parseLong(jObj.getString("birthday")) * 1000);
 					tv_pic_age.setText(age+"");
-					JSONArray jArr = new JSONArray(jObj.getString("signature"));
-					tv_pic_qianming.setText(jArr.get(1).toString());
+					if (!jObj.getString("signature").equals("null")) {
+						JSONArray jArr = new JSONArray(jObj.getString("signature"));
+						tv_pic_qianming.setText(jArr.get(1).toString());
+					}
 					
+					imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + jObj.getString("photo"), iv_pic_home_friends,
+							options, null);
 //					age = Utils.getAge(jObj.getString("birthday"));
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();

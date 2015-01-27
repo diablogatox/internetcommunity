@@ -241,7 +241,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			}
 		});
 		
-		new BubbleListTask().execute();
+//		new BubbleListTask().execute();
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	 /**      * amap添加一些事件监听器      */    
 	private void setUpMap() {                   
 		aMap.setOnMapClickListener(this);// 对amap添加单击地图事件监听器     
-		aMap.moveCamera(CameraUpdateFactory.zoomTo(20)); // 设置地图的缩放级别
+		aMap.moveCamera(CameraUpdateFactory.zoomTo(15)); // 设置地图的缩放级别
 //		aMap.setLocationSource(this);// 设置定位监听
 //		aMap.setMylocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false 
 //		aMap.setMyLocationType(AMap.LOCATION_TYPE_MAP_FOLLOW);// 设置定位的类型为 跟随模式 
@@ -370,7 +370,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		HashMap<Integer,View> lmap = new HashMap<Integer,View>();
 		
 		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
+		public View getView(final int position, View convertView, ViewGroup parent) {
 			PictureViewHolder viewHolder = null;
 			if (lmap.get(position)==null) {
 				viewHolder = new PictureViewHolder();
@@ -404,9 +404,9 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				public void onClick(View v) {
 					Intent i = new Intent(HomeActivity.this,
 							HomeFriendsPicActivity.class);
-					i.putExtra("uid", objBean.getUid());
-					Log.d("uid======>", objBean.getUid());
-//					startActivity(i);
+					i.putExtra("uid", getItem(position).getUid());
+					Log.d("uid======>", getItem(position).getUid());
+					startActivity(i);
 				}
 			});
 			viewHolder.tv_friends_name.setText(objBean.getUsername());//名字
@@ -1008,51 +1008,54 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 					FriendJSONParser parser = new FriendJSONParser();
 					nearbyUserItems = parser.parse(obj);
 					for (Friend friend: nearbyUserItems) {
-						MarkerOptions markerOption = new MarkerOptions();
+						final MarkerOptions markerOption = new MarkerOptions();
 						markerOption.position(new LatLng(Float.parseFloat(friend.getLatitude()), Float.parseFloat(friend.getLongitude())));
 						markerOption.title(friend.getUsername()).snippet(friend.getUsername());
 						markerOption.draggable(false);
 //						markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
 						Log.d("photo=============ddddd===>", friend.getPhoto());
-						if (!friend.getPhoto().trim().equals("null")) {
-							imageLoader.loadImage(AppConstants.MAIN_DOMAIN + "/" + friend.getPhoto(), new ImageLoadingListener() {
-	
-								@Override
-								public void onLoadingCancelled(String arg0,
-										View arg1) {
-									// TODO Auto-generated method stub
-									
-								}
-	
-								@Override
-								public void onLoadingComplete(String arg0,
-										View arg1, Bitmap loadedImage) {
-									Log.d("image loading complete=====>", "yes");
-									Log.d("arg0=====>", arg0);
-//									markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
+//						if (!friend.getPhoto().trim().equals("null")) {
+//							imageLoader.loadImage(AppConstants.MAIN_DOMAIN + "/" + friend.getPhoto(), new ImageLoadingListener() {
+//	
+//								@Override
+//								public void onLoadingCancelled(String arg0,
+//										View arg1) {
+//									// TODO Auto-generated method stub
+//									
+//								}
+//	
+//								@Override
+//								public void onLoadingComplete(String arg0,
+//										View arg1, Bitmap loadedImage) {
+//									Log.d("image loading complete=====>", "yes");
+//									Log.d("arg0=====>", arg0);
+////									markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
 //									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
-//									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
-									
-								}
-	
-								@Override
-								public void onLoadingFailed(String arg0, View arg1,
-										FailReason arg2) {
-									// TODO Auto-generated method stub
-									
-								}
-	
-								@Override
-								public void onLoadingStarted(String arg0, View arg1) {
-									// TODO Auto-generated method stub
-									
-								}
-								
-							});
-						}
+////									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
+//									
+//								}
+//	
+//								@Override
+//								public void onLoadingFailed(String arg0, View arg1,
+//										FailReason arg2) {
+//									// TODO Auto-generated method stub
+//									
+//								}
+//	
+//								@Override
+//								public void onLoadingStarted(String arg0, View arg1) {
+//									// TODO Auto-generated method stub
+//									
+//								}
+//								
+//							});
+//						}
 						
 						aMap.addMarker(markerOption);
 					}
+					
+					new BubbleListTask().execute();
+					
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}

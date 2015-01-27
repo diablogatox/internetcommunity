@@ -194,7 +194,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 							tv_personal_sex.setText(sex);
 							tv_personal_age.setText(Utils.covertTimestampToDate(Long.parseLong(jObj.getString("birthday")) * 1000));
 							tv_personal_uid.setText(jObj.getString("uid"));
-							
+							tv_personal_signature.setText("还没有填写签名");
 							JSONArray jArr = new JSONArray(jObj.getString("signature"));
 							String val = null;
 							if (jArr.length() > 0) {
