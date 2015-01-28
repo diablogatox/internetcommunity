@@ -8,15 +8,13 @@
 	<RelativeLayout 
 	    android:id="@+id/rl_new_friends"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:background="#00baff"
         >
         <ImageView
             android:id="@+id/new_friends_back" 
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_marginBottom="30dp"
             android:background="@drawable/icon_back"
             android:layout_centerVertical="true"
             />

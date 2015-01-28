@@ -70,6 +70,7 @@ public class BubbleJSONParser {
 				try {
 					mp.prepare();
 					duration = (mp.getDuration()/1000)+"";
+//					mp.release();
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

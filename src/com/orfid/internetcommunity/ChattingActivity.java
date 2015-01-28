@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +65,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private String token;
 	private String uid = "";
 	private String sid = "";
+	private boolean isButtonSent = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,31 +86,62 @@ public class ChattingActivity extends Activity implements OnClickListener{
         
 		findId();//寻找ID
 		init();
-		
+
+		et_chatting_input.addTextChangedListener(new TextWatcher() {
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+			}
+
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.length() > 0) {
+					// change button plus to send
+					btn_chatting_more.setBackgroundResource(R.drawable.btn_sent);
+					isButtonSent = true;
+				} else {
+					// change button plus back
+					btn_chatting_more.setBackgroundResource(R.drawable.btn_more);
+					isButtonSent = false;
+				}
+			}
+		});
+
 		lv_chatting_history.setAdapter(chatAdapter);
 		
 		btn_chatting_voice.setOnClickListener(this);
 		btn_voice_keyboard.setOnClickListener(this);
 		btn_expression_keyboard.setOnClickListener(this);
 		btn_expression_more.setOnClickListener(this);
+		btn_chatting_more.setOnClickListener(this);
 //		btn_chatting_more.setOnClickListener(this);
-		btn_chatting_more.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (!et_chatting_input.getText().toString().trim().equals("")) {
-					//发送消息
-					messageContent = et_chatting_input.getText().toString().trim();
-					Log.d("message=======>", messageContent);
-					send();
-					new SendMessageTask().execute();
-
-				} else {
-					Toast.makeText(ChattingActivity.this, "请先输入内容", Toast.LENGTH_SHORT).show();
-				}
-			}
-			
-		});
+//		btn_chatting_more.setOnClickListener(new OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				if (isButtonSent) {
+//					if (!et_chatting_input.getText().toString().trim().equals("")) {
+//						//发送消息
+//						messageContent = et_chatting_input.getText().toString().trim();
+//						Log.d("message=======>", messageContent);
+//						send();
+//						new SendMessageTask().execute();
+//
+//					} else {
+//						Toast.makeText(ChattingActivity.this, "请先输入内容", Toast.LENGTH_SHORT).show();
+//					}
+//				} else {
+//					// button plus action
+//					Log.d("click to expland plus actions====>", "foo");
+//				}
+//			}
+//			
+//		});
 		iv_chatting_picturek.setOnClickListener(this);
 		icon_title_right.setOnClickListener(this);
 		et_chatting_input.setOnClickListener(this);
@@ -215,21 +249,50 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			 * ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)) 
 			 * .showInputMethodPicker(); }
 			 * */
-			break;
-		case R.id.btn_chatting_more://添加
-			/*隐藏输入法*/
-			InputMethodManager inputMethodManager1 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
+			InputMethodManager inputMethodManager4 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
 					getSystemService(Context.INPUT_METHOD_SERVICE); 
-			inputMethodManager1.hideSoftInputFromWindow(et_chatting_input.getWindowToken(), 0);
-			btn_chatting_voice.setVisibility(View.GONE);//语音按钮(隐藏)
+			inputMethodManager4.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+			btn_chatting_voice.setVisibility(View.VISIBLE);//语音按钮(显示)
 			btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
-			btn_voice_keyboard.setVisibility(View.VISIBLE);//语音键盘按钮(显示)
+			btn_voice_keyboard.setVisibility(View.GONE);//语音键盘按钮(隐藏)
 			btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
 			btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
 			rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
 			rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
 			rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
-			rl_chatting_picturek.setVisibility(View.VISIBLE);//“相册”布局(显示)
+			rl_chatting_picturek.setVisibility(View.GONE);//“相册”布局(隐藏)
+			break;
+		case R.id.btn_chatting_more://添加
+			
+			if (isButtonSent) {
+				if (!et_chatting_input.getText().toString().trim().equals("")) {
+					//发送消息
+					messageContent = et_chatting_input.getText().toString().trim();
+					Log.d("message=======>", messageContent);
+					send();
+					new SendMessageTask().execute();
+
+				} else {
+					Toast.makeText(ChattingActivity.this, "请先输入内容", Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				// button plus action
+				Log.d("click to expland plus actions====>", "foo");
+			
+				/*隐藏输入法*/
+				InputMethodManager inputMethodManager1 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
+						getSystemService(Context.INPUT_METHOD_SERVICE); 
+				inputMethodManager1.hideSoftInputFromWindow(et_chatting_input.getWindowToken(), 0);
+				btn_chatting_voice.setVisibility(View.GONE);//语音按钮(隐藏)
+				btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
+				btn_voice_keyboard.setVisibility(View.VISIBLE);//语音键盘按钮(显示)
+				btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
+				btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
+				rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
+				rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
+				rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
+				rl_chatting_picturek.setVisibility(View.VISIBLE);//“相册”布局(显示)
+			}
 			break;
 		case R.id.btn_expression_more://表情
 			/*隐藏输入法*/
@@ -248,6 +311,22 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			break;
 		case R.id.btn_voice_keyboard://点击语音之后的“键盘”按钮
 			et_chatting_input.requestFocus();//让输入框被选中
+			
+			
+			InputMethodManager inputMethodManager3 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
+					getSystemService(Context.INPUT_METHOD_SERVICE); 
+			inputMethodManager3.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+			btn_chatting_voice.setVisibility(View.VISIBLE);//语音按钮(显示)
+			btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
+			btn_voice_keyboard.setVisibility(View.GONE);//语音键盘按钮(隐藏)
+			btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
+			btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
+			rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
+			rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
+			rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
+			rl_chatting_picturek.setVisibility(View.GONE);//“相册”布局(隐藏)
+			
+			
 //			((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)) .showInputMethodPicker();//选择输入法 
 			break;
 		case R.id.et_chatting_input://输入框

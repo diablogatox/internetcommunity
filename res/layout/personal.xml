@@ -6,7 +6,7 @@
 	<RelativeLayout 
 	    android:id="@+id/rl_personal1"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="48dp"
         android:layout_alignParentTop="true"
         android:background="#00baff"
         >
