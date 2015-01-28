@@ -132,8 +132,11 @@
             android:layout_width="match_parent"
             android:visibility="gone"
             android:background="#ffffff"
-            android:layout_height="150dp" >
-
+            android:layout_height="195dp" >
+            
+            <include
+            layout="@layout/chat_face_container" />
+<!-- 
             <android.support.v4.view.ViewPager
                 android:id="@+id/vp_chatting_expression"
                 android:layout_width="match_parent"
@@ -169,8 +172,9 @@
                 android:background="#efefef"
                 android:layout_alignParentBottom="true"
                 />
-
+-->
         </RelativeLayout>
+<!--        
         <RelativeLayout 
             android:id="@+id/rl_chatting_sent"
             android:background="#ffffff"
@@ -211,6 +215,7 @@
                 android:layout_toLeftOf="@+id/btn_chatting_sent"
                 />
         </RelativeLayout>
+-->
         <RelativeLayout
             android:id="@+id/rl_chatting_voice_big" 
             android:layout_width="match_parent"
