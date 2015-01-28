@@ -1,18 +1,20 @@
 package com.orfid.internetcommunity;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,25 +23,38 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.mofang.util.RecordUtil;
+import com.mofang.util.UploadUtils;
+
 
 public class ChattingActivity extends Activity implements OnClickListener{
 	ImageView icon_title_right;//群聊图标
@@ -54,11 +69,12 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	ViewPager vp_chatting_expression;//表情切换界面选择
 	ImageView iv_dot0,iv_dot1;//表情切换的两个点
 	Button btn_chatting_sent;//发送按钮
-	ImageView iv_chatting_voice_big;//大语音图标
+	ImageButton iv_chatting_voice_big;//大语音图标
 	ImageView iv_chatting_picturek;//相册图标
 	
 	private Timer mTimer;
 	private String messageContent;
+	private Bitmap imgAttachment = null;
 	private ChatAdapter chatAdapter;
 	private List<ChatEntity> chatList;
 	private SharedPreferences sp;
@@ -66,6 +82,23 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private String uid = "";
 	private String sid = "";
 	private boolean isButtonSent = false;
+	
+	private int mRecord_State = 0; // 录音的状态
+	private static final int RECORD_NO = 0; // 不在录音
+	private static final int RECORD_ING = 1; // 正在录音
+	private static final int RECORD_ED = 2; // 完成录音
+	private String mRecordPath;// 录音的存储名称
+	private static final String PATH = "/sdcard/internetcommunity/Record/";// 录音存储路径
+	private RecordUtil mRecordUtil;
+	private float mRecord_Time = 0;// 录音的时间
+	private static final int MAX_TIME = 60;// 最长录音时间
+	private static final int MIN_TIME = 2;// 最短录音时间
+	private double mRecord_Volume;// 麦克风获取的音量值
+	private TextView mRecordTime;
+	private ProgressBar mRecordProgressBar;
+	private int mMAXVolume;// 最大音量高度
+	private int mMINVolume;// 最小音量高度
+	private TextView status_hint_text;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +179,130 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		icon_title_right.setOnClickListener(this);
 		et_chatting_input.setOnClickListener(this);
 		
+		iv_chatting_voice_big.setOnTouchListener(new OnTouchListener() {
+
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+				// 开始录音
+				case MotionEvent.ACTION_DOWN:
+					if (mRecord_State != RECORD_ING) {
+						status_hint_text.setText("松开 结束");
+						// 开始动画效果
+//						startRecordLightAnimation();
+						// 修改录音状态
+						mRecord_State = RECORD_ING;
+						// 设置录音保存路径
+						mRecordPath = PATH + UUID.randomUUID().toString()
+								+ ".amr";
+						// 实例化录音工具类
+						mRecordUtil = new RecordUtil(mRecordPath);
+						try {
+							// 开始录音
+							mRecordUtil.start();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						new Thread(new Runnable() {
+
+							public void run() {
+								// 初始化录音时间
+								mRecord_Time = 0;
+								while (mRecord_State == RECORD_ING) {
+									// 大于最大录音时间则停止录音
+									if (mRecord_Time >= MAX_TIME) {
+										mRecordHandler.sendEmptyMessage(0);
+									} else {
+										try {
+											// 每隔200毫秒就获取声音音量并更新界面显示
+											Thread.sleep(200);
+											mRecord_Time += 0.2;
+											if (mRecord_State == RECORD_ING) {
+												mRecord_Volume = mRecordUtil
+														.getAmplitude();
+												mRecordHandler
+														.sendEmptyMessage(1);
+											}
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+									}
+								}
+							}
+						}).start();
+					}
+					break;
+				// 停止录音
+				case MotionEvent.ACTION_UP:
+
+					if (mRecord_State == RECORD_ING) {
+						// 停止动画效果
+//						stopRecordLightAnimation();
+						
+						// 修改录音状态
+						mRecord_State = RECORD_ED;
+						try {
+							// 停止录音
+							mRecordUtil.stop();
+							// 初始录音音量
+							mRecord_Volume = 0;
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						// 如果录音时间小于最短时间
+						if (mRecord_Time <= MIN_TIME) {
+							// 显示提醒
+							Toast.makeText(ChattingActivity.this, "录音时间过短",
+									Toast.LENGTH_SHORT).show();
+							// 修改录音状态
+							mRecord_State = RECORD_NO;
+							// 修改录音时间
+							mRecord_Time = 0;
+							// 修改显示界面
+							mRecordTime.setText("0″");
+							mRecordProgressBar.setProgress(0);
+							status_hint_text.setText("按住 说话");
+							// 修改录音声音界面
+//							ViewGroup.LayoutParams params = mRecordVolume
+//									.getLayoutParams();
+//							params.height = 0;
+//							mRecordVolume.setLayoutParams(params);
+						} else {
+							// 录音成功,则显示录音成功后的界面
+//							mRecordLayout.setVisibility(View.GONE);
+//							mRecord.setVisibility(View.GONE);
+//							mDisplayVoiceLayout.setVisibility(View.VISIBLE);
+//							mDisplayVoicePlay
+//									.setImageResource(R.drawable.globle_player_btn_play);
+//							mDisplayVoiceProgressBar.setMax((int) mRecord_Time);
+//							mDisplayVoiceProgressBar.setProgress(0);
+//							mDisplayVoiceTime.setText((int) mRecord_Time + "″");
+//							send.setVisibility(View.VISIBLE);
+							Log.d("record path======>", mRecordPath);
+							Log.d("record time======>", mRecord_Time+"");
+//							Intent intent = new Intent();
+//							intent.putExtra("recordPath", mRecordPath);
+//							intent.putExtra("recordTime", mRecord_Time);
+//							setResult(RESULT_OK, intent);
+//							finish();
+							send();
+							
+							mRecord_State = RECORD_ED;
+							mRecord_Time = 0;
+							mRecordTime.setText("0″");
+							mRecordProgressBar.setProgress(0);
+							status_hint_text.setText("按住 说话");
+							
+							Log.d("uid=======>", uid);
+							new UploadRecordTask(ChattingActivity.this, mRecordPath).execute(
+									AppConstants.SEND_MESSAGE);
+						}
+					}
+					break;
+				}
+				return false;
+			}
+		});
+
 //		new LoadMessageListTask().execute();
 		mTimer = new Timer();  
         // start timer task  
@@ -161,11 +318,14 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	
 	// 发布消息
  	public void send() {
+ 		Log.d("mRecord_Time========>", mRecord_Time+"");
      	ChatEntity chatEntity = new ChatEntity();
 //     	chatEntity.setChatTime(Utils.getLocalTime());
      	chatEntity.setContent(messageContent);
 //     	chatEntity.setUserImage(sp.getString("portrait", ""));
      	chatEntity.setComeMsg(false);
+     	chatEntity.setRecordTime(mRecord_Time+"");
+     	chatEntity.setImgAttachment(imgAttachment);
      	chatList.add(chatEntity);
      	chatAdapter.notifyDataSetChanged();
      	lv_chatting_history.setSelection(chatList.size() - 1);
@@ -173,12 +333,13 @@ public class ChattingActivity extends Activity implements OnClickListener{
      }
  	
  // 接收消息
-  	public void receive(String message, String portrait) {
+  	public void receive(String message, String portrait, String recordTime) {
   		ChatEntity chatEntity = new ChatEntity();
 //      	chatEntity.setChatTime(Utils.getLocalTime());
       	chatEntity.setContent(message);
 //      	chatEntity.setUserImage(portrait);
       	chatEntity.setComeMsg(true);
+      	chatEntity.setRecordTime(recordTime);
       	chatList.add(chatEntity);
       	chatAdapter.notifyDataSetChanged();
       	lv_chatting_history.setSelection(chatList.size() - 1);
@@ -201,14 +362,18 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //				return true;
 //			}
 //		});
+		mMINVolume = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, 4.5f, getResources()
+						.getDisplayMetrics());
+		mMAXVolume = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, 65f, getResources()
+						.getDisplayMetrics());
 	}
 
 	private void findId() {
 		icon_title_right = (ImageView) findViewById(R.id.icon_title_right);
 		et_chatting_input = (EditText) findViewById(R.id.et_chatting_input);
-		iv_dot0 = (ImageView) findViewById(R.id.iv_dot0);
-		iv_dot1 = (ImageView) findViewById(R.id.iv_dot1);
-		iv_chatting_voice_big = (ImageView) findViewById(R.id.iv_chatting_voice_big);
+		iv_chatting_voice_big = (ImageButton) findViewById(R.id.iv_chatting_voice_big);
 		iv_chatting_picturek = (ImageView) findViewById(R.id.iv_chatting_picturek);
 		btn_chatting_voice = (Button) findViewById(R.id.btn_chatting_voice);
 		btn_voice_keyboard = (Button) findViewById(R.id.btn_voice_keyboard);
@@ -221,7 +386,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		rl_chatting_sent = (RelativeLayout) findViewById(R.id.rl_chatting_sent);
 		rl_chatting_voice_big = (RelativeLayout) findViewById(R.id.rl_chatting_voice_big);
 		rl_chatting_picturek = (RelativeLayout) findViewById(R.id.rl_chatting_picturek);
-		vp_chatting_expression = (ViewPager) findViewById(R.id.vp_chatting_expression);
+		status_hint_text = (TextView) findViewById(R.id.status_hint_text);
+		mRecordTime = (TextView) findViewById(R.id.voice_record_time);
+		mRecordProgressBar = (ProgressBar) findViewById(R.id.voice_record_progressbar);
 	}
 
 	@Override
@@ -279,19 +446,36 @@ public class ChattingActivity extends Activity implements OnClickListener{
 				// button plus action
 				Log.d("click to expland plus actions====>", "foo");
 			
-				/*隐藏输入法*/
-				InputMethodManager inputMethodManager1 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
-						getSystemService(Context.INPUT_METHOD_SERVICE); 
-				inputMethodManager1.hideSoftInputFromWindow(et_chatting_input.getWindowToken(), 0);
-				btn_chatting_voice.setVisibility(View.GONE);//语音按钮(隐藏)
-				btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
-				btn_voice_keyboard.setVisibility(View.VISIBLE);//语音键盘按钮(显示)
-				btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
-				btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
-				rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
-				rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
-				rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
-				rl_chatting_picturek.setVisibility(View.VISIBLE);//“相册”布局(显示)
+				if (!rl_chatting_picturek.isShown()) {
+					/*隐藏输入法*/
+					InputMethodManager inputMethodManager1 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
+							getSystemService(Context.INPUT_METHOD_SERVICE); 
+					inputMethodManager1.hideSoftInputFromWindow(et_chatting_input.getWindowToken(), 0);
+					btn_chatting_voice.setVisibility(View.GONE);//语音按钮(隐藏)
+					btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
+					btn_voice_keyboard.setVisibility(View.VISIBLE);//语音键盘按钮(显示)
+					btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
+					btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
+					rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
+					rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
+					rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
+					rl_chatting_picturek.setVisibility(View.VISIBLE);//“相册”布局(显示)
+				} else {
+					et_chatting_input.requestFocus();//让输入框被选中
+					
+					InputMethodManager inputMethodManager5 =(InputMethodManager)ChattingActivity.this.getApplicationContext().
+							getSystemService(Context.INPUT_METHOD_SERVICE); 
+					inputMethodManager5.toggleSoftInput(0, InputMethodManager.SHOW_FORCED);
+					btn_chatting_voice.setVisibility(View.VISIBLE);//语音按钮(显示)
+					btn_expression_keyboard.setVisibility(View.GONE);//表情键盘按钮(隐藏)
+					btn_voice_keyboard.setVisibility(View.GONE);//语音键盘按钮(隐藏)
+					btn_expression_more.setVisibility(View.VISIBLE);//表情按钮(显示)
+					btn_chatting_more.setVisibility(View.VISIBLE);//添加按钮(显示)
+					rl_expression.setVisibility(View.GONE);//“表情”布局(隐藏)
+					rl_chatting_sent.setVisibility(View.GONE);//“发送”布局(隐藏)
+					rl_chatting_voice_big.setVisibility(View.GONE);//“语音”布局(隐藏)
+					rl_chatting_picturek.setVisibility(View.GONE);//“相册”布局(隐藏)
+				}
 			}
 			break;
 		case R.id.btn_expression_more://表情
@@ -339,11 +523,33 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			startActivity(new Intent(ChattingActivity.this,ChattingMessageActivity.class));
 			break;
 		case R.id.iv_chatting_picturek://
-			startActivity(new Intent(ChattingActivity.this,SelectPicActivity.class));
+			startActivityForResult(new Intent(ChattingActivity.this,SelectPicActivity.class), 0);
 			break;
 		}
 	}
 	
+	
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == RESULT_OK) {
+				String photoPath = data.getExtras().getString("photoPath");
+				Log.d("photoPath========>>", photoPath+"");
+				
+				imgAttachment = BitmapFactory.decodeFile(photoPath);
+				send();
+				imgAttachment = null;
+				
+				new UploadRecordTask(ChattingActivity.this, photoPath).execute(
+						AppConstants.SEND_MESSAGE);
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+
+
 	private  class ChatAdapter extends BaseAdapter{
      	private Context context = null;
      	private List<ChatEntity> chatList = null;
@@ -417,7 +623,11 @@ public class ChattingActivity extends Activity implements OnClickListener{
 // 				if (!chatList.get(position).isNofityMsg()) {
 //	 				chatHolder.timeTextView = (TextView) convertView.findViewById(R.id.tv_time);
 	 				chatHolder.contentTextView = (TextView) convertView.findViewById(R.id.tv_content);
+	 				chatHolder.voice_ll = convertView.findViewById(R.id.voice_ll);
+	 				chatHolder.voice_duration = (TextView) convertView.findViewById(R.id.voice_duration);
 	 				chatHolder.userImageView = (ImageView) convertView.findViewById(R.id.iv_user_image);
+	 				chatHolder.imgAttachment_ll = convertView.findViewById(R.id.imgAttachment_ll);
+	 				chatHolder.imgAttachment = (ImageView) convertView.findViewById(R.id.imgAttachment);
 // 				} else {
 // 					chatHolder.notifyTextView = (TextView) convertView.findViewById(R.id.tv_notify);
 // 				}
@@ -428,8 +638,29 @@ public class ChattingActivity extends Activity implements OnClickListener{
  			
 // 			if (!chatList.get(position).isNofityMsg()) {
 //	 			chatHolder.timeTextView.setText(chatList.get(position).getChatTime());
-	 			chatHolder.contentTextView.setText(chatList.get(position).getContent());
-	 					
+	 			Log.d("recordTime============>", chatList.get(position).getRecordTime());
+//	 			Log.d("imgAttachm============>", chatList.get(position).getImgAttachment().toString());
+	 			if (chatList.get(position).getRecordTime().equals("0.0")) {
+	 				if (chatList.get(position).getImgAttachment() != null) {
+		 				chatHolder.contentTextView.setVisibility(View.GONE);
+		 				chatHolder.voice_ll.setVisibility(View.GONE);
+		 				chatHolder.imgAttachment_ll.setVisibility(View.VISIBLE);
+		 				chatHolder.imgAttachment.setImageBitmap(chatList.get(position).getImgAttachment());
+	 				} else {
+	 				Log.d("here i am ======>", "entered");
+		 				chatHolder.contentTextView.setVisibility(View.VISIBLE);
+		 				chatHolder.voice_ll.setVisibility(View.GONE);
+		 				chatHolder.imgAttachment_ll.setVisibility(View.GONE);
+		 				chatHolder.contentTextView.setText(chatList.get(position).getContent());
+	 				}
+	 			} else {
+	 				chatHolder.contentTextView.setVisibility(View.GONE);
+	 				chatHolder.imgAttachment_ll.setVisibility(View.GONE);
+	 				chatHolder.voice_ll.setVisibility(View.VISIBLE);
+	 				DecimalFormat decimalFormat=new DecimalFormat(".0");
+	 				String time = decimalFormat.format(Float.parseFloat(chatList.get(position).getRecordTime()));
+	 				chatHolder.voice_duration.setText(time);
+	 			}
 //	 			imageLoader.init(ImageLoaderConfiguration
 //	 					.createDefault(context));
 //	 			imageLoader.displayImage(chatList.get(position).getUserImage(), chatHolder.userImageView,
@@ -447,6 +678,10 @@ public class ChattingActivity extends Activity implements OnClickListener{
 // 			private TextView timeTextView;
  			private ImageView userImageView;
  			private TextView contentTextView;
+ 			private View voice_ll;
+ 			private TextView voice_duration;
+ 			private View imgAttachment_ll;
+ 			private ImageView imgAttachment;
 // 			private TextView notifyTextView;
  		}
      	
@@ -573,7 +808,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 							JSONObject jsonObj = (JSONObject) jArr.get(i); 
 							JSONObject jUser = new JSONObject(jsonObj.getString("user"));
 							if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
-								receive(jsonObj.getString("text"), "");
+								receive(jsonObj.getString("text"), "", "");
 							}
 						}
 						
@@ -617,6 +852,119 @@ public class ChattingActivity extends Activity implements OnClickListener{
                     break;  
             }  
         }  
-    };  
+    }; 
+    
+    
+    /**
+	 * 用来控制录音
+	 */
+	Handler mRecordHandler = new Handler() {
+
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			switch (msg.what) {
+			case 0:
+				if (mRecord_State == RECORD_ING) {
+					// 停止动画效果
+//					stopRecordLightAnimation();
+					// 修改录音状态
+					mRecord_State = RECORD_ED;
+					try {
+						// 停止录音
+						mRecordUtil.stop();
+						// 初始化录音音量
+						mRecord_Volume = 0;
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					// 根据录音修改界面显示内容
+//					mRecordLayout.setVisibility(View.GONE);
+//					mRecord.setVisibility(View.GONE);
+//					mDisplayVoiceLayout.setVisibility(View.VISIBLE);
+//					mDisplayVoicePlay
+//							.setImageResource(R.drawable.globle_player_btn_play);
+//					mDisplayVoiceProgressBar.setMax((int) mRecord_Time);
+//					mDisplayVoiceProgressBar.setProgress(0);
+//					mDisplayVoiceTime.setText((int) mRecord_Time + "″");
+				}
+				break;
+
+			case 1:
+				// 根据录音时间显示进度条
+				mRecordProgressBar.setProgress((int) mRecord_Time);
+				// 显示录音时间
+				mRecordTime.setText((int) mRecord_Time + "″");
+				// 根据录音声音大小显示效果
+//				ViewGroup.LayoutParams params = mRecordVolume.getLayoutParams();
+//				if (mRecord_Volume < 200.0) {
+//					params.height = mMINVolume;
+//				} else if (mRecord_Volume > 200.0 && mRecord_Volume < 400) {
+//					params.height = mMINVolume * 2;
+//				} else if (mRecord_Volume > 400.0 && mRecord_Volume < 800) {
+//					params.height = mMINVolume * 3;
+//				} else if (mRecord_Volume > 800.0 && mRecord_Volume < 1600) {
+//					params.height = mMINVolume * 4;
+//				} else if (mRecord_Volume > 1600.0 && mRecord_Volume < 3200) {
+//					params.height = mMINVolume * 5;
+//				} else if (mRecord_Volume > 3200.0 && mRecord_Volume < 5000) {
+//					params.height = mMINVolume * 6;
+//				} else if (mRecord_Volume > 5000.0 && mRecord_Volume < 7000) {
+//					params.height = mMINVolume * 7;
+//				} else if (mRecord_Volume > 7000.0 && mRecord_Volume < 10000.0) {
+//					params.height = mMINVolume * 8;
+//				} else if (mRecord_Volume > 10000.0 && mRecord_Volume < 14000.0) {
+//					params.height = mMINVolume * 9;
+//				} else if (mRecord_Volume > 14000.0 && mRecord_Volume < 17000.0) {
+//					params.height = mMINVolume * 10;
+//				} else if (mRecord_Volume > 17000.0 && mRecord_Volume < 20000.0) {
+//					params.height = mMINVolume * 11;
+//				} else if (mRecord_Volume > 20000.0 && mRecord_Volume < 24000.0) {
+//					params.height = mMINVolume * 12;
+//				} else if (mRecord_Volume > 24000.0 && mRecord_Volume < 28000.0) {
+//					params.height = mMINVolume * 13;
+//				} else if (mRecord_Volume > 28000.0) {
+//					params.height = mMAXVolume;
+//				}
+//				mRecordVolume.setLayoutParams(params);
+				break;
+			}
+		}
+
+	};
+	
+	public class UploadRecordTask extends AsyncTask<String, Void, String> {
+
+		String recordPath;
+		
+		public UploadRecordTask(Context context, String recordPath) {
+			this.recordPath = recordPath;
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			File file=new File(recordPath);
+			return UploadUtils.sendMessageVoice(ChattingActivity.this, uid, sid, file, params[0]);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if(result.length() > 0){
+//				Log.d("result========>", result);
+	        	Toast.makeText(ChattingActivity.this, "上传成功",Toast.LENGTH_LONG ).show();
+
+	        	Log.d("upload record success====>", result);
+
+	        }else{
+	        	Toast.makeText(ChattingActivity.this, "上传失败，请检查网络", Toast.LENGTH_LONG ).show();
+	        }
+		}
+
+	}
 	
 }

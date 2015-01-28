@@ -48,5 +48,44 @@
             android:textColor="#fff"
             android:textSize="14sp" />
         
+        <LinearLayout
+            android:id="@+id/voice_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/iv_user_image"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:background="@drawable/chat_me">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center"
+                android:src="@drawable/z1" />
+            <TextView
+                android:id="@+id/voice_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|center"
+                android:paddingLeft="12dp"
+                android:textColor="#fff"
+                android:text="10``" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:id="@+id/imgAttachment_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@+id/iv_user_image"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            android:background="@drawable/chat_me">
+            <ImageView
+                android:id="@+id/imgAttachment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        
     </RelativeLayout>
 </LinearLayout>

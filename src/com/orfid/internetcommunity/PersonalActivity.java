@@ -104,8 +104,8 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
         uid = sp.getString("uid", "");
         
         options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.my_qq_pic)
-		.showImageForEmptyUri(R.drawable.my_qq_pic).cacheInMemory()
+		.showStubImage(R.drawable.no_portrait)
+		.showImageForEmptyUri(R.drawable.no_portrait).cacheInMemory()
 		.cacheOnDisc().build();
 		imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration
@@ -317,7 +317,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			}
 			File picFile = new File(pictureFileDir, fileName);
 			if (!picFile.exists()) {//如果文件不存在，加载项目资源图片
-				bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.my_qq_pic);
+				bitmap=BitmapFactory.decodeResource(getResources(), R.drawable.no_portrait);
 			}else{//如果文件存在加载SD卡图片
 				String pathString=picFile.getAbsolutePath();//文件的绝对路径
 				File file = new File(pathString);

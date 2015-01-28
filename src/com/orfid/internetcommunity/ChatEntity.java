@@ -1,5 +1,7 @@
 package com.orfid.internetcommunity;
 
+import android.graphics.Bitmap;
+
 public class ChatEntity {
 
 	private String userName;
@@ -7,6 +9,8 @@ public class ChatEntity {
 	private String content;
 //	private String chatTime;
 	private boolean isComeMsg;
+	private String recordTime;
+	private Bitmap imgAttachment;
 //	private boolean isNofityMsg;
 
 	public String getUserImage() {
@@ -44,5 +48,17 @@ public class ChatEntity {
 	}
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+	public String getRecordTime() {
+		return recordTime;
+	}
+	public void setRecordTime(String recordTime) {
+		this.recordTime = recordTime;
+	}
+	public Bitmap getImgAttachment() {
+		return imgAttachment;
+	}
+	public void setImgAttachment(Bitmap imgAttachment) {
+		this.imgAttachment = imgAttachment;
 	}
 }
