@@ -59,7 +59,8 @@ public class VoiceStartActivity extends Activity {
 		
 		Intent intent = getIntent();
 		Bundle bundle = intent.getExtras();
-		mRecord_Time = Float.parseFloat(bundle.getString("duration"));
+		mRecord_Time =  bundle.getString("duration").equals("0")?0:Float.parseFloat(bundle.getString("duration"));
+//		mRecord_Time = Float.parseFloat(bundle.getString("duration"));
 		mRecordPath = bundle.getString("audioUrl");
 		time = bundle.getString("time");
 		

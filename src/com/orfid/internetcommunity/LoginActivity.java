@@ -18,9 +18,19 @@ public class LoginActivity extends Activity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.login);
 		
 		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
+		
+		if (sp.getBoolean("isLogin", false)) {
+			Intent intent = new Intent(this, HomeActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); 
+			startActivity(intent);
+			finish();
+		}
+		
+		setContentView(R.layout.login);
+		
+		
 		bt_login_qq = (Button) findViewById(R.id.bt_login_qq);
 		bt_login_zhanghao = (Button) findViewById(R.id.bt_login_zhanghao);
 		bt_login_register = (Button) findViewById(R.id.bt_login_register);

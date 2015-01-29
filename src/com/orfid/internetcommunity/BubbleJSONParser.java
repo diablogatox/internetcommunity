@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 
 public class BubbleJSONParser {
 
@@ -48,13 +49,13 @@ public class BubbleJSONParser {
 	
 	private Bubble getBubble(JSONObject jBubble) {
 
-		Bubble bubble = new Bubble();
-		String uid;
-		String username;
-		String photo;
-		String bubble_type;
-		String bubble_content;
-		String utime;
+		final Bubble bubble = new Bubble();
+		final String uid;
+		final String username;
+		final String photo;
+		final String bubble_type;
+		final String bubble_content;
+		final String utime;
 		String duration = null;
 		
 		try {
@@ -66,28 +67,36 @@ public class BubbleJSONParser {
 			bubble_content = jBubble.getString("bubble_content");
 			utime = jBubble.getString("utime");
 			if (bubble_type != null && bubble_type.equals("2")) {
+				bubble.setUid(uid);
+				bubble.setUsername(username);
+				bubble.setPhoto(photo);
+				bubble.setBubble_type(bubble_type);
+				bubble.setBubble_content(bubble_content);
+				bubble.setUtime(utime);
+				bubble.setDuration("0");
 				mp = Utils.createNetAudio(bubble_content);
-				try {
-					mp.prepare();
-					duration = (mp.getDuration()/1000)+"";
-//					mp.release();
-				} catch (IllegalStateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				mp.prepareAsync();
+				mp.setOnPreparedListener(new OnPreparedListener() {
+					
+					@Override
+					public void onPrepared(MediaPlayer mp) {
+						bubble.setDuration((mp.getDuration()/1000)+"");
+						
+					}
+				});
+//				duration = (mp.getDuration()/1000)+"";
 				
+			} else {
+				bubble.setUid(uid);
+				bubble.setUsername(username);
+				bubble.setPhoto(photo);
+				bubble.setBubble_type(bubble_type);
+				bubble.setBubble_content(bubble_content);
+				bubble.setUtime(utime);
 			}
 
-			bubble.setUid(uid);
-			bubble.setUsername(username);
-			bubble.setPhoto(photo);
-			bubble.setBubble_type(bubble_type);
-			bubble.setBubble_content(bubble_content);
-			bubble.setUtime(utime);
-			bubble.setDuration(duration);
+			
+			
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

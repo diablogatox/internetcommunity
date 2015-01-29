@@ -18,20 +18,22 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
@@ -48,12 +50,16 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.AMap.InfoWindowAdapter;
 import com.amap.api.maps2d.AMap.OnMapClickListener;
+import com.amap.api.maps2d.AMap.OnMarkerClickListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.Projection;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.amap.api.services.core.LatLonPoint;
@@ -71,11 +77,9 @@ import com.amap.api.services.poisearch.Scenic;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.orfid.popwindow.PopMenu;
 
-public class HomeActivity extends Activity implements OnMapClickListener,AMapLocationListener, LocationSource, OnPoiSearchListener, Runnable  {
+public class HomeActivity extends Activity implements OnMapClickListener,AMapLocationListener, LocationSource, OnPoiSearchListener, InfoWindowAdapter, OnMarkerClickListener, Runnable  {
 	private ImageView iv_home_news;
 	private ImageView iv_home_menu;
 	private ImageView iv_home_back;
@@ -281,6 +285,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		aMap.setLocationSource(this);// 设置定位监听
 		aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+		aMap.setInfoWindowAdapter(this);
+		aMap.setOnMarkerClickListener(this);// 设置点击marker事件监听器
 
 	}
 	/**      * 对单击地图事件回调      */    
@@ -1010,7 +1016,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 					for (Friend friend: nearbyUserItems) {
 						final MarkerOptions markerOption = new MarkerOptions();
 						markerOption.position(new LatLng(Float.parseFloat(friend.getLatitude()), Float.parseFloat(friend.getLongitude())));
-						markerOption.title(friend.getUsername()).snippet(friend.getUsername());
+						markerOption.snippet(friend.getUid());
+//						markerOption.title(friend.getUsername());
 						markerOption.draggable(false);
 //						markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
 						Log.d("photo=============ddddd===>", friend.getPhoto());
@@ -1136,5 +1143,71 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		}
 		
 	}
+
+	@Override
+	public View getInfoContents(Marker marker) {
+		View infoContent = getLayoutInflater().inflate(
+				R.layout.custom_info_contents, null);
+		render(marker, infoContent);
+		return infoContent;
+	}
+
+	@Override
+	public View getInfoWindow(Marker marker) {
+		View infoWindow = getLayoutInflater().inflate(
+				R.layout.custom_info_window, null);
+
+		render(marker, infoWindow);
+		return infoWindow;
+	}
+	
+	public void render(Marker marker, View view) {
+		String title = marker.getTitle();
+		TextView textView = ((TextView) view.findViewById(R.id.tv));
+		textView.setText(title);
+		
+	}
+
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+//		if (aMap != null) {
+////			jumpPoint(marker);
+//		}
+//		Toast.makeText(this, "你点击的是" + marker.getSnippet(), Toast.LENGTH_SHORT).show();
+		Intent intent = new Intent(this, HomeFriendsPicActivity.class);
+		intent.putExtra("uid", marker.getSnippet());
+		startActivity(intent);
+		return false;
+	}
+	
+//	public void jumpPoint(final Marker marker) {
+//		final Handler handler = new Handler();
+//		final long start = SystemClock.uptimeMillis();
+//		Projection proj = aMap.getProjection();
+//		Point startPoint = proj.toScreenLocation(Constants.XIAN);
+//		startPoint.offset(0, -100);
+//		final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+//		final long duration = 1500;
+//
+//		final Interpolator interpolator = new BounceInterpolator();
+//		handler.post(new Runnable() {
+//			@Override
+//			public void run() {
+//				long elapsed = SystemClock.uptimeMillis() - start;
+//				float t = interpolator.getInterpolation((float) elapsed
+//						/ duration);
+//				double lng = t * Constants.XIAN.longitude + (1 - t)
+//						* startLatLng.longitude;
+//				double lat = t * Constants.XIAN.latitude + (1 - t)
+//						* startLatLng.latitude;
+//				marker.setPosition(new LatLng(lat, lng));
+//				aMap.invalidate();// 刷新地图
+//				if (t < 1.0) {
+//					handler.postDelayed(this, 16);
+//				}
+//			}
+//		});
+//
+//	}
 	
 }

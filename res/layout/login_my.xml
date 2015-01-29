@@ -54,7 +54,6 @@
 	        android:singleLine="true"
 	        android:maxLength="15"
 	        android:textColorHint="#55000000"
-	        android:text="vvvsix"
 	        />
 	    <View 
 	        android:layout_width="match_parent"
@@ -95,7 +94,6 @@
 	        android:singleLine="true"
 	        android:maxLength="15"
 	        android:textColorHint="#55000000"
-	        android:text="vvvsix123"
 	        />
     </RelativeLayout>
     
