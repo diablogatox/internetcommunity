@@ -66,6 +66,9 @@ import android.widget.Toast;
 
 import com.mofang.util.RecordUtil;
 import com.mofang.util.UploadUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
 public class ChattingActivity extends Activity implements OnClickListener{
@@ -117,12 +120,18 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private int columns = 6;
 	private int rows = 4;
 	private List<View> views = new ArrayList<View>();
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.chatting_from);
 
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(ChattingActivity.this));
+        
 		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
         token = sp.getString("token", "");
         
@@ -363,6 +372,19 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //      	chatEntity.setUserImage(portrait);
       	chatEntity.setComeMsg(true);
       	chatEntity.setRecordTime(recordTime);
+      	chatList.add(chatEntity);
+      	chatAdapter.notifyDataSetChanged();
+      	lv_chatting_history.setSelection(chatList.size() - 1);
+  	}
+  	
+  	public void receive(String message, String portrait, String recordTime, String attachImage) {
+  		ChatEntity chatEntity = new ChatEntity();
+//      	chatEntity.setChatTime(Utils.getLocalTime());
+      	chatEntity.setContent(message);
+//      	chatEntity.setUserImage(portrait);
+      	chatEntity.setComeMsg(true);
+      	chatEntity.setRecordTime(recordTime);
+      	chatEntity.setAttachImage(attachImage);
       	chatList.add(chatEntity);
       	chatAdapter.notifyDataSetChanged();
       	lv_chatting_history.setSelection(chatList.size() - 1);
@@ -676,8 +698,13 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		 				chatHolder.voice_ll.setVisibility(View.GONE);
 		 				chatHolder.imgAttachment_ll.setVisibility(View.VISIBLE);
 		 				chatHolder.imgAttachment.setImageBitmap(chatList.get(position).getImgAttachment());
+	 				} else if (chatList.get(position).getAttachImage() != null &&
+	 						!chatList.get(position).getAttachImage().equals("")) {
+	 					Log.d("good==========>", "very good");
+	 					imageLoader.displayImage(chatList.get(position).getAttachImage(), chatHolder.imgAttachment,
+	 							options, null);
 	 				} else {
-	 				Log.d("here i am ======>", "entered");
+	 					Log.d("here i am ======>", "entered");
 		 				chatHolder.contentTextView.setVisibility(View.VISIBLE);
 		 				chatHolder.voice_ll.setVisibility(View.GONE);
 		 				chatHolder.imgAttachment_ll.setVisibility(View.GONE);
@@ -837,10 +864,20 @@ public class ChattingActivity extends Activity implements OnClickListener{
 						JSONArray jArr = new JSONArray(jObj.getString("messages"));
 						
 						for (int i=0; i<jArr.length(); i++) {
+							String attachImg = null;
 							JSONObject jsonObj = (JSONObject) jArr.get(i); 
+							JSONArray jFiles = jsonObj.getJSONArray("files");
+							if (jFiles.length() > 0) {
+								JSONObject jFile = (JSONObject) jFiles.get(i);
+								if (jFile.getString("type").equals("image")) {
+									attachImg = AppConstants.MAIN_DOMAIN + jFile.getString("url");
+								} else {
+									
+								}
+							}
 							JSONObject jUser = new JSONObject(jsonObj.getString("user"));
 							if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
-								receive(jsonObj.getString("text"), "", "");
+								receive(jsonObj.getString("text"), "", "", attachImg);
 							}
 						}
 						

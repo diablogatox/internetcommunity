@@ -6,6 +6,7 @@ public class ChatEntity {
 
 	private String userName;
 	private String userImage;
+	private String attachImage;
 	private String content;
 //	private String chatTime;
 	private boolean isComeMsg;
@@ -60,5 +61,11 @@ public class ChatEntity {
 	}
 	public void setImgAttachment(Bitmap imgAttachment) {
 		this.imgAttachment = imgAttachment;
+	}
+	public String getAttachImage() {
+		return attachImage;
+	}
+	public void setAttachImage(String attachImage) {
+		this.attachImage = attachImage;
 	}
 }
