@@ -2,6 +2,7 @@ package com.orfid.internetcommunity;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -667,7 +668,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //	 			chatHolder.timeTextView.setText(chatList.get(position).getChatTime());
 	 			Log.d("recordTime============>", chatList.get(position).getRecordTime());
 //	 			Log.d("imgAttachm============>", chatList.get(position).getImgAttachment().toString());
-	 			if (chatList.get(position).getRecordTime().equals("0.0")) {
+	 			if (chatList.get(position).getRecordTime() ==null
+	 					|| chatList.get(position).getRecordTime().equals("")
+	 					|| chatList.get(position).getRecordTime().equals("0.0")) {
 	 				if (chatList.get(position).getImgAttachment() != null) {
 		 				chatHolder.contentTextView.setVisibility(View.GONE);
 		 				chatHolder.voice_ll.setVisibility(View.GONE);
@@ -678,7 +681,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		 				chatHolder.contentTextView.setVisibility(View.VISIBLE);
 		 				chatHolder.voice_ll.setVisibility(View.GONE);
 		 				chatHolder.imgAttachment_ll.setVisibility(View.GONE);
-		 				chatHolder.contentTextView.setText(chatList.get(position).getContent());
+		 				SpannableStringBuilder sb = handler(chatHolder.contentTextView,
+		 						chatList.get(position).getContent());
+		 				chatHolder.contentTextView.setText(sb);
 	 				}
 	 			} else {
 	 				chatHolder.contentTextView.setVisibility(View.GONE);
@@ -1185,6 +1190,43 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		ImageView iv = (ImageView) layout.findViewById(R.id.face_dot);
 		iv.setId(position);
 		return iv;
+	}
+	
+	private SpannableStringBuilder handler(final TextView gifTextView,String content) {
+		SpannableStringBuilder sb = new SpannableStringBuilder(content);
+		String regex = "(\\#\\[face/png/f_static_)\\d{3}(.png\\]\\#)";
+		Pattern p = Pattern.compile(regex);
+		Matcher m = p.matcher(content);
+		while (m.find()) {
+			String tempText = m.group();
+			try {
+				String num = tempText.substring("#[face/png/f_static_".length(), tempText.length()- ".png]#".length());
+				String gif = "face/gif/f" + num + ".gif";
+				/**
+				 * 如果open这里不抛异常说明存在gif，则显示对应的gif
+				 * 否则说明gif找不到，则显示png
+				 * */
+				InputStream is = getAssets().open(gif);
+				sb.setSpan(new AnimatedImageSpan(new AnimatedGifDrawable(is,new AnimatedGifDrawable.UpdateListener() {
+							@Override
+							public void update() {
+								gifTextView.postInvalidate();
+							}
+						})), m.start(), m.end(),
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				is.close();
+			} catch (Exception e) {
+				String png = tempText.substring("#[".length(),tempText.length() - "]#".length());
+				try {
+					sb.setSpan(new ImageSpan(this, BitmapFactory.decodeStream(getAssets().open(png))), m.start(), m.end(),Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
+		}
+		return sb;
 	}
 	
 }
