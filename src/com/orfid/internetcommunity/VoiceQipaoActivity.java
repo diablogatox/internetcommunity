@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.mofang.util.UploadUtils;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -54,14 +55,16 @@ public class VoiceQipaoActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				Log.d("record path to be uploaded=====>", mRecordPath);
-				String apiUrl;
-				if (isSignature) {
-					apiUrl = AppConstants.USER_SIGNATURE;
-				} else {
-					apiUrl = AppConstants.SEND_BUBBLE;
+				if (mRecordPath != null) {
+					Log.d("record path to be uploaded=====>", mRecordPath);
+					String apiUrl;
+					if (isSignature) {
+						apiUrl = AppConstants.USER_SIGNATURE;
+					} else {
+						apiUrl = AppConstants.SEND_BUBBLE;
+					}
+					new UploadRecordTask(VoiceQipaoActivity.this, mRecordPath, mRecord_Time).execute(apiUrl);
 				}
-				new UploadRecordTask(VoiceQipaoActivity.this, mRecordPath).execute(apiUrl);
 			}
 			
 		});
@@ -198,9 +201,14 @@ public class VoiceQipaoActivity extends Activity {
 	public class UploadRecordTask extends AsyncTask<String, Void, String> {
 
 		String recordPath;
+		float recordTime;
+		ProgressDialog pd;
+		Context context;
 		
-		public UploadRecordTask(Context context, String recordPath) {
+		public UploadRecordTask(Context context, String recordPath, float recordTime) {
+			this.context = context;
 			this.recordPath = recordPath;
+			this.recordTime = recordTime;
 		}
 
 		@Override
@@ -211,17 +219,27 @@ public class VoiceQipaoActivity extends Activity {
 
 		@Override
 		protected void onPreExecute() {
-			// TODO Auto-generated method stub
-			super.onPreExecute();
+			pd = new ProgressDialog(context);
+			pd.setTitle("正在上传");
+			pd.setMessage("请稍等.");
+			pd.setCancelable(true);
+			pd.setIndeterminate(true);
+			pd.show();
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			if(result.length() > 0){
-//				Log.d("result========>", result);
+				if (pd != null) {
+					pd.dismiss();
+				}
+				Log.d("voice update result========>", result);
 	        	Toast.makeText(VoiceQipaoActivity.this, "上传成功",Toast.LENGTH_LONG ).show();
-
-	        	Log.d("upload record success====>", result);
+	        	Intent intent = new Intent();
+	        	intent.putExtra("recordPath", recordPath);
+	        	intent.putExtra("recordTime", recordTime);
+	        	setResult(RESULT_OK, intent);
+	        	finish();
 
 	        }else{
 	        	Toast.makeText(VoiceQipaoActivity.this, "上传失败，请检查网络", Toast.LENGTH_LONG ).show();

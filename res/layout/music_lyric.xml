@@ -13,7 +13,7 @@
 	        android:layout_marginRight="18dp"
 	        android:layout_marginTop="12dp"
 	        android:layout_centerHorizontal="true"
-	        android:textSize="18sp"
+	        android:textSize="20sp"
 	        android:textColor="#00baff"
 	        />
 
@@ -21,9 +21,9 @@
 	        android:id="@+id/tv_music_lyric2"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:layout_alignRight="@+id/tv_music_lyric1"
-	        android:layout_below="@+id/tv_music_lyric1"
-	        android:layout_marginRight="18dp"
+	        android:layout_below="@id/tv_music_lyric1"
+	        android:layout_marginTop="20dp"
+	        android:layout_alignRight="@id/tv_music_lyric1"
 	        android:textColor="#000000"
 	        android:textSize="15sp" />
 

@@ -86,6 +86,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //	Button btn_chatting_sent;//发送按钮
 	ImageButton iv_chatting_voice_big;//大语音图标
 	ImageView iv_chatting_picturek;//相册图标
+	private ImageView chatting_back;
 	
 	private Timer mTimer;
 	private String messageContent;
@@ -139,7 +140,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		//if (intent != null) {
 			Bundle bundle = intent.getExtras();
 			uid = bundle.getString("toUid");
-			sid = bundle.getInt("sid")+"";
+			sid = bundle.getString("sid");
 		//}
 		chatList = new ArrayList<ChatEntity>(); 
         chatAdapter = new ChatAdapter(this, chatList);
@@ -147,6 +148,10 @@ public class ChattingActivity extends Activity implements OnClickListener{
         initStaticFaces();
 		findId();//寻找ID
 		init();
+		Log.d("sid==========>", sid);
+		if (sid != null && !sid.equals("") && !sid.equals("0")) {
+			icon_title_right.setVisibility(View.VISIBLE);
+		}
 
 		et_chatting_input.addTextChangedListener(new TextWatcher() {
 			@Override
@@ -180,6 +185,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		btn_expression_keyboard.setOnClickListener(this);
 		btn_expression_more.setOnClickListener(this);
 		btn_chatting_more.setOnClickListener(this);
+		chatting_back.setOnClickListener(this);
 //		btn_chatting_more.setOnClickListener(this);
 //		btn_chatting_more.setOnClickListener(new OnClickListener() {
 //
@@ -338,7 +344,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //		new LoadMessageListTask().execute();
 		mTimer = new Timer();  
         // start timer task  
-        setTimerTask();  
+		new LoadMessageListTask(true).execute();
+		
+        
 	}
 
 	@Override  
@@ -354,7 +362,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
      	ChatEntity chatEntity = new ChatEntity();
 //     	chatEntity.setChatTime(Utils.getLocalTime());
      	chatEntity.setContent(messageContent);
-//     	chatEntity.setUserImage(sp.getString("portrait", ""));
+     	chatEntity.setUserImage(sp.getString("photo", ""));
      	chatEntity.setComeMsg(false);
      	chatEntity.setRecordTime(mRecord_Time+"");
      	chatEntity.setImgAttachment(imgAttachment);
@@ -439,11 +447,15 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		mRecordProgressBar = (ProgressBar) findViewById(R.id.voice_record_progressbar);
 		mViewPager = (ViewPager) findViewById(R.id.face_viewpager);
 		mDotsLayout = (LinearLayout) findViewById(R.id.face_dots_container);
+		chatting_back = (ImageView) findViewById(R.id.chatting_back);
 	}
 
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
+		case R.id.chatting_back:
+			finish();
+			break;
 		case R.id.btn_chatting_voice://语音
 			/*隐藏输入法*/
 			InputMethodManager inputMethodManager =(InputMethodManager)ChattingActivity.this.getApplicationContext().
@@ -686,6 +698,8 @@ public class ChattingActivity extends Activity implements OnClickListener{
  				chatHolder = (ChatHolder)convertView.getTag();
  			}
  			
+ 			imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + chatList.get(position).getUserImage(), chatHolder.userImageView,
+						options, null);
 // 			if (!chatList.get(position).isNofityMsg()) {
 //	 			chatHolder.timeTextView.setText(chatList.get(position).getChatTime());
 	 			Log.d("recordTime============>", chatList.get(position).getRecordTime());
@@ -810,6 +824,12 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	
 	private class LoadMessageListTask extends AsyncTask<String, Void, String> {
 
+		private boolean init = false;
+		
+		public LoadMessageListTask(boolean init) {
+			this.init = init;
+		}
+		
 		@Override
 		protected String doInBackground(String... params) {
 			URL url=null;
@@ -823,7 +843,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 
 				Writer writer = new OutputStreamWriter(conn.getOutputStream());
 
-				String str = "token=" + token + "&toUid=" + uid + "&sid=" + sid;
+				String str = "token=" + token + "&toUid=" + uid + "&sid=" + sid + "&init=" + init;
 				Log.d("str-=========>", str);
 				writer.write(str);
 				writer.flush();
@@ -853,34 +873,71 @@ public class ChattingActivity extends Activity implements OnClickListener{
 
 		@Override
 		protected void onPostExecute(String result) {
-			Log.d("TEST", "消息列表JSON---" + result);
+			Log.d("TEST", "消息列表JSONddd---" + result);
 			JSONObject obj;
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
-//					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
-					JSONObject jObj = new JSONObject(obj.getString("data"));
-					if (jObj != null && jObj.length() > 0) {
-						JSONArray jArr = new JSONArray(jObj.getString("messages"));
-						
-						for (int i=0; i<jArr.length(); i++) {
-							String attachImg = null;
-							JSONObject jsonObj = (JSONObject) jArr.get(i); 
-							JSONArray jFiles = jsonObj.getJSONArray("files");
-							if (jFiles.length() > 0) {
-								JSONObject jFile = (JSONObject) jFiles.get(i);
-								if (jFile.getString("type").equals("image")) {
-									attachImg = AppConstants.MAIN_DOMAIN + jFile.getString("url");
-								} else {
+					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					Log.d("init==============>", "");
+					if (init) {
+//						setTimerTask();
+						JSONObject jObj = new JSONObject(obj.getString("data"));
+						if (jObj != null && jObj.length() > 0) {
+							JSONArray jArr = new JSONArray(jObj.getString("messages"));
+							if (jArr.length() > 0) {
+								for (int i=0; i<jArr.length(); i++) {
+									String attachImgUrl = null, attachRcdUrl = null;
+									JSONObject jsonObj = (JSONObject) jArr.get(i); 
+									JSONObject jUser = jsonObj.getJSONObject("user");
+									if (!jsonObj.getJSONArray("files").equals("[]")) {
+										JSONArray jFiles = jsonObj.getJSONArray("files");
+										if (jFiles.length() > 0) {
+											JSONObject jFile = (JSONObject) jFiles.get(0);
+											if (jFile.getString("type").equals("image")) {
+												attachImgUrl = AppConstants.MAIN_DOMAIN + jFile.getString("thumb");
+											} else {
+												attachRcdUrl = AppConstants.MAIN_DOMAIN + jFile.getString("url");
+											}
+										}
+									}
 									
+									ChatEntity chatEntity = new ChatEntity();
+							      	chatEntity.setChatTime(jsonObj.getString("sendtime"));
+							      	chatEntity.setContent(jsonObj.getString("text"));
+							      	chatEntity.setUserImage(jUser.getString("photo"));
+							      	chatEntity.setComeMsg(true);
+							      	chatEntity.setRecordTime("");
+							      	chatList.add(chatEntity);
 								}
-							}
-							JSONObject jUser = new JSONObject(jsonObj.getString("user"));
-							if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
-								receive(jsonObj.getString("text"), "", "", attachImg);
+								
+								chatAdapter.notifyDataSetChanged();
 							}
 						}
-						
+					} else {
+						JSONObject jObj = new JSONObject(obj.getString("data"));
+						if (jObj != null && jObj.length() > 0) {
+							JSONArray jArr = new JSONArray(jObj.getString("messages"));
+							
+							for (int i=0; i<jArr.length(); i++) {
+								String attachImg = null;
+								JSONObject jsonObj = (JSONObject) jArr.get(i); 
+								JSONArray jFiles = jsonObj.getJSONArray("files");
+								if (jFiles.length() > 0) {
+									JSONObject jFile = (JSONObject) jFiles.get(i);
+									if (jFile.getString("type").equals("image")) {
+										attachImg = AppConstants.MAIN_DOMAIN + jFile.getString("url");
+									} else {
+										
+									}
+								}
+								JSONObject jUser = new JSONObject(jsonObj.getString("user"));
+								if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
+									receive(jsonObj.getString("text"), "", "", attachImg);
+								}
+							}
+							
+						}
 					}
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
@@ -915,7 +972,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
                 case 1:  
                     // do some action  
 //                	Log.d("test========>", "ddd");
-                	new LoadMessageListTask().execute();
+                	new LoadMessageListTask(false).execute();
                     break;  
                 default:  
                     break;  

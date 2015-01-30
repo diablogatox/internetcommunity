@@ -108,6 +108,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 				Intent i = new Intent();
 				i.setClass(HomeFriendsPicActivity.this, ChattingActivity.class);
 				i.putExtra("toUid", uid);
+				i.putExtra("sid", "");
 				startActivity(i);
 			}
 			

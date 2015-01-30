@@ -31,7 +31,7 @@
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/my_qq_pic"
+            android:background="@drawable/no_portrait"
             android:focusable="false" />
 
         <TextView

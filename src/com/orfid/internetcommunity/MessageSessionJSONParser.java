@@ -56,15 +56,19 @@ public class MessageSessionJSONParser {
 			id = jMessageSession.getString("sid");
 			type = jMessageSession.getString("type");
 			newmsg = jMessageSession.getString("newmsg");
-			JSONObject msgObj = new JSONObject(jMessageSession.getString("lastMessage"));
-			JSONObject userObj = new JSONObject(msgObj.getString("user"));
-			Message msg = new Message(
-			msgObj.getString("id"),
-			msgObj.getString("sendtime"),
-			msgObj.getString("text"),
-			msgObj.getString("files"),
-			new Friend(userObj.getString("uid"), userObj.getString("username"), userObj.getString("photo"))
-			);
+			
+			Message msg = null;
+			if (!jMessageSession.getString("lastMessage").equals("[]")) {
+				JSONObject msgObj = new JSONObject(jMessageSession.getString("lastMessage"));
+				JSONObject userObj = new JSONObject(msgObj.getString("user"));
+				msg = new Message(
+				msgObj.getString("id"),
+				msgObj.getString("sendtime"),
+				msgObj.getString("text"),
+				msgObj.getString("files"),
+				new Friend(userObj.getString("uid"), userObj.getString("username"), userObj.getString("photo"))
+				);
+			}
 
 			messageSession.setId(id);
 			messageSession.setMessage(msg);

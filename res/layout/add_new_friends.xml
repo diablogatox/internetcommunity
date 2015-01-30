@@ -81,6 +81,7 @@
         android:layout_height="20dp"
         android:background="#efefef"
         />
+    <!-- 
     <RelativeLayout 
         android:id="@+id/rl_add_new_friends1"
         android:layout_width="match_parent"
@@ -220,5 +221,5 @@
             android:layout_marginRight="10dp"
             />
     </RelativeLayout>
-
+-->
 </LinearLayout>

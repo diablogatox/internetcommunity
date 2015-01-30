@@ -85,6 +85,12 @@ public class MaoPaoActivity extends Activity {
 				setResult(RESULT_OK, data);
 				finish();
 			}
+		} else if (requestCode == 1) {
+			if (resultCode == RESULT_OK) {
+				data.putExtra("isVoiceRecord", true);
+				setResult(RESULT_OK, data);
+				finish();
+			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	} 

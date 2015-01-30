@@ -56,8 +56,8 @@ public class MessageActivity extends Activity {
         token = sp.getString("token", "");
         
         options = new DisplayImageOptions.Builder()
-		.showStubImage(R.drawable.my_qq_pic)
-		.showImageForEmptyUri(R.drawable.my_qq_pic).cacheInMemory()
+		.showStubImage(R.drawable.no_portrait)
+		.showImageForEmptyUri(R.drawable.no_portrait).cacheInMemory()
 		.cacheOnDisc().build();
 		imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration
@@ -137,17 +137,19 @@ public class MessageActivity extends Activity {
 			
 			objBean = items.get(position);
 			Message msg = objBean.getMessage();
-			Friend fd = msg.getUser();
-			Log.d("photo======>test", fd.getPhoto());
-			if (fd.getPhoto().trim().equals("") || fd.getPhoto().equals("null")) {
-				viewHolder.iv_messages1_pic.setImageResource(R.drawable.my_qq_pic);//头像
-			} else {
-				imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + fd.getPhoto(), viewHolder.iv_messages1_pic,
-						options, null);
+			if (msg != null) {
+				Friend fd = msg.getUser();
+				Log.d("photo======>test", fd.getPhoto());
+				if (fd.getPhoto().trim().equals("") || fd.getPhoto().equals("null")) {
+					viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);//头像
+				} else {
+					imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + fd.getPhoto(), viewHolder.iv_messages1_pic,
+							options, null);
+				}
+				viewHolder.tv_message1_title.setText(fd.getUsername());//标题
+				viewHolder.tv_message1_content.setText(msg.getText()); //内容
+				viewHolder.tv_message1_time.setText(Utils.covertTimestampToDate(Long.parseLong(msg.getSendtime()) * 1000)); //时间
 			}
-			viewHolder.tv_message1_title.setText(fd.getUsername());//标题
-			viewHolder.tv_message1_content.setText(msg.getText()); //内容
-			viewHolder.tv_message1_time.setText(Utils.covertTimestampToDate(Long.parseLong(msg.getSendtime()) * 1000)); //时间
 			return convertView;
 		}
 		public class PictureViewHolder {

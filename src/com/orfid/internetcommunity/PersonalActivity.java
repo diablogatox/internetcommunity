@@ -15,11 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mofang.util.UploadUtils;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -38,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -46,6 +42,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mofang.util.UploadUtils;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 public class PersonalActivity extends Activity implements OnClickListener,Runnable{
 	private ImageView personal_back;
 	private ImageView iv_personal_pic;
@@ -53,6 +54,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	private ImageButton ib_personal_arrow1;
 	private ImageButton ib_personal_arrow2;
 	private ImageButton ib_personal_arrow3;
+	private Button btn_personal_signature;
 	private RelativeLayout rl_personal3;
 	private RelativeLayout rl_personal4;
 	private RelativeLayout rl_personal5;
@@ -202,6 +204,9 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 								val = (String) jArr.get(1);
 								if (key.equals("text")) {
 									tv_personal_signature.setText(val);
+								} else {
+									tv_personal_signature.setText("");
+									btn_personal_signature.setVisibility(View.VISIBLE);
 								}
 								
 							}
@@ -430,6 +435,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 		tv_personal_uid = (TextView) findViewById(R.id.tv_personal_id);
 		rl_personal7 = (RelativeLayout) findViewById(R.id.rl_personal7);
 		gv_personal = (GridView) findViewById(R.id.gv_personal);
+		btn_personal_signature = (Button) findViewById(R.id.btn_personal_signature);
 		personal_back.setOnClickListener(this);
 		iv_personal_pic.setOnClickListener(this);
 		ib_icon_signature.setOnClickListener(this);
@@ -486,8 +492,19 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 			}
 		} else if (requestCode == 1) {
 			if (resultCode == RESULT_OK) {
-				String text = data.getExtras().getString("text");
-				tv_personal_signature.setText(text);
+				if (data.getExtras().getBoolean("isVoiceRecord")) {
+					Log.d("isVoiceRecord==================>", data.getExtras().getBoolean("isVoiceRecord")+"");
+					Log.d("recordPath========>", data.getExtras().getString("recordPath"));
+					Log.d("recordTime=============>", data.getExtras().getFloat("recordTime")+"");
+					
+					tv_personal_signature.setText("");
+					btn_personal_signature.setText(data.getExtras().getFloat("recordTime")+"");
+					btn_personal_signature.setVisibility(View.VISIBLE);
+				} else {
+					String text = data.getExtras().getString("text");
+					btn_personal_signature.setVisibility(View.GONE);
+					tv_personal_signature.setText(text);
+				}
 			}
 		}
 	}

@@ -31,10 +31,10 @@ public class LoginActivity extends Activity implements OnClickListener{
 		setContentView(R.layout.login);
 		
 		
-		bt_login_qq = (Button) findViewById(R.id.bt_login_qq);
+//		bt_login_qq = (Button) findViewById(R.id.bt_login_qq);
 		bt_login_zhanghao = (Button) findViewById(R.id.bt_login_zhanghao);
 		bt_login_register = (Button) findViewById(R.id.bt_login_register);
-		bt_login_qq.setOnClickListener(this);
+//		bt_login_qq.setOnClickListener(this);
 		bt_login_zhanghao.setOnClickListener(this);
 		bt_login_register.setOnClickListener(this);
 	}
@@ -43,9 +43,9 @@ public class LoginActivity extends Activity implements OnClickListener{
 	public void onClick(View view) {
 		
 		switch (view.getId()) {
-		case R.id.bt_login_qq://QQ��¼
-			startActivity(new Intent(LoginActivity.this,LoginMyActivity.class));
-			break;
+//		case R.id.bt_login_qq://QQ��¼
+//			startActivity(new Intent(LoginActivity.this,LoginMyActivity.class));
+//			break;
 		case R.id.bt_login_zhanghao://�˺ŵ�¼
 			startActivity(new Intent(LoginActivity.this,LoginMyActivity.class));
 			break;
