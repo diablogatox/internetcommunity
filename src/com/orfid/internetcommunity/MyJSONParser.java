@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class MyJSONParser {
 
 	List<FriendRequest> listArray;
@@ -64,12 +66,14 @@ public class MyJSONParser {
 			photo = user.getString("photo");
 			signature = user.getString("signature");
 			action = jFriendRequest.getString("action");
+			Log.d("action==========>", action);
 			
 
 			friendRequest.setMsgid(Integer.parseInt(msgid));
 			friendRequest.setType(Integer.parseInt(type));
 			friendRequest.setText(text);
 			friendRequest.setUsername(username);
+			friendRequest.setPhoto(photo);
 			friendRequest.setAction(Integer.parseInt(action));
 			
 		} catch (JSONException e) {

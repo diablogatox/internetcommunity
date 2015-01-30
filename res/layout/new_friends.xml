@@ -34,6 +34,7 @@
         android:layout_height="wrap_content"
         android:divider="@null"
         android:background="#ffffff"
+        android:clickable="false"
         ></ListView>
     <TextView
         android:id="@+id/empty_view"

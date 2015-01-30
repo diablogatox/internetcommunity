@@ -913,6 +913,8 @@ public class ChattingActivity extends Activity implements OnClickListener{
 								
 								chatAdapter.notifyDataSetChanged();
 							}
+							
+//							setTimerTask();
 						}
 					} else {
 						JSONObject jObj = new JSONObject(obj.getString("data"));

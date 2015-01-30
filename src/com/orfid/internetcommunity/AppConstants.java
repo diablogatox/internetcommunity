@@ -69,5 +69,9 @@ public class AppConstants {
 	 * 用户登出
 	 */
 	public static String USER_SIGNOUT = "http://sww.yxkuaile.com/user/logout";
+	/**
+	 * 新消息统计
+	 */
+	public static String NEW_MESSAGE_COUNT = "http://sww.yxkuaile.com/message/count";
 
 }

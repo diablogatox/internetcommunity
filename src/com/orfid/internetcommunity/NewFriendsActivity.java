@@ -6,10 +6,15 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -35,7 +40,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class NewFriendsActivity extends Activity implements Runnable{
-	//ÐÂµÄºÃÓÑ½çÃæ
+	//ï¿½ÂµÄºï¿½ï¿½Ñ½ï¿½ï¿½ï¿½
 	private ImageView new_friends_back;
 	private ListView lv;
 	private FriendRequestsRowAdapter adapter;
@@ -105,16 +110,16 @@ public class NewFriendsActivity extends Activity implements Runnable{
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
 
-			viewHolder.tv_new_friends1.setText("ÖÜºÚÃ¨");// ºÃÓÑÃû×Ö
-			viewHolder.tv_new_friends2.setText("²»¼ÓÐÅ²»ÐÅÎÒ´òÎÒ´ò");// ºÃÓÑÇ©Ãû
-			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//ºÃÓÑÍ·Ïñ
+			viewHolder.tv_new_friends1.setText("ï¿½Üºï¿½Ã¨");// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			viewHolder.tv_new_friends2.setText("ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½ï¿½ï¿½Ò´ï¿½ï¿½Ò´ï¿½");// ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½
 			final Button temp = viewHolder.tv_accept;
 			viewHolder.btn_accept.setOnClickListener(new OnClickListener() {
-				//½ÓÊÜºÃÓÑÌí¼ÓÇëÇó
+				//ï¿½ï¿½ï¿½Üºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				@Override
 				public void onClick(View view) {
-					view.setVisibility(View.GONE);//µã»÷Ê¹°´Å¥Òþ²Ø
-					temp.setVisibility(View.VISIBLE);//ÏÔÊ¾¡°ÒÑÌí¼Ó¡±
+					view.setVisibility(View.GONE);//ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½
+					temp.setVisibility(View.VISIBLE);//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
 					new Thread(NewFriendsActivity.this).start();
 				}
 			});
@@ -169,7 +174,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 	Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			String result = (String) msg.obj;
-			Log.i("TEST", "---Í¬Òâ¼ÓÎªºÃÓÑ---JSON" + result);
+			Log.i("TEST", "---Í¬ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½---JSON" + result);
 			JSONObject object = null;
 			if (!result.equals("")) {
 				try {
@@ -183,9 +188,9 @@ public class NewFriendsActivity extends Activity implements Runnable{
 				if (object != null) {
 					try {
 						if (1==object.getInt("status")) {
-							Toast.makeText(NewFriendsActivity.this,"ÒÑ³É¹¦Ìí¼ÓÆäÎªºÃÓÑ",Toast.LENGTH_SHORT).show();
+							Toast.makeText(NewFriendsActivity.this,"ï¿½Ñ³É¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½",Toast.LENGTH_SHORT).show();
 						}else if(0==object.getInt("status")){
-							Toast.makeText(NewFriendsActivity.this,"Ìí¼ÓºÃÓÑÊ§°Ü",Toast.LENGTH_SHORT).show();
+							Toast.makeText(NewFriendsActivity.this,"ï¿½ï¿½Óºï¿½ï¿½ï¿½Ê§ï¿½ï¿½",Toast.LENGTH_SHORT).show();
 						}
 					} catch (JSONException e) {
 						e.printStackTrace();
@@ -205,7 +210,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 
 		@Override
 		protected void onPostExecute(String result) {
-			Log.d("TEST", "ºÃÓÑÇëÇóÏûÏ¢ÁÐ±íJSON---" + result);
+			Log.d("TEST", "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ð±ï¿½JSON---" + result);
 			JSONObject obj;
 			try {
 				obj = new JSONObject(result);
@@ -288,12 +293,18 @@ public class NewFriendsActivity extends Activity implements Runnable{
 		private FriendRequest objBean;
 		private int row;
 		private Context context;
+		ImageLoader imageLoader;
+		private DisplayImageOptions options;
 
 		public FriendRequestsRowAdapter(Context context, int resource, List<FriendRequest> arrayList) {
 			super(context, resource, arrayList);
 			this.context = context;
 			this.row = resource;
 			this.items = arrayList;
+			
+			imageLoader = ImageLoader.getInstance();
+	        imageLoader.init(ImageLoaderConfiguration
+					.createDefault(context));
 		}
 
 
@@ -303,10 +314,12 @@ public class NewFriendsActivity extends Activity implements Runnable{
 		}
 
 
+		HashMap<Integer,View> lmap = new HashMap<Integer,View>();
+		
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
 			PictureViewHolder viewHolder= null;
-			if (convertView == null) {
+			if (lmap.get(position)==null) {
 				viewHolder = new PictureViewHolder();
 				convertView = LayoutInflater.from(NewFriendsActivity.this).inflate(
 						R.layout.new_friends1, parent, false);
@@ -320,30 +333,37 @@ public class NewFriendsActivity extends Activity implements Runnable{
 						.findViewById(R.id.tv_accept);
 				viewHolder.btn_accept = (Button) convertView
 						.findViewById(R.id.btn_accept);
+				lmap.put(position, convertView);  
 				convertView.setTag(viewHolder);
 			} else {
+				convertView = lmap.get(position);  
 				viewHolder = (PictureViewHolder) convertView.getTag();
 			}
 
 			objBean = items.get(position);
 			
-			viewHolder.tv_new_friends1.setText(objBean.getUsername());// ºÃÓÑÃû×Ö
-			viewHolder.tv_new_friends2.setText(objBean.getText());// ºÃÓÑÇ©Ãû
-			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//ºÃÓÑÍ·Ïñ
+//			Log.d("xxxxxxxxxxxxxxxx=====>", objBean.getMsgid() + ":" + objBean.getAction());
+			
+			viewHolder.tv_new_friends1.setText(objBean.getUsername());// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			viewHolder.tv_new_friends2.setText(objBean.getText());// ï¿½ï¿½ï¿½ï¿½Ç©ï¿½ï¿½
+//			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½
+			imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + objBean.getPhoto(), viewHolder.iv_new_friends,
+					options, null);
 			final Button temp = viewHolder.tv_accept;
 			if (objBean.getAction() == 1) {
-				viewHolder.btn_accept.setVisibility(View.GONE);//µã»÷Ê¹°´Å¥Òþ²Ø
-				temp.setVisibility(View.VISIBLE);//ÏÔÊ¾¡°ÒÑÌí¼Ó¡±
+				Log.d("xxxxxxxxxxxxxxxx=====>", objBean.getMsgid() + ":" + objBean.getAction());
+				viewHolder.btn_accept.setVisibility(View.GONE);//ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½
+				temp.setVisibility(View.VISIBLE);//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
 			}
 			viewHolder.btn_accept.setOnClickListener(new OnClickListener() {
-				//½ÓÊÜºÃÓÑÌí¼ÓÇëÇó
+				//ï¿½ï¿½ï¿½Üºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				@Override
 				public void onClick(View view) {
 					Log.d("msgid======>", objBean.getMsgid()+"");
-					view.setVisibility(View.GONE);//µã»÷Ê¹°´Å¥Òþ²Ø
-					temp.setVisibility(View.VISIBLE);//ÏÔÊ¾¡°ÒÑÌí¼Ó¡±
+					view.setVisibility(View.GONE);//ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½
+					temp.setVisibility(View.VISIBLE);//ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½
 //					new Thread(NewFriendsActivity.this).start();
-					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
+//					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
 				}
 			});
 			return convertView;

@@ -5,6 +5,7 @@ public class FriendRequest {
 	private int type;
 //	private User user;
 	private String username;
+	private String photo;
 	private String sendTime;
 	private String text;
 	private int action;
@@ -44,6 +45,12 @@ public class FriendRequest {
 	}
 	public void setAction(int action) {
 		this.action = action;
+	}
+	public String getPhoto() {
+		return photo;
+	}
+	public void setPhoto(String photo) {
+		this.photo = photo;
 	}
 	
 }

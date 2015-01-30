@@ -43,7 +43,7 @@
 		        android:id="@+id/iv_ss_pic"
 		        android:layout_width="50dp"
 		        android:layout_height="50dp"
-		        android:background="@drawable/my_qq_pic"
+		        android:background="@drawable/no_portrait"
 		        android:layout_marginTop="8dp"
 		        android:layout_marginBottom="8dp"
 		        android:layout_centerVertical="true"

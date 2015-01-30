@@ -1,5 +1,9 @@
 package com.orfid.internetcommunity;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,12 +19,18 @@ public class SelectSpecificActivity extends Activity implements OnClickListener{
 	private TextView tv_ss_name;
 	private LinearLayout ll_select_specific;
 	private String uid;
+	ImageLoader imageLoader;
+	private DisplayImageOptions options;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.select_specific);
 		
+		imageLoader = ImageLoader.getInstance();
+        imageLoader.init(ImageLoaderConfiguration
+				.createDefault(SelectSpecificActivity.this));
+        
 		select_specific_back = (ImageView) findViewById(R.id.select_specific_back);
 		iv_ss_pic = (ImageView) findViewById(R.id.iv_ss_pic);
 		tv_ss_name = (TextView) findViewById(R.id.tv_ss_name);
@@ -33,7 +43,11 @@ public class SelectSpecificActivity extends Activity implements OnClickListener{
 		Intent i = getIntent();
 		Bundle bundle = i.getExtras();
 		uid = bundle.getString("uid");
-		tv_ss_name.setText(bundle.getString("username"));//ÉèÖÃÓÃ»§Ãû
+		tv_ss_name.setText(bundle.getString("username"));//ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½
+		if (bundle.getString("photo") != null) {
+			imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + bundle.getString("photo"), iv_ss_pic,
+					options, null);
+		}
 	}
 
 	@Override
@@ -44,7 +58,7 @@ public class SelectSpecificActivity extends Activity implements OnClickListener{
 		i.putExtra("uid", uid);
 		
 		switch (view.getId()) {
-		case R.id.select_specific_back://·µ»Ø
+		case R.id.select_specific_back://ï¿½ï¿½ï¿½ï¿½
 			finish();
 			break;
 		case R.id.iv_ss_pic:
