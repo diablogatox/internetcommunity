@@ -221,16 +221,17 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 										public void onPrepared(MediaPlayer mp) {
 											btn_personal_signature.setText((mp.getDuration()/1000)+"");
 											intent.putExtra("duration", (mp.getDuration()/1000)+"");
-										}
-									});
-									btn_personal_signature.setOnClickListener(new OnClickListener() {
+											btn_personal_signature.setOnClickListener(new OnClickListener() {
 
-										@Override
-										public void onClick(View v) {
-											startActivity(intent);
+												@Override
+												public void onClick(View v) {
+													startActivity(intent);
+												}
+												
+											});
 										}
-										
 									});
+									
 								}
 								
 							}

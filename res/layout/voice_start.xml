@@ -63,7 +63,7 @@
 	    android:id="@+id/voice_display_voice_layout"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_gravity="center"
+	    android:layout_centerInParent="true"
 	    android:background="@drawable/globle_player_bg"
 	    android:gravity="center"
 	    android:orientation="horizontal" >
@@ -103,6 +103,7 @@
 	    android:layout_marginRight="22dp"
 	    android:text="2014-12-18"
 	    android:textColor="#000000"
-	    android:textSize="15sp" />
+	    android:textSize="15sp"
+	    android:visibility="gone" />
 	
 </RelativeLayout>
