@@ -28,6 +28,34 @@
             android:layout_toLeftOf="@+id/iv_home_menu"
             android:layout_centerVertical="true"
             />
+
+        <!-- unread msg count -->
+        <LinearLayout
+            android:id="@+id/unread_msg_count"
+		    android:orientation="horizontal" 
+		    android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_toRightOf="@id/iv_home_news"
+            android:layout_marginLeft="-10dp"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+		    android:background="@drawable/icon_news_redx">
+            <LinearLayout 
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent" 
+                android:layout_weight="1"
+                android:gravity="center" 
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/count1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:textColor="@color/white"
+                    android:singleLine="true"
+					android:textSize="12sp"/>
+            </LinearLayout>
+		</LinearLayout>
+		
         <ImageView 
             android:id="@+id/iv_home_menu"
             android:layout_width="wrap_content"
@@ -38,6 +66,34 @@
             android:layout_marginLeft="20dp"
             android:layout_centerVertical="true"
             />
+        
+        <!-- friend request count -->
+        <LinearLayout
+            android:id="@+id/friends_req_count"
+		    android:orientation="horizontal" 
+		    android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/iv_home_news"
+            android:layout_marginLeft="35dp"
+            android:visibility="gone"
+		    android:background="@drawable/icon_news_redx">
+            <LinearLayout 
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent" 
+                android:layout_weight="1"
+                android:gravity="center" 
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/count2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:textColor="@color/white"
+                    android:singleLine="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
+		</LinearLayout>
+		
     </RelativeLayout>
     <LinearLayout 
         android:layout_width="match_parent"

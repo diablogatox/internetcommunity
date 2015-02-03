@@ -22,6 +22,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -86,6 +88,7 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 	List<GameItem> gameItems = new ArrayList<GameItem>();
 	
 	String gameListJsonStr = null;
+	private MediaPlayer mp = null;
 	
 	int year1,month1,day1;
 	@SuppressWarnings("deprecation")
@@ -207,6 +210,27 @@ public class PersonalActivity extends Activity implements OnClickListener,Runnab
 								} else {
 									tv_personal_signature.setText("");
 									btn_personal_signature.setVisibility(View.VISIBLE);
+									final Intent intent = new Intent(PersonalActivity.this, VoiceStartActivity.class);
+									intent.putExtra("audioUrl", val);
+									
+									mp = Utils.createNetAudio(val);
+									mp.prepareAsync();
+									mp.setOnPreparedListener(new OnPreparedListener() {
+										
+										@Override
+										public void onPrepared(MediaPlayer mp) {
+											btn_personal_signature.setText((mp.getDuration()/1000)+"");
+											intent.putExtra("duration", (mp.getDuration()/1000)+"");
+										}
+									});
+									btn_personal_signature.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											startActivity(intent);
+										}
+										
+									});
 								}
 								
 							}

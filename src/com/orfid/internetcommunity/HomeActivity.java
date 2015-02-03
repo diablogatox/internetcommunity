@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,25 +20,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -56,7 +54,6 @@ import com.amap.api.maps2d.AMap.OnMarkerClickListener;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.Projection;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
@@ -83,6 +80,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	private ImageView iv_home_news;
 	private ImageView iv_home_menu;
 	private ImageView iv_home_back;
+	private View unread_msg_count, friends_req_count;
+	private TextView count1, count2;
 	private RelativeLayout rl_home;
 	private ListView lv;
 	private PopMenu circlePopMenu;
@@ -141,6 +140,13 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		iv_home_news = (ImageView) findViewById(R.id.iv_home_news);
 		iv_home_menu = (ImageView) findViewById(R.id.iv_home_menu);
 		iv_home_back = (ImageView) findViewById(R.id.iv_home_back);
+		
+		unread_msg_count = findViewById(R.id.unread_msg_count);
+		friends_req_count = findViewById(R.id.friends_req_count);
+		
+		count1 = (TextView) findViewById(R.id.count1);
+		count2 = (TextView) findViewById(R.id.count2);
+		
 		rl_home = (RelativeLayout) findViewById(R.id.rl_home);
 		circlePopMenu = new PopMenu(this);//实例化一个PopMenu对象
 		circlePopMenu.setOnItemClickListener(new OnItemClickListener() {
@@ -244,8 +250,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 				lv.setVisibility(View.VISIBLE);//显示listview
 			}
 		});
-		
+
 //		new BubbleListTask().execute();
+		
+		new MessageCountTask().execute();
 	}
 
 	/**
@@ -1179,7 +1187,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		startActivity(intent);
 		return false;
 	}
-	
+
 //	public void jumpPoint(final Marker marker) {
 //		final Handler handler = new Handler();
 //		final long start = SystemClock.uptimeMillis();
@@ -1209,5 +1217,80 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 //		});
 //
 //	}
+	
+	private class MessageCountTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.NEW_MESSAGE_COUNT);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token;
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "新消息统计JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+					//Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+//					unread_msg_count, friends_req_count
+					JSONArray data = obj.getJSONArray("data");
+					String unreadMsgCount = data.get(0).toString();
+					String friendReqCount = data.get(1).toString();
+					
+					if (Integer.parseInt(unreadMsgCount) > 0) {
+						unread_msg_count.setVisibility(View.VISIBLE);
+						count1.setText(unreadMsgCount);
+					}
+					if (Integer.parseInt(friendReqCount) > 0) {
+						friends_req_count.setVisibility(View.VISIBLE);
+						count2.setText(friendReqCount);
+					}
+					
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
+	}
 	
 }
