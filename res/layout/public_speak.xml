@@ -39,11 +39,11 @@
             android:paddingRight="10dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:gravity="center_vertical"
             android:text="确定"
             android:textSize="22sp"
             android:textColor="#ffffff"
-            android:background="@drawable/button_add_game_pen2"
+            android:gravity="center"
+            android:background="@drawable/button_top_right"
             />
     </RelativeLayout>
     

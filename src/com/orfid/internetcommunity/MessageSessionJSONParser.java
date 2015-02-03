@@ -50,7 +50,8 @@ public class MessageSessionJSONParser {
 		String id;
 		String type;
 		String newmsg;
-		Friend[] users;
+		Friend[] users = null;
+		List<Friend> list = null;
 		
 		try {
 			id = jMessageSession.getString("sid");
@@ -69,12 +70,20 @@ public class MessageSessionJSONParser {
 				new Friend(userObj.getString("uid"), userObj.getString("username"), userObj.getString("photo"))
 				);
 			}
+			
+			JSONArray jUsers = jMessageSession.getJSONArray("users");
+			for (int i=0; i<jUsers.length(); i++) {
+				JSONObject user = (JSONObject) jUsers.get(i);
+//				Friend f = new Friend(user.getString("uid"), user.getString("username"), user.getString("photo"));
+//				list.add(f);
+			}
 
+			
 			messageSession.setId(id);
 			messageSession.setMessage(msg);
 			messageSession.setNewmsg(newmsg);
 			messageSession.setType(type);
-//			messageSession.setUsers(users);
+			messageSession.setUsers(users);
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

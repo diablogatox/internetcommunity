@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.orfid.internetcommunity.HomeActivity.MyAdapter;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -71,69 +72,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
         
         new LoadFriendRequestTask().execute();
 	}
-	class MyAdapter extends BaseAdapter{
-
-		@Override
-		public int getCount() {
-			return 2;
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			PictureViewHolder viewHolder= null;
-			if (convertView == null) {
-				viewHolder = new PictureViewHolder();
-				convertView = LayoutInflater.from(NewFriendsActivity.this).inflate(
-						R.layout.new_friends1, parent, false);
-				viewHolder.iv_new_friends = (ImageView) convertView
-						.findViewById(R.id.iv_new_friends);
-				viewHolder.tv_new_friends1 = (TextView) convertView
-						.findViewById(R.id.tv_new_friends1);
-				viewHolder.tv_new_friends2 = (TextView) convertView
-						.findViewById(R.id.tv_new_friends2);
-				viewHolder.tv_accept = (Button) convertView
-						.findViewById(R.id.tv_accept);
-				viewHolder.btn_accept = (Button) convertView
-						.findViewById(R.id.btn_accept);
-				convertView.setTag(viewHolder);
-			} else {
-				viewHolder = (PictureViewHolder) convertView.getTag();
-			}
-
-			viewHolder.tv_new_friends1.setText("�ܺ�è");// ��������
-			viewHolder.tv_new_friends2.setText("�����Ų����Ҵ��Ҵ�");// ����ǩ��
-			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//����ͷ��
-			final Button temp = viewHolder.tv_accept;
-			viewHolder.btn_accept.setOnClickListener(new OnClickListener() {
-				//���ܺ����������
-				@Override
-				public void onClick(View view) {
-					view.setVisibility(View.GONE);//���ʹ��ť����
-					temp.setVisibility(View.VISIBLE);//��ʾ������ӡ�
-					new Thread(NewFriendsActivity.this).start();
-				}
-			});
-			return convertView;
-		}
-		public class PictureViewHolder {
-			ImageView iv_new_friends;
-			TextView tv_new_friends1;
-			TextView tv_new_friends2;
-			Button tv_accept;
-			Button btn_accept;
-		}
-		
-	}
+	
 	@Override
 	public void run() {
 		URL url=null;
@@ -363,7 +302,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 					view.setVisibility(View.GONE);//���ʹ��ť����
 					temp.setVisibility(View.VISIBLE);//��ʾ������ӡ�
 //					new Thread(NewFriendsActivity.this).start();
-//					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
+					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
 				}
 			});
 			return convertView;
@@ -429,8 +368,18 @@ public class NewFriendsActivity extends Activity implements Runnable{
 
 		@Override
 		protected void onPostExecute(String result) {
-			// TODO Auto-generated method stub
-			super.onPostExecute(result);
+			Log.d("TEST", "回复好友请求JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}

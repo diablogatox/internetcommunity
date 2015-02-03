@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -344,7 +345,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 //		new LoadMessageListTask().execute();
 		mTimer = new Timer();  
         // start timer task  
-		new LoadMessageListTask(true).execute();
+		new LoadMessageListTask(1).execute();
 		
         
 	}
@@ -824,9 +825,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	
 	private class LoadMessageListTask extends AsyncTask<String, Void, String> {
 
-		private boolean init = false;
+		private int init = 0;
 		
-		public LoadMessageListTask(boolean init) {
+		public LoadMessageListTask(int init) {
 			this.init = init;
 		}
 		
@@ -878,9 +879,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
-					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
-					Log.d("init==============>", "");
-					if (init) {
+//					Toast.makeText(ChattingActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+//					Log.d("init==============>", "");
+					if (init == 1) {
 //						setTimerTask();
 						JSONObject jObj = new JSONObject(obj.getString("data"));
 						if (jObj != null && jObj.length() > 0) {
@@ -902,19 +903,26 @@ public class ChattingActivity extends Activity implements OnClickListener{
 										}
 									}
 									
+									String currentUserId = sp.getString("uid", "");
+									boolean isComeMsg = false;
+									if (!jUser.getString("uid").equals(currentUserId)) {
+										isComeMsg = true;
+									}
 									ChatEntity chatEntity = new ChatEntity();
 							      	chatEntity.setChatTime(jsonObj.getString("sendtime"));
 							      	chatEntity.setContent(jsonObj.getString("text"));
 							      	chatEntity.setUserImage(jUser.getString("photo"));
-							      	chatEntity.setComeMsg(true);
+							      	chatEntity.setComeMsg(isComeMsg);
 							      	chatEntity.setRecordTime("");
 							      	chatList.add(chatEntity);
 								}
 								
+								Collections.reverse(chatList);
+								lv_chatting_history.setSelection(chatList.size() - 1);
 								chatAdapter.notifyDataSetChanged();
 							}
 							
-//							setTimerTask();
+							setTimerTask();
 						}
 					} else {
 						JSONObject jObj = new JSONObject(obj.getString("data"));
@@ -974,7 +982,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
                 case 1:  
                     // do some action  
 //                	Log.d("test========>", "ddd");
-                	new LoadMessageListTask(false).execute();
+                	new LoadMessageListTask(0).execute();
                     break;  
                 default:  
                     break;  

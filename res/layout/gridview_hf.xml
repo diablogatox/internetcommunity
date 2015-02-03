@@ -7,7 +7,7 @@
     <TextView
         android:id="@+id/tv_game_bg" 
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:text="英雄联盟"
         android:gravity="center"
         android:background="@drawable/game_background"

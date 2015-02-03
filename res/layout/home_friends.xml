@@ -18,6 +18,7 @@
             app:border_color="#ccffcc"
             app:border_width="1dp"
             android:scaleType="centerCrop"
+            android:focusable="false"
             android:src="@drawable/no_portrait" />
     </LinearLayout>
 

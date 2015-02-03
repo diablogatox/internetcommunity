@@ -407,11 +407,11 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 
 				String str = "token=" + token;
 				JSONArray jArray = new JSONArray(members);
-				String tmp = "";
+				String tmp = "&members[]=" + sp.getString("uid", "");
 				for (int i=0; i<jArray.length(); i++) {
 					tmp += "&members[]=" + ((JSONObject)jArray.get(i)).getString("uid");
 				}
-//				Log.d("test============>", str+tmp);
+				Log.d("test============>", str+tmp);
 				writer.write(str+tmp);
 				writer.flush();
 
@@ -454,7 +454,7 @@ public class SelectFriendsActivity extends Activity implements Runnable {
 						int sid = jObj.getInt("sid");
 						Intent i = new Intent();
 						i.setClass(SelectFriendsActivity.this, ChattingActivity.class);
-						i.putExtra("sid", sid);
+						i.putExtra("sid", sid+"");
 						startActivity(i);
 					}
 				}else if(0==obj.getInt("status")){

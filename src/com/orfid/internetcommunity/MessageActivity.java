@@ -136,6 +136,7 @@ public class MessageActivity extends Activity {
 			}
 			
 			objBean = items.get(position);
+//			Log.d("message users=============>", objBean.getUsers().length+"");
 			Message msg = objBean.getMessage();
 			if (msg != null) {
 				Friend fd = msg.getUser();
