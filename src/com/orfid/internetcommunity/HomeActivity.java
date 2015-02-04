@@ -8,7 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +45,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amap.api.cloud.model.AMapCloudException;
+import com.amap.api.cloud.model.CloudItem;
+import com.amap.api.cloud.model.CloudItemDetail;
+import com.amap.api.cloud.model.LatLonPoint;
+import com.amap.api.cloud.search.CloudResult;
+import com.amap.api.cloud.search.CloudSearch;
+import com.amap.api.cloud.search.CloudSearch.OnCloudSearchListener;
+import com.amap.api.cloud.search.CloudSearch.SearchBound;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
@@ -59,24 +69,14 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
-import com.amap.api.services.core.LatLonPoint;
-import com.amap.api.services.core.PoiItem;
-import com.amap.api.services.core.SuggestionCity;
-import com.amap.api.services.poisearch.Cinema;
-import com.amap.api.services.poisearch.Dining;
-import com.amap.api.services.poisearch.Hotel;
-import com.amap.api.services.poisearch.PoiItemDetail;
-import com.amap.api.services.poisearch.PoiResult;
-import com.amap.api.services.poisearch.PoiSearch;
-import com.amap.api.services.poisearch.PoiSearch.OnPoiSearchListener;
-import com.amap.api.services.poisearch.PoiSearch.SearchBound;
-import com.amap.api.services.poisearch.Scenic;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.orfid.popwindow.PopMenu;
 
-public class HomeActivity extends Activity implements OnMapClickListener,AMapLocationListener, LocationSource, OnPoiSearchListener, InfoWindowAdapter, OnMarkerClickListener, Runnable  {
+public class HomeActivity extends Activity implements OnMapClickListener,
+		AMapLocationListener, LocationSource, OnCloudSearchListener,
+		InfoWindowAdapter, OnMarkerClickListener, Runnable  {
 	private ImageView iv_home_news;
 	private ImageView iv_home_menu;
 	private ImageView iv_home_back;
@@ -96,13 +96,6 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	
-	private String[] searchItems = {"网吧"};
-	private PoiSearch.Query query;// Poi查询条件类
-	private LatLonPoint lp;
-	private PoiSearch poiSearch;
-	private PoiResult poiResult; // poi返回的结果
-	private List<PoiItem> poiItems;// poi数据
-	
 	private MyAdapter adapter;
 	private SharedPreferences sp;
 	private String token;
@@ -112,6 +105,11 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 	
 	List<Bubble> bubbleItems = new ArrayList<Bubble>();
 	List<Friend> nearbyUserItems = new ArrayList<Friend>();
+	
+	private CloudSearch.Query mQuery;
+	private CloudSearch mCloudSearch;
+	private List<CloudItem> mCloudItems;
+	private ArrayList<CloudItem> items = new ArrayList<CloudItem>();
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -252,7 +250,6 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		});
 
 //		new BubbleListTask().execute();
-		
 		new MessageCountTask().execute();
 	}
 
@@ -295,6 +292,9 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
 		aMap.setInfoWindowAdapter(this);
 		aMap.setOnMarkerClickListener(this);// 设置点击marker事件监听器
+		
+		mCloudSearch = new CloudSearch(this);
+		mCloudSearch.setOnCloudSearchListener(this);
 
 	}
 	/**      * 对单击地图事件回调      */    
@@ -634,6 +634,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			
 //			lp = new LatLonPoint(Latitude, Longitude);
 			if (flag == 1) {
+				searchByBound();
 				new Thread(HomeActivity.this).start();
 			}
 			flag = 0;
@@ -677,228 +678,6 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 			mAMapLocationManager.destory();
 		}
 		mAMapLocationManager = null;
-	}
-	
-	/**
-	 * 开始进行poi搜索
-	 */
-	protected void doSearchQuery() {
-		query = new PoiSearch.Query("", searchItems[0], "上海市");// 第一个参数表示搜索字符串，第二个参数表示poi搜索类型，第三个参数表示poi搜索区域（空字符串代表全国）
-		query.setPageSize(10);// 设置每页最多返回多少条poiitem
-		query.setPageNum(0);// 设置查第一页
-
-		searchType = 0;
-
-		switch (searchType) {
-		case 0: {// 所有poi
-			query.setLimitDiscount(false);
-			query.setLimitGroupbuy(false);
-		}
-			break;
-		case 1: {// 有团购
-			query.setLimitGroupbuy(true);
-			query.setLimitDiscount(false);
-		}
-			break;
-		case 2: {// 有优惠
-			query.setLimitGroupbuy(false);
-			query.setLimitDiscount(true);
-		}
-			break;
-		case 3: {// 有团购或者优惠
-			query.setLimitGroupbuy(true);
-			query.setLimitDiscount(true);
-		}
-			break;
-		}
-
-		if (lp != null) {
-			poiSearch = new PoiSearch(this, query);
-			poiSearch.setOnPoiSearchListener(this);
-			poiSearch.setBound(new SearchBound(lp, 2000, true));//
-			// 设置搜索区域为以lp点为圆心，其周围2000米范围
-			/*
-			 * List<LatLonPoint> list = new ArrayList<LatLonPoint>();
-			 * list.add(lp);
-			 * list.add(AMapUtil.convertToLatLonPoint(Constants.BEIJING));
-			 * poiSearch.setBound(new SearchBound(list));// 设置多边形poi搜索范围
-			 */
-			poiSearch.searchPOIAsyn();// 异步搜索
-		}
-	}
-
-	/**
-	 * POI详情回调
-	 */
-	@Override
-	public void onPoiItemDetailSearched(PoiItemDetail result, int rCode) {
-//		dissmissProgressDialog();// 隐藏对话框
-		if (rCode == 0) {
-			if (result != null) {// 搜索poi的结果
-//				if (detailMarker != null) {
-					StringBuffer sb = new StringBuffer(result.getSnippet());
-					if ((result.getGroupbuys() != null && result.getGroupbuys()
-							.size() > 0)
-							|| (result.getDiscounts() != null && result
-									.getDiscounts().size() > 0)) {
-
-						if (result.getGroupbuys() != null
-								&& result.getGroupbuys().size() > 0) {// 取第一条团购信息
-							sb.append("\n团购："
-									+ result.getGroupbuys().get(0).getDetail());
-						}
-						if (result.getDiscounts() != null
-								&& result.getDiscounts().size() > 0) {// 取第一条优惠信息
-							sb.append("\n优惠："
-									+ result.getDiscounts().get(0).getDetail());
-						}
-					} else {
-						sb = new StringBuffer("地址：" + result.getSnippet()
-								+ "\n电话：" + result.getTel() + "\n类型："
-								+ result.getTypeDes());
-					}
-					// 判断poi搜索是否有深度信息
-					if (result.getDeepType() != null) {
-						sb = getDeepInfo(result, sb);
-//						detailMarker.setSnippet(sb.toString());
-					} else {
-//						ToastUtil.show(PoiAroundSearchActivity.this,
-//								"此Poi点没有深度信息");
-					}
-					
-//					Toast.makeText(this, sb.toString(), Toast.LENGTH_LONG).show();
-//				}
-
-			} else {
-//				ToastUtil
-//						.show(PoiAroundSearchActivity.this, R.string.no_result);
-			}
-		} else if (rCode == 27) {
-//			ToastUtil
-//					.show(PoiAroundSearchActivity.this, R.string.error_network);
-		} else if (rCode == 32) {
-//			ToastUtil.show(PoiAroundSearchActivity.this, R.string.error_key);
-		} else {
-//			ToastUtil.show(PoiAroundSearchActivity.this,getString(R.string.error_other) + rCode);
-		}
-	}
-
-	/**
-	 * POI深度信息获取
-	 */
-	private StringBuffer getDeepInfo(PoiItemDetail result,
-			StringBuffer sbuBuffer) {
-		switch (result.getDeepType()) {
-		// 餐饮深度信息
-		case DINING:
-			if (result.getDining() != null) {
-				Dining dining = result.getDining();
-				sbuBuffer
-						.append("\n菜系：" + dining.getTag() + "\n特色："
-								+ dining.getRecommend() + "\n来源："
-								+ dining.getDeepsrc());
-			}
-			break;
-		// 酒店深度信息
-		case HOTEL:
-			if (result.getHotel() != null) {
-				Hotel hotel = result.getHotel();
-				sbuBuffer.append("\n价位：" + hotel.getLowestPrice() + "\n卫生："
-						+ hotel.getHealthRating() + "\n来源："
-						+ hotel.getDeepsrc());
-			}
-			break;
-		// 景区深度信息
-		case SCENIC:
-			if (result.getScenic() != null) {
-				Scenic scenic = result.getScenic();
-				sbuBuffer
-						.append("\n价钱：" + scenic.getPrice() + "\n推荐："
-								+ scenic.getRecommend() + "\n来源："
-								+ scenic.getDeepsrc());
-			}
-			break;
-		// 影院深度信息
-		case CINEMA:
-			if (result.getCinema() != null) {
-				Cinema cinema = result.getCinema();
-				sbuBuffer.append("\n停车：" + cinema.getParking() + "\n简介："
-						+ cinema.getIntro() + "\n来源：" + cinema.getDeepsrc());
-			}
-			break;
-		default:
-			break;
-		}
-		return sbuBuffer;
-	}
-
-	/**
-	 * POI搜索回调方法
-	 */
-	@Override
-	public void onPoiSearched(PoiResult result, int rCode) {
-//		Log.d("result=====>", result.toString());
-//		Toast.makeText(this, result.toString(), Toast.LENGTH_LONG).show();
-//		dissmissProgressDialog();// 隐藏对话框
-		if (rCode == 0) {
-			if (result != null && result.getQuery() != null) {// 搜索poi的结果
-				if (result.getQuery().equals(query)) {// 是否是同一条
-					poiResult = result;
-					poiItems = poiResult.getPois();// 取得第一页的poiitem数据，页数从数字0开始
-//					adapter = new MyAdapter(poiItems);
-//					lv.setAdapter(adapter);
-//					Log.d("count", adapter.getCount()+"");
-//					adapter.notifyDataSetChanged();
-//					Log.d("test===>", poiItems.get(0).getTitle());
-//					for(int i = 0;i<poiItems.size();i++){
-////						Log.d("poiId====>", poiItems.get(i).getPoiId());
-//						doSearchPoiDetail(poiItems.get(i).getPoiId());
-//					}
-//					
-//					adapter = new MyAdapter(list);
-//					Toast.makeText(this, poiItems.size()+"", Toast.LENGTH_LONG).show();
-					
-					List<SuggestionCity> suggestionCities = poiResult
-							.getSearchSuggestionCitys();// 当搜索不到poiitem数据时，会返回含有搜索关键字的城市信息
-//					if (poiItems != null && poiItems.size() > 0) {
-//						aMap.clear();// 清理之前的图标
-//						poiOverlay = new PoiOverlay(aMap, poiItems);
-//						poiOverlay.removeFromMap();
-//						poiOverlay.addToMap();
-//						poiOverlay.zoomToSpan();
-//
-//						nextButton.setClickable(true);// 设置下一页可点
-//					} else if (suggestionCities != null
-//							&& suggestionCities.size() > 0) {
-//						showSuggestCity(suggestionCities);
-//					} else {
-//						ToastUtil.show(PoiAroundSearchActivity.this,
-//								R.string.no_result);
-//					}
-				}
-			} else {
-//				ToastUtil
-//						.show(PoiAroundSearchActivity.this, R.string.no_result);
-			}
-		} else if (rCode == 27) {
-//			ToastUtil
-//					.show(PoiAroundSearchActivity.this, R.string.error_network);
-		} else if (rCode == 32) {
-//			ToastUtil.show(PoiAroundSearchActivity.this, R.string.error_key);
-		} else {
-//			ToastUtil.show(PoiAroundSearchActivity.this,getString(R.string.error_other) + rCode);
-		}
-	}
-	
-	/**
-	 * 查单个poi详情
-	 * 
-	 * @param poiId
-	 */
-	public void doSearchPoiDetail(String poiId) {
-		if (poiSearch != null && poiId != null) {
-			poiSearch.searchPOIDetailAsyn(poiId);
-		}
 	}
 
 	@Override
@@ -1182,9 +961,16 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 ////			jumpPoint(marker);
 //		}
 //		Toast.makeText(this, "你点击的是" + marker.getSnippet(), Toast.LENGTH_SHORT).show();
-		Intent intent = new Intent(this, HomeFriendsPicActivity.class);
-		intent.putExtra("uid", marker.getSnippet());
-		startActivity(intent);
+		if (marker.getSnippet().equals("cloud")) {
+			Intent intent = new Intent();
+			intent.setClass(HomeActivity.this, MusicLyricActivity.class);
+			intent.putExtra("content", marker.getTitle());
+			startActivity(intent);
+		} else {
+			Intent intent = new Intent(this, HomeFriendsPicActivity.class);
+			intent.putExtra("uid", marker.getSnippet());
+			startActivity(intent);
+		}
 		return false;
 	}
 
@@ -1292,5 +1078,96 @@ public class HomeActivity extends Activity implements OnMapClickListener,AMapLoc
 		
 		
 	}
+	
+	
+	public void searchByBound() {
+	    //圆形查询范围
+//	    SearchBound bound = new SearchBound(new LatLonPoint(
+//	    		31.249146, 121.392236), 5000);
+	    SearchBound bound = new SearchBound(new LatLonPoint(Latitude, Longitude), 5000);
+	    
+	    try {
+	        //构造查询对象
+	        mQuery = new CloudSearch.Query("54d1dbdbe4b0596767e0c187", "网吧", bound);
+	    } catch (AMapCloudException e) {
+	        e.printStackTrace();
+	    }
+	    //设置查询参数
+	    mQuery.setPageSize(100);//每页结果数目
+	    CloudSearch.Sortingrules sorting = new CloudSearch.Sortingrules("_id",
+	            false);
+	    mQuery.setSortingrules(sorting);//排序规则
+	    //异步搜索
+	    mCloudSearch.searchCloudAsyn(mQuery);//mCloudSearch 为 CloudSearch 对象
+	}
+	
+	private static final String TAG = "HomeActivity";
+	
+	@Override
+	public void onCloudSearched(CloudResult result, int rCode) {
+		Log.d("yes!!!entered====>", "good");
+		Log.d("result===========>", result.getClouds().size()+"");
+	    if (rCode == 0) {
+	        if (result != null && result.getQuery() != null) {
+	            if (result.getQuery().equals(mQuery)) {
+	                //获取云数据
+	                mCloudItems = result.getClouds();
+	                if (mCloudItems != null && mCloudItems.size() > 0) {
+//	                    mAMap.clear();
+//	                    mPoiCloudOverlay = new PoiOverlay(mAMap, mCloudItems);
+//	                    mPoiCloudOverlay.removeFromMap();
+//	                    mPoiCloudOverlay.addToMap();
+//	                    mPoiCloudOverlay.zoomToSpan();
+	                	for (CloudItem item : mCloudItems) {
+							items.add(item);
+							Log.d(TAG, "_id " + item.getID());
+							Log.d(TAG, "_location "
+									+ item.getLatLonPoint().toString());
+							Log.d(TAG, "_name " + item.getTitle());
+							Log.d(TAG, "_address " + item.getSnippet());
+							Log.d(TAG, "_caretetime " + item.getCreatetime());
+							Log.d(TAG, "_updatetime " + item.getUpdatetime());
+							Log.d(TAG, "_distance " + item.getDistance());
+							Iterator iter = item.getCustomfield().entrySet()
+									.iterator();
+							while (iter.hasNext()) {
+								Map.Entry entry = (Map.Entry) iter.next();
+								Object key = entry.getKey();
+								Object val = entry.getValue();
+								Log.d(TAG, key + "   " + val);
+							}
+							
+							
+							MarkerOptions markerOption = new MarkerOptions();
+							markerOption.position(new LatLng(item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude()));
+							markerOption.snippet("cloud");
+							markerOption.title(item.getTitle());
+							markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.bar));
+//							markerOption.title(friend.getUsername());
+							markerOption.draggable(false);
+							
+							aMap.addMarker(markerOption);
+						}
+	                } else {
+//	                    ToastUtil.show(this, R.string.no_result);
+	                	Toast.makeText(HomeActivity.this, "没有数据", Toast.LENGTH_SHORT).show();
+	                }
+	            }
+	        } else {
+//	            ToastUtil.show(this, R.string.no_result);
+	        	Toast.makeText(HomeActivity.this, "没有数据", Toast.LENGTH_SHORT).show();
+	        }
+	    } else {
+//	        ToastUtil.show(this, R.string.error_network);
+	    	Toast.makeText(HomeActivity.this, "网络错误", Toast.LENGTH_SHORT).show();
+	    }
+	 
+	}
+
+	@Override
+	public void onCloudItemDetailSearched(CloudItemDetail arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}  
 	
 }

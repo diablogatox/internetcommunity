@@ -158,8 +158,8 @@ public class AddGamesActivity extends Activity implements Runnable {
 				Log.d("id=======>", id+"");
 				Log.d("name======>", gameItems1.get(position).getName());
 				
-				gameItems.add(gameItems1.get(position));
-				adapter.notifyDataSetChanged();
+//				gameItems.add(gameItems1.get(position));
+//				adapter.notifyDataSetChanged();
 				
 				new AddNewGameTask(id, null).execute();
 			}
@@ -439,7 +439,7 @@ public class AddGamesActivity extends Activity implements Runnable {
 						gameItems.add(new GameItem(jObj.getString("id"), jObj.getString("name")));
 						adapter.notifyDataSetChanged();
 						
-						new AddNewGameTask(Long.parseLong(jObj.getString("id")), null).execute();
+//						new AddNewGameTask(Long.parseLong(jObj.getString("id")), null).execute();
 					}
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(AddGamesActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();

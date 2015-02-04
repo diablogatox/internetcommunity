@@ -36,7 +36,9 @@ public class MusicLyricActivity extends Activity {
 		Bundle bundle = intent.getExtras();
 
 		tv_music_lyric1.setText(bundle.getString("content"));
-		tv_music_lyric2.setText(Utils.covertTimestampToDate(Long.parseLong(bundle.getString("time")) * 1000));
+		if (bundle.getString("time") != null) {
+			tv_music_lyric2.setText(Utils.covertTimestampToDate(Long.parseLong(bundle.getString("time")) * 1000));
+		}
 	}
 	@Override  
 	public boolean onTouchEvent(MotionEvent event){   
