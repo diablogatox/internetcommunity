@@ -221,6 +221,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 
 			@Override
 			public void onClick(View v) {
+				if (unread_msg_count.isShown() && !count1.getText().toString().equals("0")) {
+					count1.setText("");
+					unread_msg_count.setVisibility(View.GONE);
+				}
 				startActivity(new Intent(HomeActivity.this,
 						MessageActivity.class));
 			}
