@@ -51,7 +51,7 @@ public class MessageSessionJSONParser {
 		String type;
 		String newmsg;
 		Friend[] users = null;
-		List<Friend> list = null;
+		List<Friend> list = new ArrayList<Friend>();
 		
 		try {
 			id = jMessageSession.getString("sid");
@@ -74,10 +74,11 @@ public class MessageSessionJSONParser {
 			JSONArray jUsers = jMessageSession.getJSONArray("users");
 			for (int i=0; i<jUsers.length(); i++) {
 				JSONObject user = (JSONObject) jUsers.get(i);
-//				Friend f = new Friend(user.getString("uid"), user.getString("username"), user.getString("photo"));
-//				list.add(f);
+				Friend f = new Friend(user.getString("uid"), user.getString("username"), user.getString("photo"));
+				list.add(f);
 			}
 
+			users = list.toArray(new Friend[list.size()]);
 			
 			messageSession.setId(id);
 			messageSession.setMessage(msg);

@@ -98,6 +98,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private String token;
 	private String uid = "";
 	private String sid = "";
+	private boolean isGroup = false;
 	private boolean isButtonSent = false;
 	
 	private int mRecord_State = 0; // 录音的状态
@@ -142,6 +143,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			Bundle bundle = intent.getExtras();
 			uid = bundle.getString("toUid");
 			sid = bundle.getString("sid");
+			isGroup = bundle.getBoolean("isGroup");
 		//}
 		chatList = new ArrayList<ChatEntity>(); 
         chatAdapter = new ChatAdapter(this, chatList);
@@ -149,8 +151,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
         initStaticFaces();
 		findId();//寻找ID
 		init();
-		Log.d("sid==========>", sid);
-		if (sid != null && !sid.equals("") && !sid.equals("0")) {
+		if (isGroup) {
 			icon_title_right.setVisibility(View.VISIBLE);
 		}
 

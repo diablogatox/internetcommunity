@@ -12,18 +12,17 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.orfid.internetcommunity.PersonalActivity.MyAdapter.PictureViewHolder;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,14 +30,18 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.orfid.internetcommunity.SwipeMenuListView.OnMenuItemClickListener;
+import com.orfid.internetcommunity.SwipeMenuListView.OnSwipeListener;
+
 public class MessageActivity extends Activity {
-	private ListView lv;
+	private SwipeMenuListView lv;
 	private ImageView iv_message_back;
 	private MyAdapter adapter;
 	List<MessageSession> messageSessionItems = new ArrayList<MessageSession>();
@@ -63,7 +66,7 @@ public class MessageActivity extends Activity {
         imageLoader.init(ImageLoaderConfiguration
 				.createDefault(MessageActivity.this));
         
-		lv = (ListView) findViewById(R.id.lv_message);
+		lv = (SwipeMenuListView) findViewById(R.id.lv_message);
 		iv_message_back = (ImageView) findViewById(R.id.iv_message_back);
 		iv_message_back.setOnClickListener(new OnClickListener() {
 			
@@ -73,15 +76,65 @@ public class MessageActivity extends Activity {
 			}
 		});
 //		lv.setAdapter(new MyAdapter());
+//		lv.setOnItemClickListener(new OnItemClickListener() {
+//
+//			@Override
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+//					long id) {
+//				Log.d("sid======>", id+"");
+//				Intent intent = new Intent(MessageActivity.this,ChattingActivity.class);
+//				intent.putExtra("sid", id+"");
+//				startActivity(intent);
+//			}
+//		});
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long id) {
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
 				Log.d("sid======>", id+"");
 				Intent intent = new Intent(MessageActivity.this,ChattingActivity.class);
 				intent.putExtra("sid", id+"");
+				intent.putExtra("isGroup", adapter.getItem(position).getType().equals("2")?true:false);
 				startActivity(intent);
+			}
+			
+		});
+		
+		// step 1. create a MenuCreator
+		SwipeMenuCreator creator = new SwipeMenuCreator() {
+
+			@Override
+			public void create(SwipeMenu menu) {
+				// create "delete" item
+				SwipeMenuItem deleteItem = new SwipeMenuItem(
+						getApplicationContext());
+				// set item background
+				deleteItem.setBackground(new ColorDrawable(Color.rgb(0xF9,
+						0x3F, 0x25)));
+				// set item width
+				deleteItem.setWidth(dp2px(90));
+				// set a icon
+				deleteItem.setIcon(R.drawable.ic_delete);
+				// add to menu
+				menu.addMenuItem(deleteItem);
+			}
+		};
+		
+		// set creator
+		lv.setMenuCreator(creator);
+
+		// set SwipeListener
+		lv.setOnSwipeListener(new OnSwipeListener() {
+			
+			@Override
+			public void onSwipeStart(int position) {
+				// swipe start
+			}
+			
+			@Override
+			public void onSwipeEnd(int position) {
+				// swipe end
 			}
 		});
 		
@@ -130,6 +183,11 @@ public class MessageActivity extends Activity {
 				viewHolder.tv_message1_title = (TextView) convertView.findViewById(R.id.tv_message1_title);
 				viewHolder.tv_message1_content = (TextView) convertView.findViewById(R.id.tv_message1_content);
 				viewHolder.tv_message1_time = (TextView) convertView.findViewById(R.id.tv_message1_time);
+				viewHolder.group_pic = convertView.findViewById(R.id.group_pic);
+				viewHolder.top_center = (ImageView) convertView.findViewById(R.id.top_center);
+				viewHolder.bottom_left = (ImageView) convertView.findViewById(R.id.bottom_left);
+				viewHolder.bottom_right = (ImageView) convertView.findViewById(R.id.bottom_right);
+
 				convertView.setTag(viewHolder);
 			} else {
 				viewHolder = (PictureViewHolder) convertView.getTag();
@@ -137,16 +195,47 @@ public class MessageActivity extends Activity {
 			
 			objBean = items.get(position);
 //			Log.d("message users=============>", objBean.getUsers().length+"");
+
 			Message msg = objBean.getMessage();
 			if (msg != null) {
 				Friend fd = msg.getUser();
-				Log.d("photo======>test", fd.getPhoto());
-				if (fd.getPhoto().trim().equals("") || fd.getPhoto().equals("null")) {
-					viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);//头像
-				} else {
-					imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + fd.getPhoto(), viewHolder.iv_messages1_pic,
-							options, null);
+				Log.d("type======>test", objBean.getType());
+
+				if (objBean.getType().equals("1")) {
+					if (fd.getPhoto().trim().equals("") || fd.getPhoto().equals("null")) {
+						viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);//头像
+					} else {
+						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + fd.getPhoto(), viewHolder.iv_messages1_pic,
+								options, null);
+					}
+				} else if (objBean.getType().equals("2")) {
+					viewHolder.iv_messages1_pic.setVisibility(View.GONE);
+					viewHolder.group_pic.setVisibility(View.VISIBLE);
+					Log.d("message users=============>", objBean.getUsers().length + "");
+					Friend[] users = objBean.getUsers();
+					Log.d("users[0]===photo=====>", users[0].getPhoto());
+					Log.d("users[1]===photo=====>", users[1].getPhoto());
+					Log.d("users[2]===photo=====>", users[2].getPhoto());
+					if (users[0].getPhoto().trim().equals("") || users[0].getPhoto().equals("null")) {
+						viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);
+					} else {
+						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + users[0].getPhoto(), viewHolder.top_center,
+								options, null);
+					}
+					if (users[1].getPhoto().trim().equals("") || users[1].getPhoto().equals("null")) {
+						viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);
+					} else {
+						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + users[1].getPhoto(), viewHolder.bottom_left,
+								options, null);
+					}
+					if (users[2].getPhoto().trim().equals("") || users[2].getPhoto().equals("null")) {
+						viewHolder.iv_messages1_pic.setImageResource(R.drawable.no_portrait);
+					} else {
+						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + users[2].getPhoto(), viewHolder.bottom_right,
+								options, null);
+					}
 				}
+
 				viewHolder.tv_message1_title.setText(fd.getUsername());//标题
 				viewHolder.tv_message1_content.setText(msg.getText()); //内容
 				viewHolder.tv_message1_time.setText(Utils.covertTimestampToDate(Long.parseLong(msg.getSendtime()) * 1000)); //时间
@@ -158,6 +247,8 @@ public class MessageActivity extends Activity {
 			TextView tv_message1_title;
 			TextView tv_message1_content;
 			TextView tv_message1_time;
+			View group_pic;
+			ImageView top_center, bottom_left, bottom_right;
 		}
 		
 	}
@@ -264,6 +355,16 @@ public class MessageActivity extends Activity {
 					messageSessionItems = parser.parse(jObj);
 					adapter = new MyAdapter(MessageActivity.this, R.layout.message1, messageSessionItems);
 					lv.setAdapter(adapter);
+					
+					// step 2. listener item click event
+					lv.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+						@Override
+						public void onMenuItemClick(int position, SwipeMenu menu, int index) {
+							Log.d("positoin==========>", position+"");
+							messageSessionItems.remove(position);
+							adapter.notifyDataSetChanged();
+						}
+					});
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(MessageActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}
@@ -272,5 +373,10 @@ public class MessageActivity extends Activity {
 			}
 		}
 		
+	}
+	
+	private int dp2px(int dp) {
+		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
+				getResources().getDisplayMetrics());
 	}
 }
