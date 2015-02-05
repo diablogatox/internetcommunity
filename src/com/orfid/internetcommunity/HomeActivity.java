@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,7 +47,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -82,8 +82,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.DiscCacheUtil;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.orfid.popwindow.PopMenu;
 
 public class HomeActivity extends Activity implements OnMapClickListener,
@@ -839,7 +837,10 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 							Log.d("file absolute path=====>", file.getAbsolutePath());
 							
 							Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-							Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()),(int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
+							TypedValue outValue = new TypedValue();
+							getResources().getValue(R.dimen.text_line_spacing, outValue, true);
+							float value = outValue.getFloat();
+							Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()),(int)(bitmap.getWidth()*value), (int)(bitmap.getHeight()*value), true);
 							
 							markerOption.icon(BitmapDescriptorFactory.fromBitmap(getclip(bm)));
 						} else {
