@@ -15,11 +15,6 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.mofang.pb.Contacts;
-import com.mofang.pb.ContactsAdapter;
-import com.mofang.util.PinyinComparator;
-import com.mofang.util.PinyinUtils;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -32,12 +27,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.mofang.pb.Contacts;
+import com.mofang.pb.ContactsAdapter;
+import com.mofang.util.PinyinComparator;
+import com.mofang.util.PinyinUtils;
 
 public class AddFriendsActivity extends Activity implements OnClickListener, Runnable {
 	//好友界面
@@ -45,6 +46,8 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
     private ImageButton ib_add_friends1,ib_add_friends2;
     private RelativeLayout rl_add_friends1;
     private RelativeLayout rl_add_friends2;
+    private View unread_msg_count;
+    private TextView count;
     private ListView lv;
     private ContactsAdapter adapter;
     private SharedPreferences sp;
@@ -55,12 +58,23 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.add_friends);
 		
+		Bundle bundle = getIntent().getExtras();
+		String friendReqCount = bundle.getString("friendReqCount");
+		
 //		initWidget();
 		add_friends_back = (ImageView) findViewById(R.id.add_friends_back);
 		ib_add_friends1 = (ImageButton) findViewById(R.id.ib_add_friends1);
 		ib_add_friends2 = (ImageButton) findViewById(R.id.ib_add_friends2);
 		rl_add_friends1 = (RelativeLayout) findViewById(R.id.rl_add_friends1);
 		rl_add_friends2 = (RelativeLayout) findViewById(R.id.rl_add_friends2);
+		unread_msg_count = findViewById(R.id.unread_msg_count);
+		count = (TextView) findViewById(R.id.count);
+		
+		if (Integer.parseInt(friendReqCount) > 0) {
+			unread_msg_count.setVisibility(View.VISIBLE);
+			count.setText(friendReqCount);
+		}
+		
 		add_friends_back.setOnClickListener(this);
 		rl_add_friends1.setOnClickListener(this);
 		rl_add_friends2.setOnClickListener(this);
@@ -196,6 +210,7 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
 			startActivity(new Intent(AddFriendsActivity.this,AddNewFriendsActivity.class));
 			break;
 		case R.id.rl_add_friends2://新的好友
+			unread_msg_count.setVisibility(View.GONE);
 			startActivity(new Intent(AddFriendsActivity.this,NewFriendsActivity.class));
 			break;
 		case R.id.ib_add_friends2://新的好友

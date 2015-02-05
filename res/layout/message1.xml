@@ -25,6 +25,33 @@
         	app:border_width="1dp"
             android:src="@drawable/no_portrait_circle" />
         
+        <!-- unread msg count1 -->
+        <LinearLayout
+            android:id="@+id/unread_msg_count1"
+		    android:orientation="horizontal" 
+		    android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:layout_toRightOf="@id/iv_messages1_pic"
+            android:layout_marginLeft="-20dp"
+            android:layout_marginTop="5dp"
+            android:visibility="gone"
+		    android:background="@drawable/icon_news_redx">
+            <LinearLayout 
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent" 
+                android:layout_weight="1"
+                android:gravity="center" 
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/count1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:textColor="@color/white"
+                    android:singleLine="true"
+					android:textSize="12sp"/>
+            </LinearLayout>
+		</LinearLayout>
+        
         <RelativeLayout
             android:id="@+id/group_pic"
             android:layout_width="match_parent"
@@ -62,6 +89,32 @@
 				android:layout_toEndOf="@+id/bottom_left" android:layout_marginLeft="-5dp"
 				android:layout_marginTop="-2dp"/>
         </RelativeLayout>
+        <!-- unread msg count2 -->
+        <LinearLayout
+            android:id="@+id/unread_msg_count2"
+		    android:orientation="horizontal" 
+		    android:layout_width="17dp"
+            android:layout_height="17dp"
+            android:visibility="gone"
+            android:layout_toRightOf="@id/group_pic"
+            android:layout_marginLeft="-20dp"
+            android:layout_marginTop="5dp"
+		    android:background="@drawable/icon_news_redx">
+            <LinearLayout 
+                android:layout_height="fill_parent"
+                android:layout_width="fill_parent" 
+                android:layout_weight="1"
+                android:gravity="center" 
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/count2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" 
+                    android:textColor="@color/white"
+                    android:singleLine="true"
+					android:textSize="12sp"/>
+            </LinearLayout>
+		</LinearLayout>
     </LinearLayout>
 
     <TextView

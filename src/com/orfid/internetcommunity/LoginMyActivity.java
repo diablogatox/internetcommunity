@@ -161,11 +161,12 @@ public class LoginMyActivity extends Activity implements Runnable {
 							JSONObject data = new JSONObject(object.getString("data"));
 							et.putString("uid", data.getString("uid"));
 							et.putString("username", data.getString("username"));
+							et.putString("password", et_login_password.getText().toString());
 							et.putString("photo", data.getString("photo"));
 							et.putBoolean("isLogin", true);
 							et.commit();
-							Toast.makeText(LoginMyActivity.this,object.getString("text"),Toast.LENGTH_SHORT).show();
-							Log.d("uid", sp.getString("uid", ""));
+//							Toast.makeText(LoginMyActivity.this,object.getString("text"),Toast.LENGTH_SHORT).show();
+//							Log.d("uid", sp.getString("uid", ""));
 							Intent intent = new Intent(LoginMyActivity.this,HomeActivity.class);
 							intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK); 
 							startActivity(intent);

@@ -187,6 +187,10 @@ public class MessageActivity extends Activity {
 				viewHolder.top_center = (ImageView) convertView.findViewById(R.id.top_center);
 				viewHolder.bottom_left = (ImageView) convertView.findViewById(R.id.bottom_left);
 				viewHolder.bottom_right = (ImageView) convertView.findViewById(R.id.bottom_right);
+				viewHolder.unread_msg_count1 = convertView.findViewById(R.id.unread_msg_count1);
+				viewHolder.unread_msg_count2 = convertView.findViewById(R.id.unread_msg_count2);
+				viewHolder.count1 = (TextView) convertView.findViewById(R.id.count1);
+				viewHolder.count2 = (TextView) convertView.findViewById(R.id.count2);
 
 				convertView.setTag(viewHolder);
 			} else {
@@ -207,6 +211,11 @@ public class MessageActivity extends Activity {
 					} else {
 						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + fd.getPhoto(), viewHolder.iv_messages1_pic,
 								options, null);
+					}
+					
+					if (Integer.parseInt(objBean.getNewmsg()) > 0) {
+						viewHolder.unread_msg_count1.setVisibility(View.VISIBLE);
+						viewHolder.count1.setText(objBean.getNewmsg());
 					}
 				} else if (objBean.getType().equals("2")) {
 					viewHolder.iv_messages1_pic.setVisibility(View.GONE);
@@ -234,6 +243,11 @@ public class MessageActivity extends Activity {
 						imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + users[2].getPhoto(), viewHolder.bottom_right,
 								options, null);
 					}
+					
+					if (Integer.parseInt(objBean.getNewmsg()) > 0) {
+						viewHolder.unread_msg_count2.setVisibility(View.VISIBLE);
+						viewHolder.count2.setText(objBean.getNewmsg());
+					}
 				}
 
 				viewHolder.tv_message1_title.setText(fd.getUsername());//标题
@@ -249,6 +263,8 @@ public class MessageActivity extends Activity {
 			TextView tv_message1_time;
 			View group_pic;
 			ImageView top_center, bottom_left, bottom_right;
+			View unread_msg_count1, unread_msg_count2;
+			TextView count1, count2;
 		}
 		
 	}

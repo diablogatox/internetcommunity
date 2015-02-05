@@ -98,6 +98,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 	
 	private MyAdapter adapter;
 	private SharedPreferences sp;
+	private SharedPreferences.Editor et;
 	private String token;
 	
 	ImageLoader imageLoader;
@@ -110,6 +111,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 	private CloudSearch mCloudSearch;
 	private List<CloudItem> mCloudItems;
 	private ArrayList<CloudItem> items = new ArrayList<CloudItem>();
+	private String friendReqCount;
 	
 	@SuppressWarnings("deprecation")
 	@Override
@@ -153,7 +155,15 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 					long id) {
 				switch (position) {
 				case 0://加好友
-					startActivity(new Intent(HomeActivity.this,AddFriendsActivity.class));
+					Intent intent = new Intent(HomeActivity.this,AddFriendsActivity.class);
+					intent.putExtra("friendReqCount", friendReqCount);
+					startActivity(intent);
+					// 好友请求归零
+					friends_req_count.setVisibility(View.GONE);
+					count2.setText("");
+					View countView = view.findViewById(R.id.unread_msg_count);
+					countView.setBackgroundColor(Color.TRANSPARENT);
+					
 					circlePopMenu.dismiss();
 					break;
 				case 1://发起群聊
@@ -254,7 +264,9 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 		});
 
 //		new BubbleListTask().execute();
-		new MessageCountTask().execute();
+//		new MessageCountTask().execute();
+		// Sign in first
+		new SignInTask().execute();
 	}
 
 	/**
@@ -1061,7 +1073,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 //					unread_msg_count, friends_req_count
 					JSONArray data = obj.getJSONArray("data");
 					String unreadMsgCount = data.get(0).toString();
-					String friendReqCount = data.get(1).toString();
+					friendReqCount = data.get(1).toString();
 					
 					if (Integer.parseInt(unreadMsgCount) > 0) {
 						unread_msg_count.setVisibility(View.VISIBLE);
@@ -1070,6 +1082,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 					if (Integer.parseInt(friendReqCount) > 0) {
 						friends_req_count.setVisibility(View.VISIBLE);
 						count2.setText(friendReqCount);
+						circlePopMenu.setFriendReqCount(Integer.parseInt(friendReqCount));
 					}
 					
 				}else if(0==obj.getInt("status")){
@@ -1172,6 +1185,79 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 	public void onCloudItemDetailSearched(CloudItemDetail arg0, int arg1) {
 		// TODO Auto-generated method stub
 		
-	}  
+	} 
+	
+	
+	private class SignInTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL("http://sww.yxkuaile.com/user/login");
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "username=" + sp.getString("username", "")
+						+ "&password=" + sp.getString("password", "");
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "首页登录JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+					et = sp.edit();
+					et.putString("token", obj.getString("token"));
+					
+					JSONObject data = new JSONObject(obj.getString("data"));
+					et.putString("uid", data.getString("uid"));
+					et.putString("username", data.getString("username"));
+					et.putString("photo", data.getString("photo"));
+					et.putBoolean("isLogin", true);
+					et.commit();
+					
+					new MessageCountTask().execute();
+					
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
 	
 }
