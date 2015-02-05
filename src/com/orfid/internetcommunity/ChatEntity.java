@@ -6,12 +6,13 @@ public class ChatEntity {
 
 	private String userName;
 	private String userImage;
-	private String attachImage;
 	private String content;
 	private String chatTime;
 	private boolean isComeMsg;
 	private String recordTime;
-	private Bitmap imgAttachment;
+	private String recordUrl;
+	private String imgAttachmentUrl;
+	private Bitmap imageAttachmentBitmap;
 //	private boolean isNofityMsg;
 
 	public String getUserImage() {
@@ -56,22 +57,28 @@ public class ChatEntity {
 	public void setRecordTime(String recordTime) {
 		this.recordTime = recordTime;
 	}
-	public Bitmap getImgAttachment() {
-		return imgAttachment;
-	}
-	public void setImgAttachment(Bitmap imgAttachment) {
-		this.imgAttachment = imgAttachment;
-	}
-	public String getAttachImage() {
-		return attachImage;
-	}
-	public void setAttachImage(String attachImage) {
-		this.attachImage = attachImage;
-	}
 	public String getChatTime() {
 		return chatTime;
 	}
 	public void setChatTime(String chatTime) {
 		this.chatTime = chatTime;
+	}
+	public String getImgAttachmentUrl() {
+		return imgAttachmentUrl;
+	}
+	public void setImgAttachmentUrl(String imgAttachmentUrl) {
+		this.imgAttachmentUrl = imgAttachmentUrl;
+	}
+	public Bitmap getImageAttachmentBitmap() {
+		return imageAttachmentBitmap;
+	}
+	public void setImageAttachmentBitmap(Bitmap imageAttachmentBitmap) {
+		this.imageAttachmentBitmap = imageAttachmentBitmap;
+	}
+	public String getRecordUrl() {
+		return recordUrl;
+	}
+	public void setRecordUrl(String recordUrl) {
+		this.recordUrl = recordUrl;
 	}
 }

@@ -79,8 +79,8 @@ public class AddGamesActivity extends Activity implements Runnable {
 			public void onClick(View v) {
 //				Log.d("text=======>", et_input_games.getText().toString().trim());
 				if (et_input_games.getText().toString().trim().length() > 0) {
-//					gameItems.add(new GameItem(et_input_games.getText().toString().trim()));
-//					adapter.notifyDataSetChanged();
+					gameItems.add(new GameItem(et_input_games.getText().toString().trim()));
+					adapter.notifyDataSetChanged();
 					new AddNewGameTask(0, et_input_games.getText().toString().trim()).execute();
 				} else {
 					Toast.makeText(AddGamesActivity.this, "请先输入游戏名称", Toast.LENGTH_LONG).show();
@@ -158,8 +158,8 @@ public class AddGamesActivity extends Activity implements Runnable {
 				Log.d("id=======>", id+"");
 				Log.d("name======>", gameItems1.get(position).getName());
 				
-//				gameItems.add(gameItems1.get(position));
-//				adapter.notifyDataSetChanged();
+				gameItems.add(gameItems1.get(position));
+				adapter.notifyDataSetChanged();
 				
 				new AddNewGameTask(id, null).execute();
 			}
@@ -439,7 +439,7 @@ public class AddGamesActivity extends Activity implements Runnable {
 						gameItems.add(new GameItem(jObj.getString("id"), jObj.getString("name")));
 						adapter.notifyDataSetChanged();
 						
-//						new AddNewGameTask(Long.parseLong(jObj.getString("id")), null).execute();
+						new AddNewGameTask(Long.parseLong(jObj.getString("id")), null).execute();
 					}
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(AddGamesActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();

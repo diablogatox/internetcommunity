@@ -91,6 +91,7 @@ public class ContactsAdapter extends BaseAdapter {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(context,HomeFriendsPicActivity.class);
 				intent.putExtra("uid", uid);
+				intent.putExtra("beingFriend", true);
 				context.startActivity(intent);
 			}
 		});

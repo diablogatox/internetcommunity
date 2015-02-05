@@ -29,6 +29,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -367,7 +369,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
      	chatEntity.setUserImage(sp.getString("photo", ""));
      	chatEntity.setComeMsg(false);
      	chatEntity.setRecordTime(mRecord_Time+"");
-     	chatEntity.setImgAttachment(imgAttachment);
+     	chatEntity.setImageAttachmentBitmap(imgAttachment);
      	chatList.add(chatEntity);
      	chatAdapter.notifyDataSetChanged();
      	lv_chatting_history.setSelection(chatList.size() - 1);
@@ -387,14 +389,15 @@ public class ChattingActivity extends Activity implements OnClickListener{
       	lv_chatting_history.setSelection(chatList.size() - 1);
   	}
   	
-  	public void receive(String message, String portrait, String recordTime, String attachImage) {
+  	public void receive(String message, String portrait, String recordUrl, String attachImage) {
   		ChatEntity chatEntity = new ChatEntity();
 //      	chatEntity.setChatTime(Utils.getLocalTime());
       	chatEntity.setContent(message);
 //      	chatEntity.setUserImage(portrait);
       	chatEntity.setComeMsg(true);
-      	chatEntity.setRecordTime(recordTime);
-      	chatEntity.setAttachImage(attachImage);
+      	chatEntity.setRecordTime("");
+      	chatEntity.setRecordUrl(recordUrl);
+      	chatEntity.setImgAttachmentUrl(attachImage);
       	chatList.add(chatEntity);
       	chatAdapter.notifyDataSetChanged();
       	lv_chatting_history.setSelection(chatList.size() - 1);
@@ -615,6 +618,8 @@ public class ChattingActivity extends Activity implements OnClickListener{
 
 
 	private  class ChatAdapter extends BaseAdapter{
+		MediaPlayer mp;
+		ChatHolder chatHolder = null;
      	private Context context = null;
      	private List<ChatEntity> chatList = null;
      	private LayoutInflater inflater = null;
@@ -673,7 +678,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 
  		@Override
  		public View getView(int position, View convertView, ViewGroup parent) {
- 			ChatHolder chatHolder = null;
+ 			
  			if (convertView == null) {
  				chatHolder = new ChatHolder();
  				if (chatList.get(position).isComeMsg()) {
@@ -709,16 +714,36 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	 			if (chatList.get(position).getRecordTime() ==null
 	 					|| chatList.get(position).getRecordTime().equals("")
 	 					|| chatList.get(position).getRecordTime().equals("0.0")) {
-	 				if (chatList.get(position).getImgAttachment() != null) {
+	 				if (chatList.get(position).getImageAttachmentBitmap() != null) {
 		 				chatHolder.contentTextView.setVisibility(View.GONE);
 		 				chatHolder.voice_ll.setVisibility(View.GONE);
 		 				chatHolder.imgAttachment_ll.setVisibility(View.VISIBLE);
-		 				chatHolder.imgAttachment.setImageBitmap(chatList.get(position).getImgAttachment());
-	 				} else if (chatList.get(position).getAttachImage() != null &&
-	 						!chatList.get(position).getAttachImage().equals("")) {
+		 				chatHolder.imgAttachment.setImageBitmap(chatList.get(position).getImageAttachmentBitmap());
+	 				} else if (chatList.get(position).getImgAttachmentUrl() != null &&
+	 						!chatList.get(position).getImgAttachmentUrl().equals("")) {
 	 					Log.d("good==========>", "very good");
-	 					imageLoader.displayImage(chatList.get(position).getAttachImage(), chatHolder.imgAttachment,
+	 					Log.d("imgUrl==========>", chatList.get(position).getImgAttachmentUrl());
+	 					chatHolder.contentTextView.setVisibility(View.GONE);
+		 				chatHolder.voice_ll.setVisibility(View.GONE);
+		 				chatHolder.imgAttachment_ll.setVisibility(View.VISIBLE);
+	 					imageLoader.displayImage(chatList.get(position).getImgAttachmentUrl(), chatHolder.imgAttachment,
 	 							options, null);
+	 				} else if (chatList.get(position).getRecordUrl() != null) {
+	 					chatHolder.contentTextView.setVisibility(View.GONE);
+		 				chatHolder.voice_ll.setVisibility(View.VISIBLE);
+		 				chatHolder.imgAttachment_ll.setVisibility(View.GONE);
+		 				
+		 				mp = Utils.createNetAudio(chatList.get(position).getRecordUrl());
+						mp.prepareAsync();
+						mp.setOnPreparedListener(new OnPreparedListener() {
+							
+							@Override
+							public void onPrepared(MediaPlayer mp) {
+								chatHolder.voice_duration.setText((mp.getDuration()/1000)+"``");
+								
+							}
+						});
+						
 	 				} else {
 	 					Log.d("here i am ======>", "entered");
 		 				chatHolder.contentTextView.setVisibility(View.VISIBLE);
@@ -897,7 +922,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 										if (jFiles.length() > 0) {
 											JSONObject jFile = (JSONObject) jFiles.get(0);
 											if (jFile.getString("type").equals("image")) {
-												attachImgUrl = AppConstants.MAIN_DOMAIN + jFile.getString("thumb");
+												attachImgUrl = AppConstants.MAIN_DOMAIN + jFile.getString("url");
 											} else {
 												attachRcdUrl = AppConstants.MAIN_DOMAIN + jFile.getString("url");
 											}
@@ -915,6 +940,9 @@ public class ChattingActivity extends Activity implements OnClickListener{
 							      	chatEntity.setUserImage(jUser.getString("photo"));
 							      	chatEntity.setComeMsg(isComeMsg);
 							      	chatEntity.setRecordTime("");
+							      	chatEntity.setImageAttachmentBitmap(null);
+							      	chatEntity.setImgAttachmentUrl(attachImgUrl);
+							      	chatEntity.setRecordUrl(attachRcdUrl);
 							      	chatList.add(chatEntity);
 								}
 								
@@ -931,7 +959,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 							JSONArray jArr = new JSONArray(jObj.getString("messages"));
 							
 							for (int i=0; i<jArr.length(); i++) {
-								String attachImg = null;
+								String attachImg = null, attachRcdUrl = null;
 								JSONObject jsonObj = (JSONObject) jArr.get(i); 
 								JSONArray jFiles = jsonObj.getJSONArray("files");
 								if (jFiles.length() > 0) {
@@ -939,12 +967,12 @@ public class ChattingActivity extends Activity implements OnClickListener{
 									if (jFile.getString("type").equals("image")) {
 										attachImg = AppConstants.MAIN_DOMAIN + jFile.getString("url");
 									} else {
-										
+										attachRcdUrl = jFile.getString("url");
 									}
 								}
 								JSONObject jUser = new JSONObject(jsonObj.getString("user"));
 								if (!jUser.getString("uid").equals(sp.getString("uid", ""))) {
-									receive(jsonObj.getString("text"), "", "", attachImg);
+									receive(jsonObj.getString("text"), "", attachRcdUrl, attachImg);
 								}
 							}
 							
@@ -961,14 +989,18 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	}
 	
 	private void setTimerTask() {  
-        mTimer.schedule(new TimerTask() {  
-            @Override  
-            public void run() {  
-                Message message = new Message();  
-                message.what = 1;  
-                doActionHandler.sendMessage(message);  
-            }  
-        }, 1000, 10000/* 表示1000毫秒之後，每隔1000毫秒執行一次 */);  
+		try {
+	        mTimer.schedule(new TimerTask() {  
+	            @Override  
+	            public void run() {  
+	                Message message = new Message();  
+	                message.what = 1;  
+	                doActionHandler.sendMessage(message);  
+	            }  
+	        }, 1000, 10000/* 表示1000毫秒之後，每隔1000毫秒執行一次 */);  
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }  
   
     /** 

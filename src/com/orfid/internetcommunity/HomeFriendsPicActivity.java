@@ -46,6 +46,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 	private String uid;
 	private SharedPreferences sp;
 	private String token;
+	private boolean beingFriend = false;
 	
 	ImageLoader imageLoader;
 	private DisplayImageOptions options;
@@ -58,6 +59,13 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_friends_pic);
 		
+		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
+        token = sp.getString("token", "");
+		
+		Intent intent = getIntent();
+		Bundle bundle = intent.getExtras();
+		uid = bundle.getString("uid");
+		beingFriend = bundle.getBoolean("beingFriend");
 		
 		imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration
@@ -92,14 +100,19 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 				startActivity(new Intent(HomeFriendsPicActivity.this,LaHeiActivity.class));
 			}
 		});
-		//添加好友
-		btn_add_friends.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				new Thread(HomeFriendsPicActivity.this).start();
-			}
-		});
+		
+		if (beingFriend) {
+			btn_add_friends.setBackgroundResource(R.drawable.button_del_friend);
+		} else {
+			//添加好友
+			btn_add_friends.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					new Thread(HomeFriendsPicActivity.this).start();
+				}
+			});
+		}
 		//开始聊天
 		btn_begin_speak.setOnClickListener(new OnClickListener() {
 
@@ -114,12 +127,6 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 			
 		});
 		
-		sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
-        token = sp.getString("token", "");
-		
-		Intent intent = getIntent();
-		Bundle bundle = intent.getExtras();
-		uid = bundle.getString("uid");
 		
 		new FetchUserInfoTask().execute();
 		
