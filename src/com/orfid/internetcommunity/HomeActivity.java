@@ -1,5 +1,6 @@
 package com.orfid.internetcommunity;
 
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -21,7 +22,15 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -72,6 +81,9 @@ import com.amap.api.maps2d.model.MyLocationStyle;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.DiscCacheUtil;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageLoadingListener;
 import com.orfid.popwindow.PopMenu;
 
 public class HomeActivity extends Activity implements OnMapClickListener,
@@ -822,41 +834,58 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 						markerOption.snippet(friend.getUid());
 //						markerOption.title(friend.getUsername());
 						markerOption.draggable(false);
-//						markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
+						File file = DiscCacheUtil.findInCache(AppConstants.MAIN_DOMAIN + "/" + friend.getPhoto(), imageLoader.getDiscCache());
+						if (file != null) {
+							Log.d("file absolute path=====>", file.getAbsolutePath());
+							
+							Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+							Bitmap bm = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(file.getAbsolutePath()),(int)(bitmap.getWidth()*0.5), (int)(bitmap.getHeight()*0.5), true);
+							
+							markerOption.icon(BitmapDescriptorFactory.fromBitmap(getclip(bm)));
+						} else {
+							markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.no_portrait_circle));
+						}
+						
+						
+						
+//						markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.z3));
 						Log.d("photo=============ddddd===>", friend.getPhoto());
 //						if (!friend.getPhoto().trim().equals("null")) {
 //							imageLoader.loadImage(AppConstants.MAIN_DOMAIN + "/" + friend.getPhoto(), new ImageLoadingListener() {
-//	
+//
 //								@Override
 //								public void onLoadingCancelled(String arg0,
 //										View arg1) {
 //									// TODO Auto-generated method stub
 //									
 //								}
-//	
+//
 //								@Override
 //								public void onLoadingComplete(String arg0,
-//										View arg1, Bitmap loadedImage) {
+//										View arg1, Bitmap image) {
 //									Log.d("image loading complete=====>", "yes");
 //									Log.d("arg0=====>", arg0);
 ////									markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon1));
-//									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
-////									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));
+//									markerOption.icon(BitmapDescriptorFactory.fromBitmap(image));
+////									markerOption.icon(BitmapDescriptorFactory.fromBitmap(loadedImage));b
 //									
 //								}
-//	
+//
 //								@Override
-//								public void onLoadingFailed(String arg0, View arg1,
-//										FailReason arg2) {
+//								public void onLoadingFailed(String arg0,
+//										View arg1, FailReason arg2) {
+//									// TODO Auto-generated method stub
+//									
+//								}
+//
+//								@Override
+//								public void onLoadingStarted(String arg0,
+//										View arg1) {
 //									// TODO Auto-generated method stub
 //									
 //								}
 //	
-//								@Override
-//								public void onLoadingStarted(String arg0, View arg1) {
-//									// TODO Auto-generated method stub
-//									
-//								}
+//								
 //								
 //							});
 //						}
@@ -1259,5 +1288,24 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 		}
 		
 	}
+	
+	public Bitmap getclip(Bitmap bitmap) {
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
+                bitmap.getHeight(), Config.ARGB_8888);
+        Canvas canvas = new Canvas(output);
+        final int color = 0xff424242;
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(),
+                bitmap.getHeight());
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        // paint.setColor(color);
+        canvas.drawCircle(bitmap.getWidth() / 2,
+                bitmap.getHeight() / 2, bitmap.getWidth() / 2, paint);
+        paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+        return output;
+    }
 	
 }

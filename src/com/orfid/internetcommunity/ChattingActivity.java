@@ -330,7 +330,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 							mRecordProgressBar.setProgress(0);
 							status_hint_text.setText("按住 说话");
 							
-							Log.d("uid=======>", uid);
+//							Log.d("uid=======>", uid);
 							new UploadRecordTask(ChattingActivity.this, mRecordPath).execute(
 									AppConstants.SEND_MESSAGE);
 						}
@@ -587,7 +587,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 			rl_chatting_picturek.setVisibility(View.GONE);//“相册”布局(隐藏)
 			break;
 		case R.id.icon_title_right://群聊图标
-			startActivity(new Intent(ChattingActivity.this,ChattingMessageActivity.class));
+//			startActivity(new Intent(ChattingActivity.this,ChattingMessageActivity.class));
 			break;
 		case R.id.iv_chatting_picturek://
 			startActivityForResult(new Intent(ChattingActivity.this,SelectPicActivity.class), 0);

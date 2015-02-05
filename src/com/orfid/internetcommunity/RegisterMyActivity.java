@@ -59,7 +59,7 @@ public class RegisterMyActivity extends Activity implements Runnable{
 			
 			@Override
 			public void onClick(View arg0) {
-				// �������������Ȧ���ı�Э��
+				startActivity(new Intent(RegisterMyActivity.this, RightProvision.class));
 				
 			}
 		});
