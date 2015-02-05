@@ -2,17 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="15dp"
-    android:paddingBottom="15dp"
     android:orientation="vertical" >
+   <RelativeLayout
+        android:id="@+id/rl_chatting1"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#00baff" >
+		<ImageView
+            android:id="@+id/back" 
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/icon_back"
+            android:layout_centerVertical="true"
+            />
+    </RelativeLayout>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingLeft="10dp"
+	    android:paddingRight="10dp"
+	    android:paddingBottom="15dp">
 	    <TextView
 	        android:id="@+id/main_content"
 	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content" />
+	        android:layout_height="wrap_content"
+	        android:paddingTop="15dp" />
 	   </ScrollView>
 </LinearLayout>
