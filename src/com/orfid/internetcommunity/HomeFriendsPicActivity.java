@@ -103,6 +103,14 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		
 		if (beingFriend) {
 			btn_add_friends.setBackgroundResource(R.drawable.button_del_friend);
+			btn_add_friends.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					new RemoveFriendTask().execute();
+				}
+				
+			});
 		} else {
 			//添加好友
 			btn_add_friends.setOnClickListener(new OnClickListener() {
@@ -380,6 +388,75 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 					adapter = new MyAdapter(HomeFriendsPicActivity.this, R.layout.gridview_hf, gameItems);
 					gv_friends_pic_home.setAdapter(adapter);
 //					adapter.notifyDataSetChanged();
+				}else if(0==obj.getInt("status")){
+					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	
+	private class RemoveFriendTask extends AsyncTask<String, Void, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			URL url=null;
+			String result = "";
+			try {
+				url = new URL(AppConstants.REMOVE_FRIEND);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+				conn.setRequestMethod("POST");
+				conn.setDoOutput(true);
+
+				Writer writer = new OutputStreamWriter(conn.getOutputStream());
+
+				String str = "token=" + token + "&uid=" + uid;
+				writer.write(str);
+				writer.flush();
+
+				Reader is = new InputStreamReader(conn.getInputStream());
+
+				StringBuilder sb = new StringBuilder();
+				char c[] = new char[1024];
+				int len=0;
+
+				while ((len = is.read(c)) != -1) {
+					sb.append(c, 0, len);
+				}
+				result = sb.toString();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return result;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			Log.d("TEST", "删除好友JSON---" + result);
+			JSONObject obj;
+			try {
+				obj = new JSONObject(result);
+				if (1==obj.getInt("status")) {
+//					Toast.makeText(PersonalActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+					btn_add_friends.setBackgroundResource(R.drawable.button_add_friend);
+					btn_add_friends.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							new Thread(HomeFriendsPicActivity.this).start();
+						}
+					});
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeFriendsPicActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}

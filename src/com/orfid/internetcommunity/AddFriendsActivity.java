@@ -94,12 +94,21 @@ public class AddFriendsActivity extends Activity implements OnClickListener, Run
         sp = this.getSharedPreferences("icsp", Context.MODE_WORLD_READABLE);
         token = sp.getString("token", "");
         
-        new Thread(AddFriendsActivity.this).start();
+//        new Thread(AddFriendsActivity.this).start();
 	}
 	private void initWidget() {
 //		lv = (ListView) findViewById(R.id.lv_add_friends1);
 //		adapter = new ContactsAdapter(this, getMapList());
 //		lv.setAdapter(adapter);
+	}
+	
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		new Thread(AddFriendsActivity.this).start();
 	}
 	/**
 	 * 初始化加载listVIew所需要的数据 并进行排序和匹配

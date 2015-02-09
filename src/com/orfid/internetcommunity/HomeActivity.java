@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,6 +125,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 	private ArrayList<CloudItem> items = new ArrayList<CloudItem>();
 	private String friendReqCount;
 	
+	private Timer mTimer;
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -147,6 +151,9 @@ public class HomeActivity extends Activity implements OnMapClickListener,
         Log.d("【token(test only)】===========>", token);
 		init();
 		locationInit();
+		
+		mTimer = new Timer();  
+		
 		iv_home_news = (ImageView) findViewById(R.id.iv_home_news);
 		iv_home_menu = (ImageView) findViewById(R.id.iv_home_menu);
 		iv_home_back = (ImageView) findViewById(R.id.iv_home_back);
@@ -382,6 +389,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 			locationManager.destory();
 		}
 		locationManager = null;
+		
+		mTimer.cancel();  
 	}
 	
 	
@@ -1177,10 +1186,11 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 							Log.d(TAG, "_distance " + item.getDistance());
 							Iterator iter = item.getCustomfield().entrySet()
 									.iterator();
+							Object key = null, val = null;
 							while (iter.hasNext()) {
 								Map.Entry entry = (Map.Entry) iter.next();
-								Object key = entry.getKey();
-								Object val = entry.getValue();
+								key = entry.getKey();
+								val = entry.getValue();
 								Log.d(TAG, key + "   " + val);
 							}
 							
@@ -1188,7 +1198,7 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 							MarkerOptions markerOption = new MarkerOptions();
 							markerOption.position(new LatLng(item.getLatLonPoint().getLatitude(), item.getLatLonPoint().getLongitude()));
 							markerOption.snippet("cloud");
-							markerOption.title(item.getTitle());
+							markerOption.title(item.getTitle() + "\n\n地址: " + item.getSnippet() + "\n\n电话: " + (val==null?"无":val));
 							markerOption.icon(BitmapDescriptorFactory.fromResource(R.drawable.bar));
 //							markerOption.title(friend.getUsername());
 							markerOption.draggable(false);
@@ -1278,7 +1288,8 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 					et.putBoolean("isLogin", true);
 					et.commit();
 					
-					new MessageCountTask().execute();
+//					new MessageCountTask().execute();
+					setTimerTask();
 					
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(HomeActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
@@ -1290,6 +1301,42 @@ public class HomeActivity extends Activity implements OnMapClickListener,
 		
 	}
 	
+	
+	private void setTimerTask() {  
+		try {
+	        mTimer.schedule(new TimerTask() {  
+	            @Override  
+	            public void run() {  
+	                Message message = new Message();  
+	                message.what = 1;  
+	                doActionHandler.sendMessage(message);  
+	            }  
+	        }, 1000, 10000/* 表示1000毫秒之後，每隔1000毫秒執行一次 */);  
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    }  
+	
+	 /** 
+     * do some action 
+     */  
+    private Handler doActionHandler = new Handler() {  
+        @Override  
+        public void handleMessage(Message msg) {  
+            super.handleMessage(msg);  
+            int msgId = msg.what;  
+            switch (msgId) {  
+                case 1:  
+                    // do some action  
+//                	Log.d("test========>", "ddd");
+                	new MessageCountTask().execute();
+                    break;  
+                default:  
+                    break;  
+            }  
+        }  
+    }; 
+    
 	public Bitmap getclip(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
                 bitmap.getHeight(), Config.ARGB_8888);

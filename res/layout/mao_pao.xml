@@ -81,7 +81,7 @@
 	                 android:layout_height="wrap_content"
 	                 android:layout_below="@+id/tv_text2"
 	                 android:layout_centerHorizontal="true"
-	                 android:text="限1分钟 (能说大约100个字)"
+	                 android:text="限1分钟 (大约能说100个字)"
 	                 android:textColor="#888888"
 	                 android:textSize="13sp" />
 	         </RelativeLayout>

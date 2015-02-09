@@ -73,5 +73,9 @@ public class AppConstants {
 	 * 新消息统计
 	 */
 	public static String NEW_MESSAGE_COUNT = "http://sww.yxkuaile.com/message/count";
+	/**
+	 * 删除好友
+	 */
+	public static String REMOVE_FRIEND = "http://sww.yxkuaile.com/friend/remove";
 
 }

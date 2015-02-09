@@ -50,10 +50,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -127,6 +128,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	private List<View> views = new ArrayList<View>();
 	ImageLoader imageLoader;
 	private DisplayImageOptions options;
+	private float tmpRecTime;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +185,40 @@ public class ChattingActivity extends Activity implements OnClickListener{
 		});
 
 		lv_chatting_history.setAdapter(chatAdapter);
+		lv_chatting_history.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				ChatEntity entity = (ChatEntity) chatAdapter.getItem(position);
+				if (entity.getRecordUrl() != null) {
+					Log.d("is record", "true");
+					TextView tv = (TextView) view.findViewById(R.id.voice_duration);
+					Log.d("record duration====>", Integer.parseInt(tv.getText().toString().replaceAll("[\\D]",""))+"");
+					Intent intent = new Intent(ChattingActivity.this, VoiceStartActivity.class);
+					intent.putExtra("audioUrl", entity.getRecordUrl());
+					intent.putExtra("duration", Integer.parseInt(tv.getText().toString().replaceAll("[\\D]",""))+"");
+					startActivity(intent);
+				} else if (entity.getRecordTime() !=null
+	 					&& !entity.getRecordTime().equals("")
+	 					&& !entity.getRecordTime().equals("0.0")) {
+					Log.d("is record", "true");
+					Intent intent = new Intent(ChattingActivity.this, VoiceStartActivity.class);
+					intent.putExtra("audioUrl", mRecordPath);
+					Log.d("record time======>", tmpRecTime+"");
+					intent.putExtra("duration", tmpRecTime+"");
+					startActivity(intent);
+				} else if (entity.getImgAttachmentUrl() != null) {
+					Log.d("is img", "true");
+				} else if (entity.getImageAttachmentBitmap() != null) {
+					Log.d("is img", "true");
+				} else {
+					Log.d("is text", "true");
+				}
+			}
+			
+		});
 		
 		btn_chatting_voice.setOnClickListener(this);
 		btn_voice_keyboard.setOnClickListener(this);
@@ -325,6 +361,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 							send();
 							
 							mRecord_State = RECORD_ED;
+							tmpRecTime = mRecord_Time;
 							mRecord_Time = 0;
 							mRecordTime.setText("0″");
 							mRecordProgressBar.setProgress(0);
