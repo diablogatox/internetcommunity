@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:background="#ffffff"
+	android:descendantFocusability="blocksDescendants"
     android:orientation="horizontal" xmlns:app="http://schemas.android.com/apk/res/com.orfid.internetcommunity">
     
     <com.orfid.widgts.CircleImageView 
@@ -16,6 +17,7 @@
         app:border_color="#ccffcc"
         app:border_width="1dp"
         android:src="@drawable/no_portrait"
+		android:focusable="false"
         />
 	<RelativeLayout 
 	    android:layout_width="match_parent"
@@ -38,7 +40,7 @@
 	        android:textSize="16sp"
 	        android:textColor="#999999"
 	        />
-	    <Button 
+	    <TextView
 	        android:id="@+id/btn_accept"
 	        android:layout_width="70dp"
 	        android:layout_height="wrap_content"
@@ -54,7 +56,7 @@
 	        android:background="#66CD00"
 	        android:focusable="false"
 	        />
-	    <Button 
+	    <TextView
 	        android:id="@+id/tv_accept"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -65,6 +67,7 @@
 	        android:layout_marginRight="18dp"
 	        android:layout_centerVertical="true"
 	        android:layout_alignParentRight="true"
+			android:focusable="false"
 	        android:visibility="gone"
 	        />
 	    <View 

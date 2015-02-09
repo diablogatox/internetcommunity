@@ -154,7 +154,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
-					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+//					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 
 		        		
 		        		MyJSONParser myJsonParser = new MyJSONParser();
@@ -169,7 +169,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 		    	        	Log.d("Exception",e.toString());
 		    	        }
 
-		    	        FriendRequestsRowAdapter adapter = new FriendRequestsRowAdapter(NewFriendsActivity.this,
+		    	        final FriendRequestsRowAdapter adapter = new FriendRequestsRowAdapter(NewFriendsActivity.this,
 		    					R.layout.new_friends1, friendRequests);
 
 		    			lv.setAdapter(adapter);
@@ -177,6 +177,10 @@ public class NewFriendsActivity extends Activity implements Runnable{
 		    				@Override
 		    				public void onItemClick(AdapterView<?> parent, View view, int position,
 		    						long id) {
+								Log.d("msgid======>", adapter.getItem(position).getMsgid()+"");
+								view.findViewById(R.id.btn_accept).setVisibility(View.GONE);
+								view.findViewById(R.id.tv_accept).setVisibility(View.VISIBLE);
+								new ReplyFriendRequestTask(adapter.getItem(position).getMsgid()).execute();
 		    				}
 		    			});
 
@@ -268,9 +272,9 @@ public class NewFriendsActivity extends Activity implements Runnable{
 						.findViewById(R.id.tv_new_friends1);
 				viewHolder.tv_new_friends2 = (TextView) convertView
 						.findViewById(R.id.tv_new_friends2);
-				viewHolder.tv_accept = (Button) convertView
+				viewHolder.tv_accept = (TextView) convertView
 						.findViewById(R.id.tv_accept);
-				viewHolder.btn_accept = (Button) convertView
+				viewHolder.btn_accept = (TextView) convertView
 						.findViewById(R.id.btn_accept);
 				lmap.put(position, convertView);  
 				convertView.setTag(viewHolder);
@@ -288,23 +292,23 @@ public class NewFriendsActivity extends Activity implements Runnable{
 //			viewHolder.iv_new_friends.setBackgroundResource(R.drawable.ic_launcher);//����ͷ��
 			imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + objBean.getPhoto(), viewHolder.iv_new_friends,
 					options, null);
-			final Button temp = viewHolder.tv_accept;
+			final TextView temp = viewHolder.tv_accept;
 			if (objBean.getAction() == 1) {
 				Log.d("xxxxxxxxxxxxxxxx=====>", objBean.getMsgid() + ":" + objBean.getAction());
 				viewHolder.btn_accept.setVisibility(View.GONE);//���ʹ��ť����
 				temp.setVisibility(View.VISIBLE);//��ʾ������ӡ�
 			}
-			viewHolder.btn_accept.setOnClickListener(new OnClickListener() {
-				//���ܺ����������
-				@Override
-				public void onClick(View view) {
-					Log.d("msgid======>", objBean.getMsgid()+"");
-					view.setVisibility(View.GONE);//���ʹ��ť����
-					temp.setVisibility(View.VISIBLE);//��ʾ������ӡ�
-//					new Thread(NewFriendsActivity.this).start();
-					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
-				}
-			});
+//			viewHolder.btn_accept.setOnClickListener(new OnClickListener() {
+//				//���ܺ����������
+//				@Override
+//				public void onClick(View view) {
+//					Log.d("msgid======>", objBean.getMsgid()+"");
+////					view.setVisibility(View.GONE);//���ʹ��ť����
+////					temp.setVisibility(View.VISIBLE);//��ʾ������ӡ�
+////					new Thread(NewFriendsActivity.this).start();
+////					new ReplyFriendRequestTask(objBean.getMsgid()).execute();
+//				}
+//			});
 			return convertView;
 		}
 		
@@ -312,8 +316,8 @@ public class NewFriendsActivity extends Activity implements Runnable{
 			ImageView iv_new_friends;
 			TextView tv_new_friends1;
 			TextView tv_new_friends2;
-			Button tv_accept;
-			Button btn_accept;
+			TextView tv_accept;
+			TextView btn_accept;
 		}
 
 	}
