@@ -129,6 +129,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	ImageLoader imageLoader;
 	private DisplayImageOptions options;
 	private float tmpRecTime;
+	private String photoPath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -211,8 +212,14 @@ public class ChattingActivity extends Activity implements OnClickListener{
 					startActivity(intent);
 				} else if (entity.getImgAttachmentUrl() != null) {
 					Log.d("is img", "true");
+					Intent intent = new Intent(ChattingActivity.this, ImageDetailsActivity.class);
+					intent.putExtra("image_url", entity.getImgAttachmentUrl());
+					startActivity(intent);
 				} else if (entity.getImageAttachmentBitmap() != null) {
 					Log.d("is img", "true");
+					Intent intent = new Intent(ChattingActivity.this, ImageDetailsActivity.class);
+					intent.putExtra("image_path", photoPath);
+					startActivity(intent);
 				} else {
 					Log.d("is text", "true");
 				}
@@ -638,7 +645,7 @@ public class ChattingActivity extends Activity implements OnClickListener{
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 0) {
 			if (resultCode == RESULT_OK) {
-				String photoPath = data.getExtras().getString("photoPath");
+				photoPath = data.getExtras().getString("photoPath");
 				Log.d("photoPath========>>", photoPath+"");
 				
 				imgAttachment = BitmapFactory.decodeFile(photoPath);

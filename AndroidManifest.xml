@@ -34,7 +34,7 @@
         
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="797097ef1c12fd02b51a74c26f2b4a7d" />
+            android:value="4272d5824935f3a03f502c18610d7e6a" />
         
         <activity
             android:name="com.orfid.internetcommunity.MainActivity"
@@ -149,6 +149,9 @@
             ></activity>
         <activity
             android:name="com.orfid.internetcommunity.RightProvision">
+        </activity>
+        <activity
+            android:name="com.orfid.internetcommunity.ImageDetailsActivity">
         </activity>
         
     </application>

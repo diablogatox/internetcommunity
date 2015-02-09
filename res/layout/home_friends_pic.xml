@@ -165,6 +165,17 @@
             android:textSize="18sp"
             android:textColor="#888888"
             />
+        <Button 
+	        android:id="@+id/btn_personal_signature"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="10dp"
+            android:layout_marginLeft="35dp"
+            android:layout_marginBottom="10dp"
+	        android:background="@drawable/voice_bj"
+	        android:textColor="#ffffff"
+	        android:visibility="gone"
+	        />
     </LinearLayout>
     <View 
         android:id="@+id/view2"

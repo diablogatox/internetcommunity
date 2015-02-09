@@ -22,6 +22,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,7 +43,7 @@ import android.widget.Toast;
 public class HomeFriendsPicActivity extends Activity implements Runnable{
 	private ImageView home_pic_back, iv_pic_home_friends;
 	private TextView tv_lahei1, tv_pic_name1, tv_name_id1, tv_pic_age, tv_pic_qianming;
-	private Button btn_add_friends, btn_begin_speak;
+	private Button btn_add_friends, btn_begin_speak, btn_personal_signature;
 	private GridView gv_friends_pic_home;
 	private String uid;
 	private SharedPreferences sp;
@@ -53,6 +55,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 	
 	private MyAdapter adapter;
 	List<GameItem> gameItems = new ArrayList<GameItem>();
+	private MediaPlayer mp = null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,7 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 		tv_pic_qianming = (TextView) findViewById(R.id.tv_pic_qianming);
 		btn_add_friends = (Button) findViewById(R.id.btn_add_friends);
 		btn_begin_speak = (Button) findViewById(R.id.btn_begin_speak);
+		btn_personal_signature = (Button) findViewById(R.id.btn_personal_signature);
 		gv_friends_pic_home = (GridView) findViewById(R.id.gv_friends_pic_home);
 //		gv_friends_pic_home.setAdapter(new GameAdapter());
 		gv_friends_pic_home.setFocusable(false);
@@ -315,7 +319,33 @@ public class HomeFriendsPicActivity extends Activity implements Runnable{
 					tv_pic_age.setText(age+"");
 					if (!jObj.getString("signature").equals("null")) {
 						JSONArray jArr = new JSONArray(jObj.getString("signature"));
-						tv_pic_qianming.setText(jArr.get(1).toString());
+						if (jArr.get(0).toString().equals("audio")) {
+							tv_pic_qianming.setText("");
+							btn_personal_signature.setVisibility(View.VISIBLE);
+							final Intent intent = new Intent(HomeFriendsPicActivity.this, VoiceStartActivity.class);
+							intent.putExtra("audioUrl", jArr.get(1).toString());
+							
+							mp = Utils.createNetAudio(jArr.get(1).toString());
+							mp.prepareAsync();
+							mp.setOnPreparedListener(new OnPreparedListener() {
+								
+								@Override
+								public void onPrepared(MediaPlayer mp) {
+									btn_personal_signature.setText((mp.getDuration()/1000)+"");
+									intent.putExtra("duration", (mp.getDuration()/1000)+"");
+									btn_personal_signature.setOnClickListener(new OnClickListener() {
+
+										@Override
+										public void onClick(View v) {
+											startActivity(intent);
+										}
+										
+									});
+								}
+							});
+						} else {
+							tv_pic_qianming.setText(jArr.get(1).toString());
+						}
 					}
 					
 					imageLoader.displayImage(AppConstants.MAIN_DOMAIN + "/" + jObj.getString("photo"), iv_pic_home_friends,
