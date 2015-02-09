@@ -377,7 +377,7 @@ public class NewFriendsActivity extends Activity implements Runnable{
 			try {
 				obj = new JSONObject(result);
 				if (1==obj.getInt("status")) {
-					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
+//					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}else if(0==obj.getInt("status")){
 					Toast.makeText(NewFriendsActivity.this,obj.getString("text"),Toast.LENGTH_SHORT).show();
 				}
