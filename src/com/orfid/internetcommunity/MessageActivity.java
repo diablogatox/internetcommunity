@@ -289,7 +289,7 @@ public class MessageActivity extends Activity {
 							viewHolder.media_hinter_iv.setBackgroundResource(R.drawable.icon_pictuerk);
 						} else {
 							viewHolder.media_hinter_iv.setVisibility(View.VISIBLE);
-							viewHolder.media_hinter_iv.setBackgroundResource(R.drawable.z1);
+							viewHolder.media_hinter_iv.setBackgroundResource(R.drawable.icon_yyts);
 						}
 					} catch (JSONException e) {
 						// TODO Auto-generated catch block
