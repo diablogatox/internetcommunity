@@ -4,7 +4,7 @@
     android:layout_height="70dp"
     android:background="#ffffff"
 	android:descendantFocusability="blocksDescendants"
-    android:orientation="horizontal" xmlns:app="http://schemas.android.com/apk/res/com.orfid.ic">
+    android:orientation="horizontal" xmlns:app="http://schemas.android.com/apk/res/com.orfid.internetcommunity">
     
     <com.orfid.widgts.CircleImageView 
         android:id="@+id/iv_new_friends"

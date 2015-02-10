@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.orfid.ic.R;
+import com.orfid.internetcommunity.R;
 
 public class PopMenu {
 	private ArrayList<Integer> itemList;
