@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.orfid.internetcommunity"
+    package="com.orfid.ic"
     android:installLocation="auto"
     android:versionCode="1"
     android:versionName="1.2" >
@@ -25,7 +25,7 @@
     
 
     <application
-        android:name="com.orfid.internetcommunity.MyApplication"
+        android:name="com.orfid.ic.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
@@ -37,13 +37,13 @@
             android:value="4272d5824935f3a03f502c18610d7e6a" />
         
         <activity
-            android:name="com.orfid.internetcommunity.MainActivity"
+            android:name="com.orfid.ic.MainActivity"
             android:theme="@android:style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/app_name" >
         </activity>
         <activity 
-            android:name="com.orfid.internetcommunity.LoginActivity"
+            android:name="com.orfid.ic.LoginActivity"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,106 +52,106 @@
             </intent-filter>
         </activity>
         <activity 
-            android:name="com.orfid.internetcommunity.HomeActivity"
+            android:name="com.orfid.ic.HomeActivity"
             >
              
         </activity>
         <activity 
-            android:name="com.orfid.internetcommunity.MessageActivity"
+            android:name="com.orfid.ic.MessageActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.SettingActivity"
+            android:name="com.orfid.ic.SettingActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.HomeFriendsPicActivity"
+            android:name="com.orfid.ic.HomeFriendsPicActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.PersonalActivity"
+            android:name="com.orfid.ic.PersonalActivity"
             >
             
         </activity>
         <activity 
-            android:name="com.orfid.internetcommunity.TextQipaoActivity"
+            android:name="com.orfid.ic.TextQipaoActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.VoiceQipaoActivity"
+            android:name="com.orfid.ic.VoiceQipaoActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.AddFriendsActivity"
+            android:name="com.orfid.ic.AddFriendsActivity"
             >
            
         </activity>
         <activity 
-            android:name="com.orfid.internetcommunity.AddNewFriendsActivity"
+            android:name="com.orfid.ic.AddNewFriendsActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.NewFriendsActivity"
+            android:name="com.orfid.ic.NewFriendsActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.SelectFriendsActivity"
+            android:name="com.orfid.ic.SelectFriendsActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.NickNameActivity"
+            android:name="com.orfid.ic.NickNameActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.SexyActivity"
+            android:name="com.orfid.ic.SexyActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.AddGamesActivity"
+            android:name="com.orfid.ic.AddGamesActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.ChattingActivity"
+            android:name="com.orfid.ic.ChattingActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.LoginMyActivity"
+            android:name="com.orfid.ic.LoginMyActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.ChattingMessageActivity"
+            android:name="com.orfid.ic.ChattingMessageActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.RegisterMyActivity"
+            android:name="com.orfid.ic.RegisterMyActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.SelectSpecificActivity"
+            android:name="com.orfid.ic.SelectSpecificActivity"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.ToastActivity"
+            android:name="com.orfid.ic.ToastActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.MusicLyricActivity"
+            android:name="com.orfid.ic.MusicLyricActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.VoiceStartActivity"
+            android:name="com.orfid.ic.VoiceStartActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.VoiceNewActivity"
+            android:name="com.orfid.ic.VoiceNewActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.SelectPicActivity"
+            android:name="com.orfid.ic.SelectPicActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.LaHeiActivity"
+            android:name="com.orfid.ic.LaHeiActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity 
-            android:name="com.orfid.internetcommunity.MaoPaoActivity"
+            android:name="com.orfid.ic.MaoPaoActivity"
             android:theme="@style/MyDialogStyleBottom"
             ></activity>
         <activity
-            android:name="com.orfid.internetcommunity.MultyLocationActivity"
+            android:name="com.orfid.ic.MultyLocationActivity"
             android:screenOrientation="portrait"
             android:label="@string/app_name"
             ></activity>
         <activity
-            android:name="com.orfid.internetcommunity.RightProvision">
+            android:name="com.orfid.ic.RightProvision">
         </activity>
         <activity
-            android:name="com.orfid.internetcommunity.ImageDetailsActivity">
+            android:name="com.orfid.ic.ImageDetailsActivity">
         </activity>
         
     </application>
